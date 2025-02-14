@@ -1,4 +1,4 @@
-# Gabriel Freitas Souza
+# Gabriel Freitas Souza -gabrielfs.dev
 ---
 # Astro Starter Kit: Basics
 
