@@ -1,3 +1,5 @@
+# Gabriel Freitas Souza
+---
 # Astro Starter Kit: Basics
 
 ```sh
