@@ -3,7 +3,6 @@ import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 import ExperienceCard from '../components/ExperienceCard.astro';
 import { getCollection } from 'astro:content';
-import type { CollectionEntry } from 'astro:content';
 
 const experiences = await getCollection('experience');
 const sortedExperiences = experiences.sort((a, b) => {
@@ -21,44 +20,54 @@ const sortedExperiences = experiences.sort((a, b) => {
     const dateB = getDate(b.data.period);
     return dateB.getTime() - dateA.getTime();
 });
+
+// Gerar descrição com base nas experiências mais recentes
+const latestExperience = sortedExperiences[0]?.data;
+const description = latestExperience
+    ? `Experiência profissional como ${latestExperience.position} na ${latestExperience.company} e outras empresas do setor de tecnologia.`
+    : "Experiência profissional em desenvolvimento de software e tecnologia.";
 ---
 
-<Layout title="Experiência Profissional - Gabriel Freitas Souza">
+<Layout 
+    title="Experiência Profissional - Gabriel Freitas Souza"
+    description={description}
+>
     <Navigation />
     
-    <main class="experience">
+    <main id="main-content">
         <div class="page-header">
             <h1>Experiência Profissional</h1>
             <p>Minha trajetória e conquistas profissionais</p>
         </div>
 
-        <div class="timeline" id="timeline">
+        <section 
+            class="timeline" 
+            aria-label="Linha do tempo de experiências profissionais"
+        >
             {sortedExperiences.map((exp, index) => (
                 <div class="timeline-item" data-index={index}>
                     <ExperienceCard experience={exp.data} />
                     {index !== sortedExperiences.length - 1 && (
-                        <div class="timeline-connector">
+                        <div 
+                            class="timeline-connector" 
+                            role="presentation" 
+                            aria-hidden="true"
+                        >
                             <div class="line"></div>
                             <div class="dot"></div>
                         </div>
                     )}
                 </div>
             ))}
-        </div>
+        </section>
     </main>
 </Layout>
 
 <style>
-.experience {
-    padding: 2rem;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
 .page-header {
     text-align: center;
     margin-bottom: 3rem;
-    animation: fadeIn 0.6s ease forwards;
+    animation: fadeIn 0.5s ease-out;
 }
 
 .page-header h1 {
@@ -78,6 +87,8 @@ const sortedExperiences = experiences.sort((a, b) => {
 .timeline {
     position: relative;
     padding: 2rem 0;
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
 .timeline-item {
@@ -154,10 +165,6 @@ const sortedExperiences = experiences.sort((a, b) => {
 }
 
 @media (max-width: 768px) {
-    .experience {
-        padding: 1rem;
-    }
-
     .page-header h1 {
         font-size: 2rem;
     }
@@ -175,6 +182,38 @@ const sortedExperiences = experiences.sort((a, b) => {
         height: 3rem;
     }
 }
+
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .timeline-item:not(:last-child) {
+        margin-bottom: 2.5rem;
+    }
+
+    .timeline-connector {
+        bottom: -2.5rem;
+        height: 2.5rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page-header {
+        animation: none;
+    }
+
+    .timeline-item,
+    .timeline-connector .line,
+    .timeline-connector .dot {
+        transition: none !important;
+    }
+
+    .timeline-item {
+        opacity: 1;
+        transform: none;
+    }
+}
 </style>
 
 <script>
@@ -187,7 +226,8 @@ function observeTimelineItems() {
             }
         });
     }, {
-        threshold: 0.2
+        threshold: 0.2,
+        rootMargin: '0px 0px -50px 0px'
     });
 
     document.querySelectorAll('.timeline-item').forEach(item => {
@@ -195,7 +235,16 @@ function observeTimelineItems() {
     });
 }
 
+// Inicializar observador quando a página carregar
 document.addEventListener('astro:page-load', () => {
-    observeTimelineItems();
+    // Verificar suporte a IntersectionObserver
+    if ('IntersectionObserver' in window) {
+        observeTimelineItems();
+    } else {
+        // Fallback para browsers que não suportam IntersectionObserver
+        document.querySelectorAll('.timeline-item').forEach(item => {
+            item.classList.add('visible');
+        });
+    }
 });
 </script>

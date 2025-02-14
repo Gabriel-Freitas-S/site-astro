@@ -13,13 +13,15 @@ interface Props {
 const { experience } = Astro.props;
 ---
 
-<div class="experience-card">
+<article class="experience-card">
     <div class="card-header">
         <div class="position-info">
             <h3>{experience.position}</h3>
             <h4>{experience.company}</h4>
         </div>
-        <span class="period">{experience.period}</span>
+        <span class="period" aria-label={`Período: ${experience.period}`}>
+            {experience.period}
+        </span>
     </div>
 
     <p class="description">{experience.description}</p>
@@ -27,9 +29,9 @@ const { experience } = Astro.props;
     {experience.technologies && (
         <div class="technologies">
             <h5>Tecnologias</h5>
-            <div class="tech-list">
+            <div class="tech-list" role="list">
                 {experience.technologies.map(tech => (
-                    <span class="tech-tag">{tech}</span>
+                    <span class="tech-tag" role="listitem">{tech}</span>
                 ))}
             </div>
         </div>
@@ -38,14 +40,14 @@ const { experience } = Astro.props;
     {experience.achievements && (
         <div class="achievements">
             <h5>Principais Conquistas</h5>
-            <ul>
+            <ul role="list">
                 {experience.achievements.map(achievement => (
-                    <li>{achievement}</li>
+                    <li role="listitem">{achievement}</li>
                 ))}
             </ul>
         </div>
     )}
-</div>
+</article>
 
 <style>
 .experience-card {
@@ -53,6 +55,7 @@ const { experience } = Astro.props;
     border-radius: 12px;
     padding: 2rem;
     border: 1px solid var(--border-color);
+    transition: background-color 0.3s ease;
 }
 
 .card-header {
@@ -74,6 +77,7 @@ const { experience } = Astro.props;
     font-size: 1.1rem;
     color: var(--text-color-secondary);
     font-weight: 500;
+    line-height: 1.4;
 }
 
 .period {
@@ -93,7 +97,8 @@ const { experience } = Astro.props;
     opacity: 0.9;
 }
 
-.technologies, .achievements {
+.technologies, 
+.achievements {
     margin-top: 2rem;
 }
 
@@ -115,6 +120,7 @@ h5 {
     padding: 0.4rem 1rem;
     border-radius: 20px;
     font-size: 0.9rem;
+    line-height: 1.4;
 }
 
 ul {
@@ -214,6 +220,12 @@ li::before {
         font-size: 0.9rem;
         padding-left: 1.2rem;
         margin-bottom: 0.8rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .experience-card {
+        transition: none;
     }
 }
 </style>

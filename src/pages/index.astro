@@ -56,41 +56,60 @@ const skillCategories: SkillCategory[] = [
         ]
     }
 ];
+
+const totalCertifications = skillCategories.reduce((total, category) => {
+    return total + category.skills.reduce((sum, skill) => sum + skill.certs.length, 0);
+}, 0);
+
+const description = `Desenvolvedor de software especializado em desenvolvimento web e mobile, com ${totalCertifications} certificações em diversas tecnologias e frameworks.`;
 ---
 
-<Layout title="Gabriel Freitas Souza - Portfolio">
+<Layout 
+    title="Gabriel Freitas Souza - Portfolio"
+    description={description}
+>
     <Navigation />
     <Header />
     
-    <section class="skills-section">
-        <h2>Habilidades</h2>
-        <div class="skills-grid">
-            {skillCategories.map(category => (
-                <div class="skill-category">
-                    <div class="category-header">
-                        <h3>{category.title}</h3>
-                    </div>
-                    <ul class="skill-list">
-                        {category.skills.map(skill => (
-                            <li>
-                                <button 
-                                    class="skill-button"
-                                    onclick={`openPopup('popup-${skill.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}')`}
-                                    disabled={skill.certs.length === 0}
-                                >
-                                    {skill.name}
-                                    {skill.certs.length > 0 && (
-                                        <span class="cert-count">{skill.certs.length}</span>
-                                    )}
-                                </button>
-                                <SkillPopup skill={skill.name} certifications={skill.certs.map(cert => cert.data)} />
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            ))}
-        </div>
-    </section>
+    <main id="main-content">
+        <section class="skills-section" aria-labelledby="skills-title">
+            <h2 id="skills-title">Habilidades</h2>
+            <div class="skills-grid">
+                {skillCategories.map(category => (
+                    <section 
+                        class="skill-category" 
+                        aria-labelledby={`category-${category.title.toLowerCase()}`}
+                    >
+                        <div class="category-header">
+                            <h3 id={`category-${category.title.toLowerCase()}`}>
+                                {category.title}
+                            </h3>
+                        </div>
+                        <ul class="skill-list" role="list">
+                            {category.skills.map(skill => (
+                                <li>
+                                    <button 
+                                        class="skill-button"
+                                        onclick={`openPopup('popup-${skill.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}')`}
+                                        disabled={skill.certs.length === 0}
+                                        aria-label={`${skill.name}${skill.certs.length > 0 ? ` - ${skill.certs.length} certificações` : ' - Sem certificações'}`}
+                                    >
+                                        {skill.name}
+                                        {skill.certs.length > 0 && (
+                                            <span class="cert-count" aria-hidden="true">
+                                                {skill.certs.length}
+                                            </span>
+                                        )}
+                                    </button>
+                                    <SkillPopup skill={skill.name} certifications={skill.certs.map(cert => cert.data)} />
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+                ))}
+            </div>
+        </section>
+    </main>
 </Layout>
 
 <style>
@@ -98,6 +117,7 @@ const skillCategories: SkillCategory[] = [
     padding: 4rem 2rem;
     max-width: 1200px;
     margin: 0 auto;
+    animation: fadeIn 0.5s ease-out;
 }
 
 .skills-section h2 {
@@ -120,12 +140,13 @@ const skillCategories: SkillCategory[] = [
     background: var(--secondary-color);
     border-radius: 12px;
     overflow: hidden;
+    border: 1px solid var(--border-color);
 }
 
 .category-header {
-    background: rgba(0, 122, 255, 0.1);
+    background: rgba(var(--text-color-rgb), 0.1);
     padding: 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .skill-category h3 {
@@ -153,15 +174,15 @@ const skillCategories: SkillCategory[] = [
     padding: 0.8rem 1.2rem;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s ease;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: background-color 0.2s ease;
 }
 
-.skill-button:not(:disabled):hover {
-    background: rgba(0, 122, 255, 0.1);
-    transform: translateX(4px);
+.skill-button:not(:disabled):hover,
+.skill-button:not(:disabled):focus-visible {
+    background: rgba(var(--text-color-rgb), 0.1);
 }
 
 .skill-button:disabled {
@@ -175,6 +196,17 @@ const skillCategories: SkillCategory[] = [
     padding: 0.2rem 0.6rem;
     border-radius: 12px;
     font-size: 0.8rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @media (max-width: 768px) {
@@ -192,6 +224,36 @@ const skillCategories: SkillCategory[] = [
 
     .skill-list {
         padding: 1rem;
+    }
+
+    .skill-button {
+        font-size: 0.95rem;
+        padding: 0.7rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .skills-section h2 {
+        font-size: 1.75rem;
+    }
+
+    .skill-category h3 {
+        font-size: 1.3rem;
+    }
+
+    .skill-button {
+        font-size: 0.9rem;
+        padding: 0.6rem 1rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skills-section {
+        animation: none;
+    }
+
+    .skill-button {
+        transition: none;
     }
 }
 </style>

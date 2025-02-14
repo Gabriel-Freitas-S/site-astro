@@ -5,35 +5,52 @@ import CertificationCard from '../components/CertificationCard.astro';
 import { getCollection } from 'astro:content';
 
 const certifications = await getCollection('certifications');
+const sortedCertifications = certifications.sort((a, b) => {
+    // Ordenar por duração total em horas (assumindo formato "XXh")
+    const getHours = (duration: string) => parseInt(duration.replace('h', ''));
+    const totalA = getHours(a.data.duration);
+    const totalB = getHours(b.data.duration);
+    return totalB - totalA;
+});
+
+const totalHours = sortedCertifications.reduce((acc, cert) => {
+    const hours = parseInt(cert.data.duration.replace('h', ''));
+    return acc + hours;
+}, 0);
+
+const description = `Certificações e cursos em desenvolvimento de software, totalizando ${totalHours} horas de estudo em diversas tecnologias e frameworks.`;
 ---
 
-<Layout title="Certificações - Gabriel Freitas Souza">
+<Layout 
+    title="Certificações - Gabriel Freitas Souza"
+    description={description}
+>
     <Navigation />
     
-    <main class="certifications">
+    <main id="main-content">
         <div class="page-header">
             <h1>Certificações</h1>
-            <p>Minha jornada de aprendizado contínuo e desenvolvimento profissional</p>
+            <p>
+                Total de {totalHours} horas de estudo e aperfeiçoamento profissional
+            </p>
         </div>
 
-        <div class="certifications-grid">
-            {certifications.map(cert => (
-                <CertificationCard certification={cert.data} />
+        <section 
+            class="certifications-grid" 
+            aria-label="Lista de certificações"
+        >
+            {sortedCertifications.map((certification) => (
+                <CertificationCard certification={certification.data} />
             ))}
-        </div>
+        </section>
     </main>
 </Layout>
 
 <style>
-.certifications {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
 .page-header {
     text-align: center;
     margin-bottom: 3rem;
+    animation: fadeIn 0.5s ease-out;
 }
 
 .page-header h1 {
@@ -46,27 +63,54 @@ const certifications = await getCollection('certifications');
 }
 
 .page-header p {
-    color: #888;
+    color: var(--text-color-secondary);
     font-size: 1.2rem;
 }
 
 .certifications-grid {
     display: grid;
     gap: 2rem;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 600px), 1fr));
+    margin-top: 2rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @media (max-width: 768px) {
-    .certifications {
-        padding: 1rem;
-    }
-
     .page-header h1 {
         font-size: 2rem;
     }
 
     .page-header p {
         font-size: 1rem;
+    }
+
+    .certifications-grid {
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .certifications-grid {
+        gap: 1rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page-header {
+        animation: none;
     }
 }
 </style>
