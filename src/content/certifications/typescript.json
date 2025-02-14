@@ -1,0 +1,35 @@
+{
+  "title": "Melhore sua experiência de desenvolvimento com TypeScript",
+  "duration": "32h",
+  "courses": [
+    {
+      "name": "TypeScript Part 1: Evolving Your JavaScript",
+      "period": "20/12/2023 a 21/12/2023",
+      "duration": "10h"
+    },
+    {
+      "name": "TypeScript parte 2: avançando na linguagem",
+      "period": "21/12/2023 a 21/12/2023",
+      "duration": "10h"
+    },
+    {
+      "name": "Typescript parte 3: mais técnicas e boas práticas",
+      "period": "21/12/2023 a 21/12/2023",
+      "duration": "10h"
+    }
+  ],
+  "complementaryContent": [
+    {
+      "name": "Video: Quais são as principais vantagens do Typescript?",
+      "duration": "60min"
+    },
+    {
+      "name": "Artigo: TypeScript com JavaScript Vanilla",
+      "duration": "30min"
+    },
+    {
+      "name": "Artigo: JavaScript ou TypeScript? Entenda as principais diferenças",
+      "duration": "30min"
+    }
+  ]
+}

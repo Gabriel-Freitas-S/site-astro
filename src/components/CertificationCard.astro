@@ -1,0 +1,152 @@
+---
+interface Props {
+    certification: {
+        title: string;
+        duration: string;
+        courses: {
+            name: string;
+            period?: string;
+            duration: string;
+        }[];
+        complementaryContent?: {
+            name: string;
+            duration: string;
+        }[];
+    };
+}
+
+const { certification } = Astro.props;
+---
+
+<div class="certification-card">
+    <div class="card-header">
+        <h3>{certification.title}</h3>
+        <span class="duration">{certification.duration}</span>
+    </div>
+
+    <div class="content">
+        <div class="courses">
+            <h4>Cursos</h4>
+            <ul>
+                {certification.courses.map(course => (
+                    <li>
+                        <div class="course-info">
+                            <span class="name">{course.name}</span>
+                            {course.period && (
+                                <span class="period">({course.period})</span>
+                            )}
+                            <span class="duration">{course.duration}</span>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        </div>
+
+        {certification.complementaryContent && (
+            <div class="complementary">
+                <h4>Conteúdos complementares</h4>
+                <ul>
+                    {certification.complementaryContent.map(content => (
+                        <li>
+                            <div class="complementary-info">
+                                <span class="name">{content.name}</span>
+                                <span class="duration">{content.duration}</span>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        )}
+    </div>
+</div>
+
+<style>
+.certification-card {
+    background: var(--secondary-color);
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.card-header h3 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.card-header .duration {
+    background: rgba(var(--text-color-rgb), 0.1);
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.content h4 {
+    color: var(--text-color-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.courses, .complementary {
+    margin-bottom: 2rem;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    margin-bottom: 1rem;
+}
+
+.course-info, .complementary-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    color: var(--text-color);
+}
+
+.name {
+    flex: 1;
+    min-width: 250px;
+}
+
+.period {
+    color: var(--text-color-secondary);
+    font-size: 0.9rem;
+}
+
+.duration {
+    color: var(--text-color-secondary);
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .certification-card {
+        padding: 1.5rem;
+    }
+
+    .card-header {
+        flex-direction: column;
+    }
+
+    .card-header h3 {
+        font-size: 1.3rem;
+    }
+
+    .name {
+        min-width: 200px;
+    }
+}
+</style>

@@ -1,0 +1,93 @@
+{
+  "title": "Engenharia de software",
+  "duration": "85h",
+  "courses": [
+    {
+      "name": "Quality Assurance: plano de testes e gestão de bugs",
+      "period": "23/01/2024 a 23/01/2024",
+      "duration": "8h"
+    },
+    {
+      "name": "Microsserviços: padrões de projeto",
+      "period": "29/12/2023 a 29/12/2023",
+      "duration": "6h"
+    },
+    {
+      "name": "Microsserviços: explorando os conceitos",
+      "period": "30/12/2023 a 02/01/2024",
+      "duration": "8h"
+    },
+    {
+      "name": "Microsserviços na prática: entendendo a tomada de decisões",
+      "period": "02/01/2024 a 22/01/2024",
+      "duration": "8h"
+    },
+    {
+      "name": "Integração Contínua: mais qualidade e menos risco no desenvolvimento",
+      "period": "23/01/2024 a 24/01/2024",
+      "duration": "6h"
+    },
+    {
+      "name": "Entrega Contínua: confiabilidade e qualidade na implantação de software",
+      "period": "24/01/2024 a 24/01/2024",
+      "duration": "8h"
+    },
+    {
+      "name": "Scrum: agilidade em seu projeto",
+      "period": "24/01/2024 a 24/01/2024",
+      "duration": "8h"
+    },
+    {
+      "name": "Equipes ágeis: organizando os papéis em uma equipe",
+      "period": "24/01/2024 a 24/01/2024",
+      "duration": "8h"
+    },
+    {
+      "name": "Extreme Programming: metodologia de desenvolvimento ágil de software",
+      "period": "24/01/2024 a 24/01/2024",
+      "duration": "8h"
+    }
+  ],
+  "complementaryContent": [
+    {
+      "name": "Alura+: Design de código vs Arquitetura de software",
+      "duration": "7min"
+    },
+    {
+      "name": "Alura+: O que é arquitetura hexagonal?",
+      "duration": "11min"
+    },
+    {
+      "name": "Alura+: Clean Architecture (Arquitetura Limpa) - O que é?",
+      "duration": "11min"
+    },
+    {
+      "name": "Alura+: Domain-Driven Design (DDD) - O que é?",
+      "duration": "13min"
+    },
+    {
+      "name": "Alura+: O que é Mensageria?",
+      "duration": "11min"
+    },
+    {
+      "name": "Alura+: Modelagem de eventos",
+      "duration": "11min"
+    },
+    {
+      "name": "Alura+: O que é uma arquitetura orientada a eventos?",
+      "duration": "11min"
+    },
+    {
+      "name": "Hipsters Ponto Tech: Testes Automatizados",
+      "duration": "46min"
+    },
+    {
+      "name": "Alura+: O que é Test-Driven Development (TDD)?",
+      "duration": "16min"
+    },
+    {
+      "name": "Alura+: O que é Behavior-Driven Development (BDD)?",
+      "duration": "11min"
+    }
+  ]
+}

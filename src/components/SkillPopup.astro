@@ -1,0 +1,177 @@
+---
+interface Course {
+    name: string;
+    duration: string;
+    period?: string;
+}
+
+interface Certification {
+    title: string;
+    duration: string;
+    courses: Course[];
+}
+
+interface Props {
+    skill: string;
+    certifications: Certification[];
+}
+
+const { skill, certifications } = Astro.props;
+---
+
+<div class="skill-popup" id={`popup-${skill.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}>
+    <div class="popup-content">
+        <button class="close-button" onclick="closePopup(this.parentElement.parentElement.id)">&times;</button>
+        <h3>Certificações relacionadas a {skill}</h3>
+        <div class="certifications-list">
+            {certifications.map(cert => (
+                <div class="certification-item">
+                    <h4>{cert.title}</h4>
+                    <p class="duration">{cert.duration}</p>
+                    <div class="courses">
+                        {cert.courses.map(course => (
+                            <div class="course">
+                                <span class="course-name">{course.name}</span>
+                                <span class="course-duration">{course.duration}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ))}
+        </div>
+    </div>
+</div>
+
+<style>
+.skill-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-content {
+    background: var(--secondary-color);
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color 0.2s ease;
+}
+
+.close-button:hover {
+    color: var(--text-color);
+}
+
+h3 {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    color: var(--primary-color);
+}
+
+.certification-item {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+h4 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.duration {
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.courses {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.course {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.course-name {
+    color: #CCC;
+    font-size: 0.9rem;
+}
+
+.course-duration {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+    .popup-content {
+        padding: 1.5rem;
+        width: 95%;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+    }
+
+    .certification-item {
+        padding: 1rem;
+    }
+}
+</style>
+
+<script>
+declare global {
+    interface Window {
+        closePopup: (popupId: string) => void;
+        openPopup: (popupId: string) => void;
+    }
+}
+
+function closePopup(popupId: string) {
+    const popup = document.getElementById(popupId);
+    if (popup) {
+        popup.style.display = 'none';
+    }
+}
+
+function openPopup(popupId: string) {
+    const popup = document.getElementById(popupId);
+    if (popup) {
+        popup.style.display = 'flex';
+    }
+}
+
+window.closePopup = closePopup;
+window.openPopup = openPopup;
+</script>

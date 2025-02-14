@@ -1,0 +1,49 @@
+{
+  "title": "CSS: aprofunde em estilos",
+  "duration": "36h",
+  "courses": [
+    {
+      "name": "CSS: Flexbox e layouts responsivos",
+      "period": "15/12/2023 a 15/12/2023",
+      "duration": "6h"
+    },
+    {
+      "name": "CSS: construindo layouts com Grid",
+      "period": "15/12/2023 a 18/12/2023",
+      "duration": "6h"
+    },
+    {
+      "name": "SASS e CSS: estilizando um site",
+      "period": "18/12/2023 a 18/12/2023",
+      "duration": "8h"
+    },
+    {
+      "name": "Tailwind CSS: estilizando a sua página com classes utilitárias",
+      "period": "18/12/2023 a 18/12/2023",
+      "duration": "8h"
+    },
+    {
+      "name": "Praticando CSS: Grid e Flexbox",
+      "period": "18/12/2023 a 18/12/2023",
+      "duration": "6h"
+    }
+  ],
+  "complementaryContent": [
+    {
+      "name": "Alura+: CSS FlexBox: distribua elementos de forma responsiva",
+      "duration": "29min"
+    },
+    {
+      "name": "Artigo: CSS: o que é, como usar no HTML e um Guia para iniciar",
+      "duration": "30min"
+    },
+    {
+      "name": "Artigo: Flexbox CSS: guia completo, elementos e exemplos",
+      "duration": "30min"
+    },
+    {
+      "name": "Artigo: CSS Object-fit: trabalhando com proporções",
+      "duration": "30min"
+    }
+  ]
+}

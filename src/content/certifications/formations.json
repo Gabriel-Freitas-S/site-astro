@@ -1,0 +1,69 @@
+{
+  "title": "A partir do zero: crie projetos em Dart, a linguagem utilizada no Flutter",
+  "duration": "55h",
+  "courses": [
+    {
+      "name": "Dart: criando e manipulando variáveis e listas",
+      "period": "14/11/2023 a 16/11/2023",
+      "duration": "10h"
+    },
+    {
+      "name": "Dart: entendendo a Orientação a Objetos",
+      "period": "15/11/2023 a 17/11/2023",
+      "duration": "12h"
+    },
+    {
+      "name": "Dart: sintaxe, coleções e dinamismo",
+      "period": "16/11/2023 a 18/11/2023",
+      "duration": "8h"
+    },
+    {
+      "name": "Dart: lidando com Exceptions e Null Safety",
+      "period": "17/11/2023 a 20/11/2023",
+      "duration": "12h"
+    },
+    {
+      "name": "Dart: entendendo assincronismo",
+      "period": "17/11/2023 a 20/11/2023",
+      "duration": "8h"
+    }
+  ],
+  "complementaryContent": [
+    {
+      "name": "Alura+: Usando o teclado para entrada e saída de dados com Dart",
+      "duration": "14min"
+    },
+    {
+      "name": "Alura+: Const x Final no Dart",
+      "duration": "8min"
+    },
+    {
+      "name": "Alura+: Null Safety no Dart",
+      "duration": "8min"
+    },
+    {
+      "name": "Artigo: Entrada e Saída de Dados no Terminal do Dart",
+      "duration": "30min"
+    },
+    {
+      "name": "Artigo: Qual a diferença entre Static, Const e Final no Dart",
+      "duration": "30min"
+    },
+    {
+      "name": "Video: Os 5 métodos da lista do Dart",
+      "duration": "60min"
+    },
+    {
+      "name": "Video: Entendendo Input e Output no Dart",
+      "duration": "60min"
+    },
+    {
+      "name": "Artigo: Construtores no Dart: conhecendo tipos de construtores e como usá-los",
+      "duration": "30min"
+    },
+    {
+      "name": "Video: Conclusao Formacao Dart",
+      "duration": "60min"
+    }
+  ]
+}

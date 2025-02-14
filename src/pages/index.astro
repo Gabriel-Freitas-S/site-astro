@@ -1,0 +1,197 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Navigation from '../components/Navigation.astro';
+import SkillPopup from '../components/SkillPopup.astro';
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+interface Skill {
+    name: string;
+    certs: CollectionEntry<'certifications'>[];
+}
+
+interface SkillCategory {
+    title: string;
+    skills: Skill[];
+}
+
+const certifications = await getCollection('certifications');
+
+const skillCategories: SkillCategory[] = [
+    {
+        title: "Linguagens",
+        skills: [
+            { name: "TypeScript/JavaScript", certs: certifications.filter(cert => 
+                cert.data.title.toLowerCase().includes('typescript') || 
+                cert.data.title.toLowerCase().includes('javascript')) },
+            { name: "Dart", certs: certifications.filter(cert => 
+                cert.data.title.toLowerCase().includes('dart')) },
+            { name: "Rust", certs: certifications.filter(cert => 
+                cert.data.title.toLowerCase().includes('rust')) },
+            { name: "HTML/CSS", certs: certifications.filter(cert => 
+                cert.data.title.toLowerCase().includes('html') ||
+                cert.data.title.toLowerCase().includes('css')) }
+        ]
+    },
+    {
+        title: "Frameworks",
+        skills: [
+            { name: "React", certs: certifications.filter(cert => 
+                cert.data.title.toLowerCase().includes('react')) },
+            { name: "Flutter", certs: certifications.filter(cert => 
+                cert.data.courses.some(course => course.name.toLowerCase().includes('flutter'))) },
+            { name: "Astro", certs: [] }
+        ]
+    },
+    {
+        title: "Ferramentas",
+        skills: [
+            { name: "Git", certs: certifications.filter(cert => 
+                cert.data.title.toLowerCase().includes('git')) },
+            { name: "Docker", certs: certifications.filter(cert => 
+                cert.data.title.toLowerCase().includes('docker')) },
+            { name: "VSCode", certs: certifications.filter(cert => 
+                cert.data.title.toLowerCase().includes('vscode')) }
+        ]
+    }
+];
+---
+
+<Layout title="Gabriel Freitas Souza - Portfolio">
+    <Navigation />
+    <Header />
+    
+    <section class="skills-section">
+        <h2>Habilidades</h2>
+        <div class="skills-grid">
+            {skillCategories.map(category => (
+                <div class="skill-category">
+                    <div class="category-header">
+                        <h3>{category.title}</h3>
+                    </div>
+                    <ul class="skill-list">
+                        {category.skills.map(skill => (
+                            <li>
+                                <button 
+                                    class="skill-button"
+                                    onclick={`openPopup('popup-${skill.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}')`}
+                                    disabled={skill.certs.length === 0}
+                                >
+                                    {skill.name}
+                                    {skill.certs.length > 0 && (
+                                        <span class="cert-count">{skill.certs.length}</span>
+                                    )}
+                                </button>
+                                <SkillPopup skill={skill.name} certifications={skill.certs.map(cert => cert.data)} />
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            ))}
+        </div>
+    </section>
+</Layout>
+
+<style>
+.skills-section {
+    padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.skills-section h2 {
+    text-align: center;
+    margin-bottom: 3rem;
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #00C6FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.skill-category {
+    background: var(--secondary-color);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.category-header {
+    background: rgba(0, 122, 255, 0.1);
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.skill-category h3 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.skill-list {
+    list-style: none;
+    padding: 1.5rem;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.skill-button {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1rem;
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.skill-button:not(:disabled):hover {
+    background: rgba(0, 122, 255, 0.1);
+    transform: translateX(4px);
+}
+
+.skill-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.cert-count {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+    .skills-section {
+        padding: 2rem 1rem;
+    }
+
+    .skills-section h2 {
+        font-size: 2rem;
+    }
+
+    .category-header {
+        padding: 1rem;
+    }
+
+    .skill-list {
+        padding: 1rem;
+    }
+}
+</style>

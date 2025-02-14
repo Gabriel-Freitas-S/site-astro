@@ -1,0 +1,156 @@
+---
+interface Props {
+    experience: {
+        company: string;
+        position: string;
+        period: string;
+        description: string;
+        technologies?: string[];
+        achievements?: string[];
+    };
+}
+
+const { experience } = Astro.props;
+---
+
+<div class="experience-card">
+    <div class="card-header">
+        <div class="position-info">
+            <h3>{experience.position}</h3>
+            <h4>{experience.company}</h4>
+        </div>
+        <span class="period">{experience.period}</span>
+    </div>
+
+    <p class="description">{experience.description}</p>
+
+    {experience.technologies && (
+        <div class="technologies">
+            <h5>Tecnologias</h5>
+            <div class="tech-list">
+                {experience.technologies.map(tech => (
+                    <span class="tech-tag">{tech}</span>
+                ))}
+            </div>
+        </div>
+    )}
+
+    {experience.achievements && (
+        <div class="achievements">
+            <h5>Principais Conquistas</h5>
+            <ul>
+                {experience.achievements.map(achievement => (
+                    <li>{achievement}</li>
+                ))}
+            </ul>
+        </div>
+    )}
+</div>
+
+<style>
+.experience-card {
+    background: var(--secondary-color);
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.position-info h3 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.position-info h4 {
+    font-size: 1.1rem;
+    color: var(--text-color-secondary);
+    font-weight: 500;
+}
+
+.period {
+    background: rgba(var(--text-color-rgb), 0.1);
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.description {
+    color: var(--text-color);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.technologies, .achievements {
+    margin-top: 1.5rem;
+}
+
+h5 {
+    color: var(--text-color-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.tech-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tech-tag {
+    background: rgba(var(--text-color-rgb), 0.1);
+    color: var(--text-color);
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.9rem;
+}
+
+ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.8rem;
+    color: var(--text-color);
+    opacity: 0.9;
+}
+
+li::before {
+    content: "•";
+    color: var(--primary-color);
+    position: absolute;
+    left: 0;
+}
+
+@media (max-width: 768px) {
+    .experience-card {
+        padding: 1.5rem;
+    }
+
+    .card-header {
+        flex-direction: column;
+    }
+
+    .period {
+        align-self: flex-start;
+    }
+
+    .position-info h3 {
+        font-size: 1.3rem;
+    }
+}
+</style>

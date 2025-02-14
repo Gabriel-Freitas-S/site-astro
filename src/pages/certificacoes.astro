@@ -1,0 +1,72 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+import CertificationCard from '../components/CertificationCard.astro';
+import { getCollection } from 'astro:content';
+
+const certifications = await getCollection('certifications');
+---
+
+<Layout title="Certificações - Gabriel Freitas Souza">
+    <Navigation />
+    
+    <main class="certifications">
+        <div class="page-header">
+            <h1>Certificações</h1>
+            <p>Minha jornada de aprendizado contínuo e desenvolvimento profissional</p>
+        </div>
+
+        <div class="certifications-grid">
+            {certifications.map(cert => (
+                <CertificationCard certification={cert.data} />
+            ))}
+        </div>
+    </main>
+</Layout>
+
+<style>
+.certifications {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #00C6FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-header p {
+    color: #888;
+    font-size: 1.2rem;
+}
+
+.certifications-grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 600px), 1fr));
+}
+
+@media (max-width: 768px) {
+    .certifications {
+        padding: 1rem;
+    }
+
+    .page-header h1 {
+        font-size: 2rem;
+    }
+
+    .page-header p {
+        font-size: 1rem;
+    }
+}
+</style>
