@@ -101,6 +101,7 @@ const currentPath = Astro.url.pathname;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 2rem;
+    height: 64px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -108,7 +109,7 @@ const currentPath = Astro.url.pathname;
 
 .nav-links {
     display: flex;
-    gap: 0.5rem;
+    gap: 1rem;
 }
 
 .nav-actions {
@@ -144,6 +145,9 @@ const currentPath = Astro.url.pathname;
     padding: 0.5rem;
     border-radius: 8px;
     opacity: 0.8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .nav-icon:hover {
@@ -189,26 +193,50 @@ const currentPath = Astro.url.pathname;
 @media (max-width: 768px) {
     .nav-container {
         padding: 0 1rem;
+        height: auto;
     }
 
     .nav-links {
-        padding: 0.5rem 0;
+        gap: 0.25rem;
     }
 
     .nav-link {
-        font-size: 0.9rem;
-        padding: 0.4rem 1rem;
+        font-size: 0.85rem;
+        padding: 0.4rem 0.75rem;
     }
 
-    .nav-icon svg, .theme-toggle svg {
+    .nav-actions {
+        gap: 0.5rem;
+    }
+
+    .nav-icon svg, 
+    .theme-toggle svg {
         width: 20px;
         height: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-container {
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 0.75rem;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .nav-actions {
+        width: 100%;
+        justify-content: center;
+        padding-bottom: 0.25rem;
     }
 }
 </style>
 
 <script>
-// Função para alternar o tema
 function toggleTheme() {
     const root = document.documentElement;
     const isLight = root.classList.contains('light-theme');
@@ -216,7 +244,6 @@ function toggleTheme() {
     localStorage.setItem('theme', !isLight ? 'light' : 'dark');
 }
 
-// Atualizar ícone e estado do botão após mudança de tema
 function updateThemeToggle() {
     const button = document.getElementById('theme-toggle');
     if (button) {
@@ -228,7 +255,6 @@ function updateThemeToggle() {
     }
 }
 
-// Adicionar event listener ao botão
 document.addEventListener('astro:page-load', () => {
     const button = document.getElementById('theme-toggle');
     if (button) {
@@ -240,16 +266,15 @@ document.addEventListener('astro:page-load', () => {
     updateThemeToggle();
 });
 
-// Atualizar classe scrolled na navegação
 document.addEventListener('astro:page-load', () => {
     const handleScroll = () => {
         const navWrapper = document.getElementById('nav-wrapper');
         if (navWrapper) {
-            navWrapper.classList.toggle('scrolled', window.scrollY > 100);
+            navWrapper.classList.toggle('scrolled', window.scrollY > 50);
         }
     };
 
     document.addEventListener('scroll', handleScroll);
-    handleScroll(); // Verificar estado inicial
+    handleScroll();
 });
 </script>

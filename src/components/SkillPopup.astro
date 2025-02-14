@@ -21,17 +21,29 @@ const { skill, certifications } = Astro.props;
 
 <div class="skill-popup" id={`popup-${skill.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}>
     <div class="popup-content">
-        <button class="close-button" onclick="closePopup(this.parentElement.parentElement.id)">&times;</button>
-        <h3>Certificações relacionadas a {skill}</h3>
+        <button class="close-button" onclick={`closePopup('popup-${skill.toLowerCase().replace(/[^a-z0-9]/g, '-')}')`}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        <h3>Certificações em {skill}</h3>
         <div class="certifications-list">
             {certifications.map(cert => (
                 <div class="certification-item">
-                    <h4>{cert.title}</h4>
-                    <p class="duration">{cert.duration}</p>
+                    <div class="cert-header">
+                        <h4>{cert.title}</h4>
+                        <span class="duration">{cert.duration}</span>
+                    </div>
                     <div class="courses">
                         {cert.courses.map(course => (
                             <div class="course">
-                                <span class="course-name">{course.name}</span>
+                                <div class="course-info">
+                                    <span class="course-name">{course.name}</span>
+                                    {course.period && (
+                                        <span class="course-period">({course.period})</span>
+                                    )}
+                                </div>
                                 <span class="course-duration">{course.duration}</span>
                             </div>
                         ))}
@@ -54,6 +66,7 @@ const { skill, certifications } = Astro.props;
     z-index: 1000;
     justify-content: center;
     align-items: center;
+    padding: 1rem;
 }
 
 .popup-content {
@@ -61,10 +74,11 @@ const { skill, certifications } = Astro.props;
     border-radius: 12px;
     padding: 2rem;
     max-width: 800px;
-    width: 90%;
+    width: 100%;
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
+    border: 1px solid var(--border-color);
 }
 
 .close-button {
@@ -73,105 +87,146 @@ const { skill, certifications } = Astro.props;
     right: 1rem;
     background: none;
     border: none;
-    color: #888;
-    font-size: 1.5rem;
+    color: var(--text-color);
     cursor: pointer;
     padding: 0.5rem;
-    transition: color 0.2s ease;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
 }
 
 .close-button:hover {
-    color: var(--text-color);
+    background: rgba(var(--text-color-rgb), 0.1);
 }
 
 h3 {
     font-size: 1.8rem;
     margin-bottom: 2rem;
     color: var(--primary-color);
+    padding-right: 2rem;
 }
 
 .certification-item {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(var(--text-color-rgb), 0.05);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 1rem;
 }
 
+.cert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
 h4 {
     font-size: 1.2rem;
-    margin-bottom: 0.5rem;
     color: var(--text-color);
+    line-height: 1.3;
 }
 
 .duration {
-    color: var(--primary-color);
+    color: var(--text-color-secondary);
     font-size: 0.9rem;
-    margin-bottom: 1rem;
+    white-space: nowrap;
+    background: rgba(var(--text-color-rgb), 0.1);
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
 }
 
 .courses {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.8rem;
 }
 
 .course {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    gap: 1rem;
     padding: 0.5rem;
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
+    border-radius: 6px;
+    background: rgba(var(--text-color-rgb), 0.05);
+}
+
+.course-info {
+    flex: 1;
+    min-width: 0;
 }
 
 .course-name {
-    color: #CCC;
-    font-size: 0.9rem;
+    display: block;
+    color: var(--text-color);
+    font-size: 0.95rem;
+}
+
+.course-period {
+    display: block;
+    color: var(--text-color-secondary);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
 }
 
 .course-duration {
-    color: #888;
-    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+    font-size: 0.9rem;
+    white-space: nowrap;
 }
 
 @media (max-width: 768px) {
     .popup-content {
         padding: 1.5rem;
-        width: 95%;
+        margin: 1rem;
+        width: auto;
     }
 
     h3 {
         font-size: 1.5rem;
+        margin-bottom: 1.5rem;
     }
 
     .certification-item {
         padding: 1rem;
     }
+
+    .cert-header {
+        flex-direction: column;
+    }
+
+    h4 {
+        font-size: 1.1rem;
+    }
+
+    .course {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .course-duration {
+        align-self: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .popup-content {
+        padding: 1rem;
+        margin: 0.5rem;
+    }
+
+    h3 {
+        font-size: 1.3rem;
+    }
+
+    .certification-item {
+        padding: 0.8rem;
+    }
+
+    .course-name {
+        font-size: 0.9rem;
+    }
 }
 </style>
-
-<script>
-declare global {
-    interface Window {
-        closePopup: (popupId: string) => void;
-        openPopup: (popupId: string) => void;
-    }
-}
-
-function closePopup(popupId: string) {
-    const popup = document.getElementById(popupId);
-    if (popup) {
-        popup.style.display = 'none';
-    }
-}
-
-function openPopup(popupId: string) {
-    const popup = document.getElementById(popupId);
-    if (popup) {
-        popup.style.display = 'flex';
-    }
-}
-
-window.closePopup = closePopup;
-window.openPopup = openPopup;
-</script>

@@ -31,10 +31,12 @@ const { certification } = Astro.props;
                 {certification.courses.map(course => (
                     <li>
                         <div class="course-info">
-                            <span class="name">{course.name}</span>
-                            {course.period && (
-                                <span class="period">({course.period})</span>
-                            )}
+                            <div class="course-main">
+                                <span class="name">{course.name}</span>
+                                {course.period && (
+                                    <span class="period">({course.period})</span>
+                                )}
+                            </div>
                             <span class="duration">{course.duration}</span>
                         </div>
                     </li>
@@ -79,6 +81,7 @@ const { certification } = Astro.props;
 .card-header h3 {
     font-size: 1.5rem;
     color: var(--primary-color);
+    line-height: 1.3;
 }
 
 .card-header .duration {
@@ -112,24 +115,32 @@ li {
 
 .course-info, .complementary-info {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    justify-content: space-between;
+    gap: 1rem;
     color: var(--text-color);
 }
 
-.name {
+.course-main {
     flex: 1;
-    min-width: 250px;
+    min-width: 0;
+}
+
+.name {
+    display: block;
+    color: var(--text-color);
 }
 
 .period {
     color: var(--text-color-secondary);
     font-size: 0.9rem;
+    display: block;
+    margin-top: 0.25rem;
 }
 
 .duration {
     color: var(--text-color-secondary);
     white-space: nowrap;
+    font-size: 0.9rem;
 }
 
 @media (max-width: 768px) {
@@ -145,8 +156,44 @@ li {
         font-size: 1.3rem;
     }
 
+    .card-header .duration {
+        align-self: flex-start;
+    }
+
+    .course-info, .complementary-info {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .duration {
+        align-self: flex-start;
+    }
+
+    .content h4 {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .certification-card {
+        padding: 1rem;
+    }
+
+    .card-header h3 {
+        font-size: 1.2rem;
+    }
+
+    .card-header .duration {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
     .name {
-        min-width: 200px;
+        font-size: 0.95rem;
+    }
+
+    .period {
+        font-size: 0.85rem;
     }
 }
 </style>
