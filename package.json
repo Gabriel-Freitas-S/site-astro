@@ -4,9 +4,10 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run astro build",
+    "build": "npm run optimize-images && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "optimize-images": "node scripts/optimize-profile.js"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.2.1",
@@ -16,12 +17,13 @@
     "astro-compressor": "^1.0.0",
     "astro-font": "^1.0.0",
     "astro-icon": "^1.1.5",
-    "astro-imagetools": "^0.9.0",
+    "astro-imagetools": "^0.2.7",
     "astro-minify-html-swc": "^0.1.5",
     "astro-purgecss": "^5.2.0"
   },
   "devDependencies": {
     "@iconify-json/mdi": "^1.2.3",
-    "@iconify-json/simple-icons": "^1.2.24"
+    "@iconify-json/simple-icons": "^1.2.24",
+    "sharp": "^0.33.2"
   }
 }
