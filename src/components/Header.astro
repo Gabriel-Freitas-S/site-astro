@@ -10,7 +10,7 @@ const preloadImage = await getImage({
     quality: 90
 });
 
-// Inline critical CSS para a imagem de perfil
+// CSS crítico inline para elementos LCP
 const criticalStyles = `
     .profile-image-container {
         width: var(--image-size, 140px);
@@ -21,6 +21,20 @@ const criticalStyles = `
         box-shadow: 0 0 20px var(--accent-tertiary);
         background: var(--secondary-color);
         contain: strict;
+    }
+    .title {
+        font-size: clamp(1.75rem, 5vw, 3rem);
+        font-weight: 700;
+        background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1.2;
+        margin: 0;
+        padding: 0;
+        will-change: transform, opacity;
+        transform: translateZ(0);
+        backface-visibility: hidden;
     }
     @media (max-width: 768px) {
         .profile-image-container { --image-size: 120px; }
@@ -50,7 +64,7 @@ const criticalStyles = `
                     quality={90}
                 />
             </div>
-            <h1>Gabriel Freitas Souza</h1>
+            <h1 class="title">Gabriel Freitas Souza</h1>
             <div class="social-links" role="list">
                 <a 
                     href="https://www.linkedin.com/in/gabriel-freitas-souza/" 
@@ -88,6 +102,7 @@ const criticalStyles = `
     position: relative;
     margin-bottom: 2rem;
     animation: fadeIn 0.5s ease-out;
+    contain: content;
 }
 
 .header-content {
@@ -108,16 +123,6 @@ const criticalStyles = `
     height: 100%;
     object-fit: cover;
     display: block;
-}
-
-h1 {
-    font-size: 3rem;
-    font-weight: 700;
-    background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1.2;
 }
 
 .social-links {
@@ -177,10 +182,6 @@ h1 {
         padding: 6rem 0 3rem 0;
     }
 
-    h1 {
-        font-size: 2rem;
-    }
-
     .social-button {
         padding: 0.7rem 1.2rem;
         font-size: 0.9rem;
@@ -195,11 +196,6 @@ h1 {
 @media (max-width: 480px) {
     .header {
         padding: 5rem 0 2rem 0;
-    }
-
-    h1 {
-        font-size: 1.75rem;
-        padding: 0 1rem;
     }
 
     .social-links {
