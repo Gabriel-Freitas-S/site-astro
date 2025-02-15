@@ -1,6 +1,7 @@
 ---
 import { ViewTransitions } from 'astro:transitions';
 import { AstroFont } from "astro-font";
+import { GoogleAnalytics } from 'astro-analytics';
 
 interface Props {
     title: string;
@@ -35,6 +36,8 @@ const {
 
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         
+        <GoogleAnalytics id="G-KXJCF6VDEE" />
+
         <AstroFont
             config={[
                 {
