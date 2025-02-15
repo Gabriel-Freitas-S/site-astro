@@ -2,10 +2,9 @@
 import { defineConfig } from 'astro/config';
 import compressor from 'astro-compressor';
 import minify from 'astro-minify-html-swc';
-
 import sitemap from '@astrojs/sitemap';
-
 import icon from 'astro-icon';
+import { astroImageTools } from "astro-imagetools";
 
 // https://astro.build/config
 export default defineConfig({
