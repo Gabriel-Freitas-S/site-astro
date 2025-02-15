@@ -5,7 +5,14 @@ const navItems = [
     { href: "/experiencia", label: "Experiência" }
 ];
 
+// Certifica que a comparação funciona para a página inicial e outras páginas
 const currentPath = Astro.url.pathname;
+const isCurrentPage = (href: string) => {
+    if (href === '/') {
+        return currentPath === href;
+    }
+    return currentPath.startsWith(href);
+};
 ---
 
 <div class="nav-wrapper" id="nav-wrapper">
@@ -17,10 +24,10 @@ const currentPath = Astro.url.pathname;
                         href={item.href}
                         class:list={[
                             'nav-link',
-                            { active: currentPath === item.href }
+                            { active: isCurrentPage(item.href) }
                         ]}
                         role="menuitem"
-                        aria-current={currentPath === item.href ? "page" : undefined}
+                        aria-current={isCurrentPage(item.href) ? "page" : undefined}
                     >
                         {item.label}
                     </a>
@@ -233,7 +240,6 @@ const currentPath = Astro.url.pathname;
     display: none;
 }
 
-/* Média queries existentes mantidas... */
 @media (max-width: 768px) {
     .nav-container {
         padding: 0 1rem;
