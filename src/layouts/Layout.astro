@@ -1,5 +1,6 @@
 ---
 import { ViewTransitions } from 'astro:transitions';
+import { AstroFont } from "astro-font";
 
 interface Props {
     title: string;
@@ -33,9 +34,40 @@ const {
         <meta name="twitter:description" content={description} />
 
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        
+        <AstroFont
+            config={[
+                {
+                    name: "Inter",
+                    src: [
+                        {
+                            style: 'normal',
+                            weight: '400',
+                            path: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2'
+                        },
+                        {
+                            style: 'normal',
+                            weight: '500',
+                            path: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuI6fAZ9hiA.woff2'
+                        },
+                        {
+                            style: 'normal',
+                            weight: '600',
+                            path: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff2'
+                        },
+                        {
+                            style: 'normal',
+                            weight: '700',
+                            path: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuFuYAZ9hiA.woff2'
+                        }
+                    ],
+                    preload: true,
+                    display: "swap",
+                    selector: "body",
+                    fallback: "sans-serif"
+                }
+            ]}
+        />
         
         <title>{title}</title>
         <ViewTransitions />
