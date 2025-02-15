@@ -1,4 +1,6 @@
 ---
+import { Icon } from 'astro-icon/components';
+
 interface Props {
     experience: {
         company: string;
@@ -11,6 +13,33 @@ interface Props {
 }
 
 const { experience } = Astro.props;
+
+// Mapeamento de tecnologias para ícones do devicon
+const getTechIcon = (tech: string): string => {
+    const techMap: Record<string, string> = {
+        'TypeScript/React': 'simple-icons:react',
+        'Node.js': 'simple-icons:nodedotjs',
+        'Android': 'simple-icons:android',
+        'Expo': 'simple-icons:expo',
+        'CI/CD': 'simple-icons:jenkins',
+        'Git': 'simple-icons:git',
+        'Testes': 'simple-icons:jest',
+        'Figma': 'simple-icons:figma',
+        'TypeScript': 'simple-icons:typescript',
+        'JavaScript': 'simple-icons:javascript',
+        'HTML': 'simple-icons:html5',
+        'CSS': 'simple-icons:css3',
+        'Python': 'simple-icons:python',
+        'Docker': 'simple-icons:docker',
+        'PostgreSQL': 'simple-icons:postgresql',
+        'MongoDB': 'simple-icons:mongodb',
+        'Flutter': 'simple-icons:flutter',
+        'Dart': 'simple-icons:dart',
+        'Rust': 'simple-icons:rust',
+    };
+    
+    return techMap[tech] || 'mdi:code-tags';
+};
 ---
 
 <article class="experience-card">
@@ -31,7 +60,10 @@ const { experience } = Astro.props;
             <h5>Tecnologias</h5>
             <div class="tech-list" role="list">
                 {experience.technologies.map(tech => (
-                    <span class="tech-tag" role="listitem">{tech}</span>
+                    <span class="tech-tag" role="listitem">
+                        <Icon name={getTechIcon(tech)} class="tech-icon" width={16} height={16} />
+                        <span>{tech}</span>
+                    </span>
                 ))}
             </div>
         </div>
@@ -127,6 +159,14 @@ h5 {
     font-size: 0.9rem;
     line-height: 1.4;
     transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tech-icon {
+    color: var(--text-color);
+    opacity: 0.9;
 }
 
 .tech-tag:hover {

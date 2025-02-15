@@ -5,23 +5,59 @@ import minify from 'astro-minify-html-swc';
 
 import sitemap from '@astrojs/sitemap';
 
+import icon from 'astro-icon';
+
 // https://astro.build/config
 export default defineConfig({
-  integrations: [compressor({
-    gzip: true,
-    brotli: true,
-    fileExtensions: [
-      '.css',
-      '.js',
-      '.html',
-      '.xml',
-      '.cjs',
-      '.mjs',
-      '.svg',
-      '.txt',
-      '.json',
-      '.ts'
-
-    ]
-  }), minify(), sitemap()]
+  integrations: [
+    compressor({
+      gzip: true,
+      brotli: true,
+      fileExtensions: [
+        '.css',
+        '.js',
+        '.html',
+        '.xml',
+        '.cjs',
+        '.mjs',
+        '.svg',
+        '.txt',
+        '.json',
+        '.ts'
+      ]
+    }),
+    minify(),
+    sitemap(),
+    icon({
+      include: {
+        'simple-icons': [
+          'typescript',
+          'javascript',
+          'react',
+          'nodedotjs',
+          'android',
+          'jenkins',
+          'git',
+          'jest',
+          'figma',
+          'html5',
+          'css3',
+          'python',
+          'docker',
+          'postgresql',
+          'mongodb',
+          'flutter',
+          'dart',
+          'rust',
+          'astro',
+          'visualstudiocode',
+          'expo'
+        ],
+        mdi: [
+          'code-tags',
+          'code-braces'
+        ]
+      }
+    })
+  ]
 });

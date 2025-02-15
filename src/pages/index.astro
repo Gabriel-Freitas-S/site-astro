@@ -3,8 +3,36 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Navigation from '../components/Navigation.astro';
 import SkillPopup from '../components/SkillPopup.astro';
+import { Icon } from 'astro-icon/components';
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
+
+// Mapeamento de habilidades para ícones
+const getSkillIcon = (skill: string): string => {
+    const skillMap: Record<string, string> = {
+        'TypeScript/JavaScript': 'simple-icons:typescript',
+        'Dart': 'simple-icons:dart',
+        'Rust': 'simple-icons:rust',
+        'HTML/CSS': 'simple-icons:html5',
+        'React': 'simple-icons:react',
+        'Flutter': 'simple-icons:flutter',
+        'Astro': 'simple-icons:astro',
+        'Git': 'simple-icons:git',
+        'Docker': 'simple-icons:docker',
+        'VSCode': 'simple-icons:visualstudiocode',
+        'Node.js': 'simple-icons:nodedotjs',
+        'PostgreSQL': 'simple-icons:postgresql',
+        'MongoDB': 'simple-icons:mongodb',
+        'Python': 'simple-icons:python',
+        'Jenkins': 'simple-icons:jenkins',
+        'Jest': 'simple-icons:jest',
+        'Figma': 'simple-icons:figma',
+        'Android': 'simple-icons:android',
+        'Expo': 'simple-icons:expo',
+    };
+    
+    return skillMap[skill] || 'mdi:code-braces';
+};
 
 interface Skill {
     name: string;
@@ -88,13 +116,16 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
                         <ul class="skill-list" role="list">
                             {category.skills.map(skill => (
                                 <li>
-                                    <button 
+                                    <button
                                         class="skill-button"
                                         onclick={`openPopup('popup-${skill.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}')`}
                                         disabled={skill.certs.length === 0}
                                         aria-label={`${skill.name}${skill.certs.length > 0 ? ` - ${skill.certs.length} certificações` : ' - Sem certificações'}`}
                                     >
-                                        {skill.name}
+                                        <div class="skill-content">
+                                            <Icon name={getSkillIcon(skill.name)} class="skill-icon" width={20} height={20} />
+                                            <span>{skill.name}</span>
+                                        </div>
                                         {skill.certs.length > 0 && (
                                             <span class="cert-count" aria-hidden="true">
                                                 {skill.certs.length}
@@ -184,6 +215,17 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
     justify-content: space-between;
     align-items: center;
     transition: all 0.2s ease;
+}
+
+.skill-content {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.skill-icon {
+    color: var(--text-color);
+    opacity: 0.9;
 }
 
 .skill-button:not(:disabled):hover,
