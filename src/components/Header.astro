@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Picture } from 'astro:assets';
 import profileImage from '../assets/images/profile.webp';
 ---
 
@@ -7,12 +7,13 @@ import profileImage from '../assets/images/profile.webp';
     <div class="header-content">
         <div class="profile">
             <div class="image-container">
-                <Image
+                <Picture
                     src={profileImage}
                     alt="Foto de perfil de Gabriel Freitas Souza"
+                    formats={['avif', 'webp']}
+                    widths={[100, 120, 140]}
+                    sizes="(max-width: 480px) 100px, (max-width: 768px) 120px, 140px"
                     class="profile-image"
-                    width={140}
-                    height={140}
                     loading="eager"
                     fetchpriority="high"
                 />
@@ -84,6 +85,12 @@ import profileImage from '../assets/images/profile.webp';
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+:global(picture) {
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 h1 {
