@@ -60,8 +60,26 @@ export default defineConfig({
   ],
   image: {
     service: {
-      entrypoint: 'astro/assets/services/sharp'
-    },
-    remotePatterns: [] // Se precisar de imagens remotas no futuro
+      entrypoint: 'astro/assets/services/sharp',
+      config: {
+        // Configurações do Sharp para melhor otimização
+        jpeg: {
+          quality: 80,
+          progressive: true
+        },
+        png: {
+          quality: 80,
+          progressive: true
+        },
+        webp: {
+          quality: 80,
+          effort: 6
+        },
+        avif: {
+          quality: 80,
+          effort: 6
+        }
+      }
+    }
   }
 });

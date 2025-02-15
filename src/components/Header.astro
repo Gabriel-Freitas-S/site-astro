@@ -1,7 +1,22 @@
 ---
-import { Picture } from 'astro:assets';
+import { Picture, getImage } from 'astro:assets';
 import profileImage from '../assets/images/profile.webp';
+
+// Preload da menor imagem para mobile
+const preloadImage = await getImage({
+    src: profileImage,
+    width: 100,
+    format: 'avif',
+    quality: 90
+});
 ---
+
+<link
+  rel="preload"
+  as="image"
+  href={preloadImage.src}
+  fetchpriority="high"
+/>
 
 <header class="header" role="banner">
     <div class="header-content">
@@ -16,6 +31,7 @@ import profileImage from '../assets/images/profile.webp';
                     class="profile-image"
                     loading="eager"
                     fetchpriority="high"
+                    quality={90}
                 />
             </div>
             <h1>Gabriel Freitas Souza</h1>
@@ -91,6 +107,11 @@ import profileImage from '../assets/images/profile.webp';
     width: 100%;
     height: 100%;
     display: block;
+}
+
+:global(picture source) {
+    width: 100%;
+    height: 100%;
 }
 
 h1 {
