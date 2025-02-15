@@ -54,8 +54,13 @@ const { experience } = Astro.props;
     background: var(--secondary-color);
     border-radius: 12px;
     padding: 2rem;
-    border: 1px solid var(--border-color);
-    transition: background-color 0.3s ease;
+    border: 1px solid var(--accent-tertiary);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.experience-card:hover {
+    box-shadow: 0 0 15px var(--accent-tertiary);
+    transform: translateY(-2px);
 }
 
 .card-header {
@@ -68,20 +73,20 @@ const { experience } = Astro.props;
 
 .position-info h3 {
     font-size: 1.5rem;
-    color: var(--primary-color);
+    color: var(--accent-primary);
     margin-bottom: 0.5rem;
     line-height: 1.3;
 }
 
 .position-info h4 {
     font-size: 1.1rem;
-    color: var(--text-color-secondary);
+    color: var(--accent-secondary);
     font-weight: 500;
     line-height: 1.4;
 }
 
 .period {
-    background: rgba(var(--text-color-rgb), 0.1);
+    background: var(--accent-tertiary);
     color: var(--text-color);
     padding: 0.5rem 1rem;
     border-radius: 20px;
@@ -115,12 +120,17 @@ h5 {
 }
 
 .tech-tag {
-    background: rgba(var(--text-color-rgb), 0.1);
+    background: var(--accent-quaternary);
     color: var(--text-color);
     padding: 0.4rem 1rem;
     border-radius: 20px;
     font-size: 0.9rem;
     line-height: 1.4;
+    transition: transform 0.2s ease;
+}
+
+.tech-tag:hover {
+    transform: translateY(-2px);
 }
 
 ul {
@@ -140,7 +150,7 @@ li {
 
 li::before {
     content: "•";
-    color: var(--primary-color);
+    color: var(--accent-secondary);
     position: absolute;
     left: 0;
     top: -1px;

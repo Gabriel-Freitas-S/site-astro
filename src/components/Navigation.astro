@@ -124,7 +124,8 @@ const isCurrentPage = (href: string) => {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(44, 44, 46, 0.3);
+    background: var(--background-color);
+    opacity: 0.95;
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid var(--border-color);
@@ -133,15 +134,16 @@ const isCurrentPage = (href: string) => {
 }
 
 :global(.light-theme) .navigation::before {
-    background: rgba(255, 255, 255, 0.7);
+    background: var(--background-color);
+    opacity: 0.9;
 }
 
 .nav-wrapper.scrolled .navigation::before {
-    background: rgba(44, 44, 46, 0.7);
+    opacity: 0.98;
 }
 
 :global(.light-theme) .nav-wrapper.scrolled .navigation::before {
-    background: rgba(255, 255, 255, 0.95);
+    opacity: 0.98;
 }
 
 .nav-container {
@@ -178,12 +180,13 @@ const isCurrentPage = (href: string) => {
 .nav-link:hover,
 .nav-link:focus-visible {
     opacity: 1;
-    background: rgba(var(--text-color-rgb), 0.1);
+    background: var(--accent-quaternary);
+    color: var(--text-color);
 }
 
 .nav-link.active {
     color: white;
-    background: var(--primary-color);
+    background: var(--accent-primary);
     opacity: 1;
 }
 
@@ -201,7 +204,8 @@ const isCurrentPage = (href: string) => {
 .nav-icon:hover,
 .nav-icon:focus-visible {
     opacity: 1;
-    background: rgba(var(--text-color-rgb), 0.1);
+    background: var(--accent-secondary);
+    color: white;
 }
 
 .theme-toggle {
@@ -221,7 +225,8 @@ const isCurrentPage = (href: string) => {
 .theme-toggle:hover,
 .theme-toggle:focus-visible {
     opacity: 1;
-    background: rgba(var(--text-color-rgb), 0.1);
+    background: var(--accent-tertiary);
+    color: var(--text-color);
 }
 
 .sun-icon {

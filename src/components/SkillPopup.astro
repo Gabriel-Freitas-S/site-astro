@@ -78,16 +78,18 @@ const popupId = `popup-${skill.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
     width: 95%;
     margin: 1rem auto;
     padding: 0;
-    border: none;
+    border: 1px solid var(--accent-tertiary);
     border-radius: 12px;
     background: var(--secondary-color);
     color: var(--text-color);
     overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 0 15px var(--accent-tertiary);
 }
 
 .skill-popup::backdrop {
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
 }
 
 .popup-content {
@@ -105,7 +107,7 @@ const popupId = `popup-${skill.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
     position: sticky;
     top: 0;
     background: var(--secondary-color);
-    padding-bottom: 1rem;
+    padding: 0 0 1rem 0;
     border-bottom: 1px solid var(--border-color);
     z-index: 1;
 }
@@ -120,31 +122,35 @@ const popupId = `popup-${skill.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .close-button:hover,
 .close-button:focus-visible {
-    background: rgba(var(--text-color-rgb), 0.1);
+    background: var(--accent-quaternary);
+    transform: scale(1.1);
 }
 
 h3 {
-    font-size: 1.8rem;
-    color: var(--primary-color);
+    font-size: 1.5rem;
+    color: var(--accent-primary);
+    line-height: 1.3;
     padding-right: 2rem;
     margin: 0;
 }
 
 .certification-item {
-    background: rgba(var(--text-color-rgb), 0.05);
-    border-radius: 8px;
-    padding: 1.5rem;
+    background: var(--secondary-color);
+    border: 1px solid var(--accent-tertiary);
+    border-radius: 12px;
+    padding: 2rem;
     margin-bottom: 1rem;
-    outline: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.certification-item:focus-visible {
-    box-shadow: 0 0 0 2px var(--primary-color);
+.certification-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px var(--accent-tertiary);
 }
 
 .cert-header {
@@ -152,38 +158,36 @@ h3 {
     justify-content: space-between;
     align-items: flex-start;
     gap: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
 }
 
 h4 {
-    font-size: 1.2rem;
-    color: var(--text-color);
+    font-size: 1.5rem;
+    color: var(--accent-primary);
     line-height: 1.3;
     margin: 0;
 }
 
 .duration {
-    color: var(--text-color-secondary);
+    background: var(--accent-secondary);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
     font-size: 0.9rem;
     white-space: nowrap;
-    background: rgba(var(--text-color-rgb), 0.1);
-    padding: 0.3rem 0.8rem;
-    border-radius: 15px;
 }
 
 .courses {
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 1rem;
 }
 
 .course {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
-    padding: 0.5rem;
-    border-radius: 6px;
-    background: rgba(var(--text-color-rgb), 0.05);
+    color: var(--text-color);
 }
 
 .course-info {
@@ -194,13 +198,13 @@ h4 {
 .course-name {
     display: block;
     color: var(--text-color);
-    font-size: 0.95rem;
+    font-size: 1rem;
 }
 
 .course-period {
     display: block;
     color: var(--text-color-secondary);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     margin-top: 0.25rem;
 }
 
