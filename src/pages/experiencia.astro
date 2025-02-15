@@ -45,7 +45,7 @@ const description = latestExperience
             aria-label="Linha do tempo de experiências profissionais"
         >
             {sortedExperiences.map((exp, index) => (
-                <div class="timeline-item" data-index={index}>
+                <div class="timeline-item visible" data-index={index}>
                     <ExperienceCard experience={exp.data} />
                     {index !== sortedExperiences.length - 1 && (
                         <div 
@@ -73,10 +73,12 @@ const description = latestExperience
 .page-header h1 {
     font-size: 2.5rem;
     margin-bottom: 1rem;
+    color: var(--primary-color);
     background: linear-gradient(135deg, var(--primary-color) 0%, #00C6FF 100%);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
 }
 
 .page-header p {
@@ -218,6 +220,17 @@ const description = latestExperience
 
 <script>
 function observeTimelineItems() {
+    const items = document.querySelectorAll('.timeline-item');
+    
+    // Se IntersectionObserver não estiver disponível, mantenha os itens visíveis
+    if (!('IntersectionObserver' in window)) {
+        items.forEach(item => item.classList.add('visible'));
+        return;
+    }
+
+    // Remove a classe visible inicial para permitir a animação
+    items.forEach(item => item.classList.remove('visible'));
+    
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -230,21 +243,10 @@ function observeTimelineItems() {
         rootMargin: '0px 0px -50px 0px'
     });
 
-    document.querySelectorAll('.timeline-item').forEach(item => {
+    items.forEach(item => {
         observer.observe(item);
     });
 }
 
-// Inicializar observador quando a página carregar
-document.addEventListener('astro:page-load', () => {
-    // Verificar suporte a IntersectionObserver
-    if ('IntersectionObserver' in window) {
-        observeTimelineItems();
-    } else {
-        // Fallback para browsers que não suportam IntersectionObserver
-        document.querySelectorAll('.timeline-item').forEach(item => {
-            item.classList.add('visible');
-        });
-    }
-});
+document.addEventListener('astro:page-load', observeTimelineItems);
 </script>
