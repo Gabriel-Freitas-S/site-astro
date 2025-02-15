@@ -1,18 +1,20 @@
 ---
+import { Image } from 'astro:assets';
+import profileImage from '../assets/images/profile.webp';
 ---
 
 <header class="header" role="banner">
     <div class="header-content">
         <div class="profile">
             <div class="image-container">
-                <img
-                    src="/profile.webp"
+                <Image
+                    src={profileImage}
                     alt="Foto de perfil de Gabriel Freitas Souza"
                     class="profile-image"
-                    width="140"
-                    height="140"
+                    width={140}
+                    height={140}
+                    loading="eager"
                     fetchpriority="high"
-                    decoding="async"
                 />
             </div>
             <h1>Gabriel Freitas Souza</h1>

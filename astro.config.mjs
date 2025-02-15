@@ -4,7 +4,6 @@ import compressor from 'astro-compressor';
 import minify from 'astro-minify-html-swc';
 import sitemap from '@astrojs/sitemap';
 import icon from 'astro-icon';
-import { astroImageTools } from "astro-imagetools";
 
 // https://astro.build/config
 export default defineConfig({
@@ -58,5 +57,11 @@ export default defineConfig({
         ]
       }
     })
-  ]
+  ],
+  image: {
+    service: {
+      entrypoint: 'astro/assets/services/sharp'
+    },
+    remotePatterns: [] // Se precisar de imagens remotas no futuro
+  }
 });
