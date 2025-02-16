@@ -30,7 +30,7 @@ const description = `Certificações e cursos em desenvolvimento de software, to
     <main id="main-content">
         <div class="page-header">
             <h1>Certificações</h1>
-            <p>
+            <p class="header-description">
                 Total de {totalHours} horas de estudo e aperfeiçoamento profissional
             </p>
         </div>
@@ -68,7 +68,7 @@ const description = `Certificações e cursos em desenvolvimento de software, to
     transform: translateZ(0);
 }
 
-.page-header p {
+.header-description {
     color: var(--text-color);
     font-size: clamp(0.9rem, 3vw, 1.2rem);
     font-weight: 600;
@@ -103,7 +103,7 @@ const description = `Certificações e cursos em desenvolvimento de software, to
         font-size: 2rem;
     }
 
-    .page-header p {
+    .header-description {
         font-size: 1rem;
     }
 
@@ -126,5 +126,11 @@ const description = `Certificações e cursos em desenvolvimento de software, to
     .page-header {
         animation: none;
     }
+}
+
+/* Ajustes específicos para tema claro */
+:global(.light-theme) .header-description {
+    color: var(--text-color);
+    font-weight: 600;
 }
 </style>

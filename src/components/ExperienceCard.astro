@@ -30,7 +30,7 @@ const { experience } = Astro.props;
 
         {experience.achievements && (
             <div class="achievements">
-                <h5>Principais Conquistas</h5>
+                <h3>Principais Conquistas</h3>
                 <ul role="list">
                     {experience.achievements.map(achievement => (
                         <li role="listitem">{achievement}</li>
@@ -90,10 +90,11 @@ const { experience } = Astro.props;
     margin-top: 2rem;
 }
 
-h5 {
-    color: var(--text-color-secondary);
+.achievements h3 {
+    color: var(--text-color);
     font-size: 1.1rem;
     margin-bottom: 1rem;
+    font-weight: 600;
 }
 
 ul {
@@ -144,8 +145,9 @@ li::before {
         margin-bottom: 1.5rem;
     }
 
-    h5 {
+    .achievements h3 {
         font-size: 1rem;
+        font-weight: 600;
     }
 }
 
