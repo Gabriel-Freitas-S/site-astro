@@ -54,25 +54,37 @@ const description = `Certificações e cursos em desenvolvimento de software, to
 }
 
 .page-header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    margin-bottom: 0.75rem;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     text-fill-color: transparent;
+    line-height: 1.3;
+    max-width: 90vw;
+    margin-inline: auto;
+    will-change: transform;
+    transform: translateZ(0);
 }
 
 .page-header p {
     color: var(--accent-tertiary);
-    font-size: 1.2rem;
+    font-size: clamp(0.9rem, 3vw, 1.2rem);
     font-weight: 500;
+    max-width: 85vw;
+    margin-inline: auto;
+    line-height: 1.4;
 }
 
 .certifications-grid {
     display: grid;
-    gap: 2rem;
-    margin-top: 2rem;
+    gap: clamp(1rem, 3vw, 2rem);
+    margin-top: clamp(1.5rem, 4vw, 2rem);
+    width: 100%;
+    max-width: 100vw;
+    padding-inline: clamp(0.75rem, 2vw, 2rem);
+    box-sizing: border-box;
 }
 
 @keyframes fadeIn {
