@@ -89,7 +89,7 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
                         </div>
                         <ul class="skill-list" role="list">
                             {category.skills.map(skill => (
-                                <li>
+                                <li role="listitem">
                                     <button
                                         class="skill-button"
                                         onclick={`openPopup('popup-${skill.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}')`}
@@ -199,9 +199,10 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
 .skill-button {
     width: 100%;
     text-align: left;
-    background: none;
-    border: 1px solid var(--accent-quaternary);
+    background: var(--accent-quaternary);
+    border: none;
     color: var(--text-color);
+    font-weight: 500;
     font-size: clamp(0.875rem, 2.5vw, 1rem);
     padding: clamp(0.6rem, 2vw, 0.8rem) clamp(0.8rem, 2vw, 1.2rem);
     border-radius: 8px;
@@ -245,13 +246,16 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
 }
 
 .skill-button:disabled {
-    opacity: 0.5;
+    opacity: 0.7;
     cursor: not-allowed;
+    background: rgba(var(--text-color-rgb), 0.1);
+    color: var(--text-color-secondary);
 }
 
 .cert-count {
-    background: var(--accent-secondary);
+    background: var(--accent-primary);
     color: white;
+    font-weight: 600;
     padding: clamp(0.15rem, 1vw, 0.2rem) clamp(0.4rem, 2vw, 0.6rem);
     border-radius: 12px;
     font-size: clamp(0.75rem, 2vw, 0.8rem);

@@ -1,7 +1,5 @@
 ---
-import { Icon } from 'astro-icon/components';
 import BaseCard from './BaseCard.astro';
-import { getTechIcon } from '../utils/iconMapping';
 
 interface Props {
     experience: {
@@ -9,7 +7,6 @@ interface Props {
         position: string;
         period: string;
         description: string;
-        technologies?: string[];
         achievements?: string[];
     };
 }
@@ -30,20 +27,6 @@ const { experience } = Astro.props;
         </div>
 
         <p class="description">{experience.description}</p>
-
-        {experience.technologies && (
-            <div class="technologies">
-                <h5>Tecnologias</h5>
-                <div class="tech-list" role="list">
-                    {experience.technologies.map(tech => (
-                        <span class="tech-tag" role="listitem">
-                            <Icon name={getTechIcon(tech)} class="tech-icon" width={16} height={16} />
-                            <span>{tech}</span>
-                        </span>
-                    ))}
-                </div>
-            </div>
-        )}
 
         {experience.achievements && (
             <div class="achievements">
@@ -86,13 +69,14 @@ const { experience } = Astro.props;
 }
 
 .period {
-    background: var(--accent-tertiary);
-    color: var(--text-color);
+    background: var(--accent-primary);
+    color: white;
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.9rem;
     white-space: nowrap;
     height: fit-content;
+    font-weight: 600;
 }
 
 .description {
@@ -102,7 +86,6 @@ const { experience } = Astro.props;
     opacity: 0.9;
 }
 
-.technologies, 
 .achievements {
     margin-top: 2rem;
 }
@@ -111,34 +94,6 @@ h5 {
     color: var(--text-color-secondary);
     font-size: 1.1rem;
     margin-bottom: 1rem;
-}
-
-.tech-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.6rem;
-}
-
-.tech-tag {
-    background: var(--accent-quaternary);
-    color: var(--text-color);
-    padding: 0.4rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    transition: transform 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.tech-icon {
-    color: var(--text-color);
-    opacity: 0.9;
-}
-
-.tech-tag:hover {
-    transform: translateY(-2px);
 }
 
 ul {
@@ -192,11 +147,6 @@ li::before {
     h5 {
         font-size: 1rem;
     }
-
-    .tech-tag {
-        font-size: 0.85rem;
-        padding: 0.3rem 0.8rem;
-    }
 }
 
 @media (max-width: 480px) {
@@ -221,23 +171,6 @@ li::before {
         line-height: 1.5;
     }
 
-    .tech-list {
-        gap: 0.5rem;
-        justify-content: flex-start;
-    }
-
-    .tech-tag {
-        font-size: 0.85rem;
-        padding: 0.6rem 0.8rem;
-        min-height: 36px;
-        border-radius: 8px;
-    }
-
-    .tech-icon {
-        width: 14px;
-        height: 14px;
-    }
-
     li {
         font-size: 0.9rem;
         padding: 0.5rem;
@@ -252,22 +185,12 @@ li::before {
         top: 0.5rem;
     }
 
-    .technologies,
     .achievements {
         margin-top: 1.5rem;
     }
 }
 
 @media (max-width: 360px) {
-    .tech-tag {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .tech-list {
-        gap: 0.4rem;
-    }
-
     li {
         padding: 0.4rem;
         padding-left: 1.25rem;
