@@ -1,0 +1,63 @@
+---
+interface Props {
+    className?: string;
+}
+
+const { className = '' } = Astro.props;
+---
+
+<div class:list={['base-card', className]}>
+    <slot />
+</div>
+
+<style>
+.base-card {
+    background: var(--secondary-color);
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid var(--accent-tertiary);
+    transition: transform 0.2s ease;
+    will-change: transform;
+    transform: translateZ(0);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.base-card:hover,
+.base-card:active {
+    box-shadow: 0 4px 12px rgba(var(--text-color-rgb), 0.1);
+    transform: translateY(-2px);
+}
+
+@media (hover: hover) {
+    .base-card:hover {
+        box-shadow: 0 4px 12px rgba(var(--text-color-rgb), 0.1);
+        transform: translateY(-2px);
+    }
+}
+
+@media (max-width: 768px) {
+    .base-card {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .base-card {
+        padding: 1.25rem 1rem;
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .base-card {
+        padding: 1rem 0.75rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .base-card {
+        transition: none;
+    }
+}
+</style>

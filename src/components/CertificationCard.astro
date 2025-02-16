@@ -1,4 +1,6 @@
 ---
+import BaseCard from './BaseCard.astro';
+
 interface Props {
     certification: {
         title: string;
@@ -18,7 +20,7 @@ interface Props {
 const { certification } = Astro.props;
 ---
 
-<div class="certification-card">
+<BaseCard className="certification-card">
     <div class="card-header">
         <h3>{certification.title}</h3>
         <span class="duration">{certification.duration}</span>
@@ -60,33 +62,9 @@ const { certification } = Astro.props;
             </div>
         )}
     </div>
-</div>
+</BaseCard>
 
 <style>
-.certification-card {
-    background: var(--secondary-color);
-    border-radius: 12px;
-    padding: 2rem;
-    border: 1px solid var(--accent-tertiary);
-    transition: transform 0.2s ease;
-    will-change: transform;
-    transform: translateZ(0);
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.certification-card:hover,
-.certification-card:active {
-    box-shadow: 0 4px 12px rgba(var(--text-color-rgb), 0.1);
-    transform: translateY(-2px);
-}
-
-@media (hover: hover) {
-    .certification-card:hover {
-        box-shadow: 0 4px 12px rgba(var(--text-color-rgb), 0.1);
-        transform: translateY(-2px);
-    }
-}
 
 .card-header {
     display: flex;

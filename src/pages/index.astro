@@ -6,33 +6,7 @@ import SkillPopup from '../components/SkillPopup.astro';
 import { Icon } from 'astro-icon/components';
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-
-// Mapeamento de habilidades para ícones
-const getSkillIcon = (skill: string): string => {
-    const skillMap: Record<string, string> = {
-        'TypeScript/JavaScript': 'simple-icons:typescript',
-        'Dart': 'simple-icons:dart',
-        'Rust': 'simple-icons:rust',
-        'HTML/CSS': 'simple-icons:html5',
-        'React': 'simple-icons:react',
-        'Flutter': 'simple-icons:flutter',
-        'Astro': 'simple-icons:astro',
-        'Git': 'simple-icons:git',
-        'Docker': 'simple-icons:docker',
-        'VSCode': 'simple-icons:visualstudiocode',
-        'Node.js': 'simple-icons:nodedotjs',
-        'PostgreSQL': 'simple-icons:postgresql',
-        'MongoDB': 'simple-icons:mongodb',
-        'Python': 'simple-icons:python',
-        'Jenkins': 'simple-icons:jenkins',
-        'Jest': 'simple-icons:jest',
-        'Figma': 'simple-icons:figma',
-        'Android': 'simple-icons:android',
-        'Expo': 'simple-icons:expo',
-    };
-    
-    return skillMap[skill] || 'mdi:code-braces';
-};
+import { getSkillIcon } from '../utils/iconMapping';
 
 interface Skill {
     name: string;
