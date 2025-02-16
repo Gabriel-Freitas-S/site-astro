@@ -7,6 +7,7 @@ import icon from 'astro-icon';
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://gabrielfs.dev',
   integrations: [
     compressor({
       gzip: true,
@@ -58,28 +59,32 @@ export default defineConfig({
       }
     })
   ],
+  prefetch: true,
   image: {
     service: {
       entrypoint: 'astro/assets/services/sharp',
       config: {
-        // Configurações do Sharp para melhor otimização
-        jpeg: {
-          quality: 80,
-          progressive: true
-        },
-        png: {
-          quality: 80,
-          progressive: true
-        },
-        webp: {
-          quality: 80,
-          effort: 6
-        },
-        avif: {
-          quality: 80,
-          effort: 6
+        jpeg: { quality: 80, progressive: true },
+        png: { quality: 80, progressive: true },
+        webp: { quality: 80, effort: 6 },
+        avif: { quality: 80, effort: 6 }
+      }
+    }
+  },
+  build: {
+    inlineStylesheets: 'auto'
+  },
+  vite: {
+    build: {
+      cssCodeSplit: false,
+      rollupOptions: {
+        output: {
+          manualChunks: undefined
         }
       }
+    },
+    ssr: {
+      noExternal: ['@fontsource/*']
     }
   }
 });
