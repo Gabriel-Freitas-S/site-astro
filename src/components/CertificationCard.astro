@@ -68,12 +68,24 @@ const { certification } = Astro.props;
     border-radius: 12px;
     padding: 2rem;
     border: 1px solid var(--accent-tertiary);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease;
+    will-change: transform;
+    transform: translateZ(0);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.certification-card:hover {
-    box-shadow: 0 0 15px var(--accent-tertiary);
+.certification-card:hover,
+.certification-card:active {
+    box-shadow: 0 4px 12px rgba(var(--text-color-rgb), 0.1);
     transform: translateY(-2px);
+}
+
+@media (hover: hover) {
+    .certification-card:hover {
+        box-shadow: 0 4px 12px rgba(var(--text-color-rgb), 0.1);
+        transform: translateY(-2px);
+    }
 }
 
 .card-header {
@@ -182,24 +194,71 @@ li {
 
 @media (max-width: 480px) {
     .certification-card {
-        padding: 1rem;
+        padding: 1.25rem 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .card-header {
+        margin-bottom: 1.5rem;
     }
 
     .card-header h3 {
         font-size: 1.2rem;
+        line-height: 1.4;
     }
 
     .card-header .duration {
-        padding: 0.4rem 0.8rem;
+        padding: 0.5rem 1rem;
         font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+
+    .content h4 {
+        margin-bottom: 0.75rem;
+    }
+
+    .courses, .complementary {
+        margin-bottom: 1.5rem;
+    }
+
+    li {
+        margin-bottom: 0.75rem;
+        padding: 0.5rem;
+        border-radius: 8px;
+        background: rgba(var(--text-color-rgb), 0.03);
     }
 
     .name {
         font-size: 0.95rem;
+        line-height: 1.4;
     }
 
     .period {
         font-size: 0.85rem;
+        margin-top: 0.2rem;
+    }
+
+    .duration {
+        margin-top: 0.25rem;
+    }
+}
+
+/* Otimizações para telas muito pequenas */
+@media (max-width: 360px) {
+    .certification-card {
+        padding: 1rem 0.75rem;
+    }
+
+    .card-header .duration {
+        padding: 0.4rem 0.8rem;
+    }
+
+    li {
+        padding: 0.4rem;
+    }
+
+    .name {
+        font-size: 0.9rem;
     }
 }
 </style>
