@@ -62,16 +62,26 @@ const {
         <ViewTransitions />
 
         <script>
-            const setTheme = () => {
-                const theme = localStorage?.getItem('theme') || 
+            // Função para definir o tema
+            function setTheme() {
+                const theme = localStorage.getItem('theme') || 
                     (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
                 
                 document.documentElement.classList.toggle('light-theme', theme === 'light');
-                localStorage.setItem('theme', theme);
-            };
+            }
 
+            // Inicializa o tema
             setTheme();
+
+            // Atualiza o tema após transição de página
             document.addEventListener('astro:after-swap', setTheme);
+
+            // Observa mudanças no localStorage
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'theme') {
+                    setTheme();
+                }
+            });
         </script>
     </head>
     <body>

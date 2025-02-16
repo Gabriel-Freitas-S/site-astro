@@ -356,15 +356,26 @@ function toggleMobileMenu(force?: boolean) {
     document.body.style.overflow = isExpanded ? 'hidden' : '';
 }
 
+function toggleTheme() {
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.classList.toggle('light-theme', newTheme === 'light');
+}
+
 document.addEventListener('astro:page-load', () => {
     const menuToggle = document.getElementById('menu-toggle');
     const navLinks = document.getElementById('nav-links');
+    const themeToggle = document.getElementById('theme-toggle');
     
     menuToggle?.addEventListener('click', () => toggleMobileMenu());
     
     navLinks?.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => toggleMobileMenu(false));
     });
+
+    themeToggle?.addEventListener('click', toggleTheme);
 
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
