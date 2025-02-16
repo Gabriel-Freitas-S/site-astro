@@ -18,8 +18,8 @@ const { experience } = Astro.props;
     <article class="experience-card">
         <div class="card-header">
             <div class="position-info">
-                <h3>{experience.position}</h3>
-                <h4>{experience.company}</h4>
+                <h2>{experience.position}</h2>
+                <h3>{experience.company}</h3>
             </div>
             <span class="period" aria-label={`Período: ${experience.period}`}>
                 {experience.period}
@@ -54,14 +54,14 @@ const { experience } = Astro.props;
     margin-bottom: 1.5rem;
 }
 
-.position-info h3 {
+.position-info h2 {
     font-size: 1.5rem;
     color: var(--accent-primary);
     margin-bottom: 0.5rem;
     line-height: 1.3;
 }
 
-.position-info h4 {
+.position-info h3 {
     font-size: 1.1rem;
     color: var(--accent-secondary);
     font-weight: 500;
@@ -126,11 +126,11 @@ li::before {
         gap: 1rem;
     }
 
-    .position-info h3 {
+    .position-info h2 {
         font-size: 1.3rem;
     }
 
-    .position-info h4 {
+    .position-info h3 {
         font-size: 1rem;
     }
 
@@ -155,12 +155,12 @@ li::before {
         margin-bottom: 1.25rem;
     }
 
-    .position-info h3 {
+    .position-info h2 {
         font-size: 1.2rem;
         line-height: 1.4;
     }
 
-    .position-info h4 {
+    .position-info h3 {
         font-size: 0.95rem;
         line-height: 1.3;
     }
