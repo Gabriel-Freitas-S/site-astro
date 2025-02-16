@@ -16,32 +16,33 @@ const { experience } = Astro.props;
 
 <BaseCard>
     <article class="experience-card">
-        <div class="card-header">
+        <header class="card-header">
             <div class="position-info">
                 <h2>{experience.position}</h2>
                 <h3>{experience.company}</h3>
             </div>
-            <span class="period" aria-label={`Período: ${experience.period}`}>
+            <span class="duration-badge" aria-label={`Período: ${experience.period}`}>
                 {experience.period}
             </span>
-        </div>
+        </header>
 
         <p class="description">{experience.description}</p>
 
         {experience.achievements && (
-            <div class="achievements">
-                <h3>Principais Conquistas</h3>
-                <ul role="list">
+            <section class="achievements" aria-labelledby="achievements-title">
+                <h3 id="achievements-title">Principais Conquistas</h3>
+                <ul>
                     {experience.achievements.map(achievement => (
-                        <li role="listitem">{achievement}</li>
+                        <li>{achievement}</li>
                     ))}
                 </ul>
-            </div>
+            </section>
         )}
     </article>
 </BaseCard>
 
 <style>
+/* Layout */
 .experience-card {
     display: contents;
 }
@@ -50,10 +51,11 @@ const { experience } = Astro.props;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 1.5rem;
+    gap: var(--container-padding);
     margin-bottom: 1.5rem;
 }
 
+/* Position Info */
 .position-info h2 {
     font-size: 1.5rem;
     color: var(--accent-primary);
@@ -68,7 +70,8 @@ const { experience } = Astro.props;
     line-height: 1.4;
 }
 
-.period {
+/* Duration Badge */
+.duration-badge {
     background: var(--accent-primary);
     color: white;
     padding: 0.5rem 1rem;
@@ -77,10 +80,11 @@ const { experience } = Astro.props;
     white-space: nowrap;
     height: fit-content;
     font-weight: 600;
+    box-shadow: var(--card-shadow) var(--border-color);
 }
 
+/* Content */
 .description {
-    color: var(--text-color);
     line-height: 1.6;
     margin-bottom: 2rem;
     opacity: 0.9;
@@ -91,12 +95,12 @@ const { experience } = Astro.props;
 }
 
 .achievements h3 {
-    color: var(--text-color);
     font-size: 1.1rem;
     margin-bottom: 1rem;
     font-weight: 600;
 }
 
+/* List styles */
 ul {
     list-style: none;
     padding: 0;
@@ -107,7 +111,6 @@ li {
     position: relative;
     padding-left: 1.5rem;
     margin-bottom: 1rem;
-    color: var(--text-color);
     opacity: 0.9;
     line-height: 1.5;
 }
@@ -121,6 +124,7 @@ li::before {
     font-size: 1.2em;
 }
 
+/* Responsive styles */
 @media (max-width: 768px) {
     .card-header {
         flex-direction: column;
@@ -135,7 +139,7 @@ li::before {
         font-size: 1rem;
     }
 
-    .period {
+    .duration-badge {
         font-size: 0.85rem;
         padding: 0.4rem 0.8rem;
     }
@@ -147,7 +151,6 @@ li::before {
 
     .achievements h3 {
         font-size: 1rem;
-        font-weight: 600;
     }
 }
 
@@ -179,7 +182,7 @@ li::before {
         padding-left: 1.5rem;
         margin-bottom: 0.75rem;
         background: rgba(var(--text-color-rgb), 0.03);
-        border-radius: 8px;
+        border-radius: calc(var(--border-radius) * 0.75);
     }
 
     li::before {
@@ -204,8 +207,8 @@ li::before {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .tech-tag {
-        transition: none;
+    * {
+        transition: none !important;
     }
 }
 </style>

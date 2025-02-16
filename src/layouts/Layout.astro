@@ -19,16 +19,10 @@ const {
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link
-            rel="preload"
-            as="image"
-            href="/profile.webp"
-            fetchpriority="high"
-            type="image/webp"
-        />
         <meta name="description" content={description} />
         <meta name="author" content="Gabriel Freitas Souza" />
         <meta name="theme-color" content="#007AFF" />
+        <meta name="color-scheme" content="light dark">
 
         <!-- Open Graph -->
         <meta property="og:title" content={title} />
@@ -52,23 +46,8 @@ const {
                     src: [
                         {
                             style: 'normal',
-                            weight: '400',
-                            path: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2'
-                        },
-                        {
-                            style: 'normal',
-                            weight: '500',
-                            path: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuI6fAZ9hiA.woff2'
-                        },
-                        {
-                            style: 'normal',
-                            weight: '600',
-                            path: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff2'
-                        },
-                        {
-                            style: 'normal',
-                            weight: '700',
-                            path: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuFuYAZ9hiA.woff2'
+                            weight: '400 700',
+                            path: 'https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2'
                         }
                     ],
                     preload: true,
@@ -82,26 +61,14 @@ const {
         <title>{title}</title>
         <ViewTransitions />
 
-        <script is:inline>
-            function setTheme() {
-                const theme = (() => {
-                    if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-                        return localStorage.getItem('theme');
-                    }
-                    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                        return 'dark';
-                    }
-                    return 'light';
-                })();
+        <script>
+            const setTheme = () => {
+                const theme = localStorage?.getItem('theme') || 
+                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
                 
-                if (theme === 'light') {
-                    document.documentElement.classList.add('light-theme');
-                } else {
-                    document.documentElement.classList.remove('light-theme');
-                }
-                
-                window.localStorage.setItem('theme', theme);
-            }
+                document.documentElement.classList.toggle('light-theme', theme === 'light');
+                localStorage.setItem('theme', theme);
+            };
 
             setTheme();
             document.addEventListener('astro:after-swap', setTheme);
@@ -116,33 +83,76 @@ const {
 
 <style is:global>
 :root {
-    --primary-color: #B34747;
+    color-scheme: dark light;
+    
+    /* Core colors */
+    --primary-hue: 0;
+    --primary-saturation: 65%;
+    --primary-lightness: 55%;
+
+    /* Theme variables */
+    --primary-color: hsl(var(--primary-hue), var(--primary-saturation), var(--primary-lightness));
     --background-color: #2C2C2C;
     --text-color: #FFFFFF;
     --text-color-rgb: 255, 255, 255;
     --secondary-color: #3C3C3C;
     --border-color: rgba(255, 255, 255, 0.1);
     --text-color-secondary: #888;
-    --focus-ring-color: #B8860B;
-    --accent-primary: #B34747;
-    --accent-secondary: #CC7A00;
-    --accent-tertiary: #B8860B;
-    --accent-quaternary: #C9A000;
+    
+    /* Accent colors */
+    --accent-primary: var(--primary-color);
+    --accent-secondary: hsl(var(--primary-hue), calc(var(--primary-saturation) - 10%), calc(var(--primary-lightness) + 5%));
+    --accent-tertiary: hsl(var(--primary-hue), calc(var(--primary-saturation) - 20%), calc(var(--primary-lightness) + 10%));
+    
+    /* Interactive states */
+    --focus-ring-color: var(--accent-tertiary);
+    
+    /* Animation tokens */
+    --transition-duration: 0.2s;
+    --transition-timing: ease;
+    
+    /* Layout tokens */
+    --container-max-width: 1200px;
+    --container-padding: 2rem;
+    --border-radius: 12px;
+    --card-shadow: 0 2px 8px;
 }
 
 :root.light-theme {
-    --primary-color: #FF6F61;
     --background-color: #FFF5E1;
     --text-color: #1A1A1A;
     --text-color-rgb: 26, 26, 26;
     --secondary-color: #FFF9EC;
     --border-color: rgba(0, 0, 0, 0.1);
     --text-color-secondary: #666;
-    --focus-ring-color: #FFD700;
-    --accent-primary: #FF6F61;
-    --accent-secondary: #FFA552;
-    --accent-tertiary: #FFD700;
-    --accent-quaternary: #FFF200;
+}
+
+/* Forced Colors Mode */
+@media (forced-colors: active) {
+    :root {
+        --primary-color: CanvasText;
+        --background-color: Canvas;
+        --text-color: CanvasText;
+        --secondary-color: Canvas;
+        --border-color: CanvasText;
+        --text-color-secondary: GrayText;
+        --accent-primary: Highlight;
+        --accent-secondary: Highlight;
+        --accent-tertiary: Highlight;
+        --focus-ring-color: Highlight;
+    }
+
+    * {
+        forced-color-adjust: none;
+    }
+
+    a, button {
+        forced-color-adjust: auto;
+    }
+
+    img {
+        forced-color-adjust: auto;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -159,7 +169,7 @@ html {
     background: var(--background-color);
     color: var(--text-color);
     scroll-behavior: smooth;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color var(--transition-duration) var(--transition-timing);
     font-size: 16px;
     line-height: 1.5;
     -webkit-text-size-adjust: 100%;
@@ -175,26 +185,24 @@ body {
 }
 
 main {
-    max-width: 1200px;
+    max-width: var(--container-max-width);
     margin: 0 auto;
-    padding: 4rem 2rem 2rem 2rem;
+    padding: 4rem var(--container-padding) 2rem;
 }
 
 @media (max-width: 768px) {
+    :root {
+        --container-padding: 1rem;
+    }
+    
     main {
-        padding: 3.5rem 1rem 1rem 1rem;
+        padding-top: 3.5rem;
     }
 }
 
 @media (max-width: 480px) {
     main {
-        padding: 3rem 1rem 1rem 1rem;
-    }
-}
-
-@media (max-width: 360px) {
-    main {
-        padding: 3rem 0.75rem 1rem 0.75rem;
+        padding-top: 3rem;
     }
 }
 
@@ -217,22 +225,17 @@ p {
 a {
     color: var(--primary-color);
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: color var(--transition-duration) var(--transition-timing);
 }
 
 a:hover {
     color: color-mix(in srgb, var(--primary-color) 80%, var(--background-color));
 }
 
-a:focus-visible {
+a:focus-visible, button:focus-visible {
     outline: 2px solid var(--focus-ring-color);
     outline-offset: 2px;
     border-radius: 4px;
-}
-
-button:focus-visible {
-    outline: 2px solid var(--focus-ring-color);
-    outline-offset: 2px;
 }
 
 .sr-only {
@@ -247,15 +250,6 @@ button:focus-visible {
     border: 0;
 }
 
-.card {
-    background: var(--secondary-color);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    transition: transform 0.2s ease, background-color 0.3s ease;
-    border: 1px solid var(--border-color);
-}
-
 ::selection {
     background: var(--primary-color);
     color: white;
@@ -264,9 +258,9 @@ button:focus-visible {
 img {
     max-width: 100%;
     height: auto;
+    display: block;
 }
 
-/* Remove tap highlight on mobile */
 * {
     -webkit-tap-highlight-color: transparent;
 }
