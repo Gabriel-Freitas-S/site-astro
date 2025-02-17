@@ -1,6 +1,5 @@
 ---
 import { ViewTransitions } from 'astro:transitions';
-import { GoogleAnalytics } from 'astro-analytics';
 
 interface Props {
     title: string;
@@ -33,6 +32,15 @@ const {
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
+
+        <!-- Google Analytics -->
+        <script type="text/partytown" async src="https://www.googletagmanager.com/gtag/js?id=G-KXJCF6VDEE"></script>
+        <script type="text/partytown">
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-KXJCF6VDEE');
+        </script>
 
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         
@@ -68,7 +76,6 @@ const {
         <main id="main-content">
             <slot />
         </main>
-        <GoogleAnalytics id="G-KXJCF6VDEE" client:idle />
     </body>
 </html>
 

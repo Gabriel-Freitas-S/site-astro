@@ -4,6 +4,7 @@ import compressor from 'astro-compressor';
 import minify from 'astro-minify-html-swc';
 import sitemap from '@astrojs/sitemap';
 import icon from 'astro-icon';
+import partytown from '@astrojs/partytown';
 
 // https://astro.build/config
 export default defineConfig({
@@ -28,6 +29,11 @@ export default defineConfig({
     }),
     minify(),
     sitemap(),
+    partytown({
+      config: {
+        forward: ["dataLayer.push"],
+      },
+    }),
     icon({
       include: {
         'simple-icons': [
