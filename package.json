@@ -6,7 +6,8 @@
     "dev": "astro dev",
     "build": "astro build --clean",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "local" : "astro build --clean && astro preview"
   },
   "dependencies": {
     "@astrojs/partytown": "^2.1.3",
