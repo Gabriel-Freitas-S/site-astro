@@ -1,5 +1,6 @@
 ---
 import { ViewTransitions } from 'astro:transitions';
+import SafeResource from '@igor.dvlpr/astro-saferesource';
 
 interface Props {
     title: string;
@@ -32,44 +33,49 @@ const {
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
+<!-- Google Analytics -->
+<SafeResource>
+    <script type="text/partytown" async src="https://www.googletagmanager.com/gtag/js?id=G-KXJCF6VDEE"></script>
+    <script type="text/partytown" is:inline>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-KXJCF6VDEE');
+    </script>
+</SafeResource>
 
-        <!-- Google Analytics -->
-        <script type="text/partytown" async src="https://www.googletagmanager.com/gtag/js?id=G-KXJCF6VDEE"></script>
-        <script type="text/partytown">
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-KXJCF6VDEE');
-        </script>
+<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        
-        <!-- Otimização de fonte usando sistema nativo do Astro 5 -->
-        <link
-            rel="preload"
-            href="https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2"
-            as="font"
-            type="font/woff2"
-            crossorigin
-        />
-        
-        <title>{title}</title>
-        <ViewTransitions />
+<!-- Otimização de fonte usando sistema nativo do Astro 5 -->
+<link
+    rel="preload"
+    href="https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+/>
 
-        <script is:inline>
-            // Define uma função para configurar o tema
-            const setTheme = () => {
-                const theme = localStorage.getItem('theme') || 
-                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-                document.documentElement.classList.toggle('light-theme', theme === 'light');
-            };
+<title>{title}</title>
+<ViewTransitions />
 
-            // Executa imediatamente para evitar flash
-            setTheme();
+<!-- Theme Script -->
+<SafeResource>
+    <script is:inline>
+        // Define uma função para configurar o tema
+        const setTheme = () => {
+            const theme = localStorage.getItem('theme') ||
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.classList.toggle('light-theme', theme === 'light');
+        };
 
-            // Registra os event listeners após o carregamento do documento
-            document.addEventListener('astro:after-swap', setTheme);
-            window.addEventListener('storage', (e) => e.key === 'theme' && setTheme());
+        // Executa imediatamente para evitar flash
+        setTheme();
+
+        // Registra os event listeners após o carregamento do documento
+        document.addEventListener('astro:after-swap', setTheme);
+        window.addEventListener('storage', (e) => e.key === 'theme' && setTheme());
+    </script>
+</SafeResource>
         </script>
     </head>
     <body>
