@@ -107,6 +107,29 @@ export default defineConfig({
     assets: 'assets',
     redirects: true
   },
+  output: 'static',
+  server: {
+    headers: {
+      'Content-Security-Policy': `
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.google-analytics.com;
+        style-src 'self' 'unsafe-inline' https://fonts.gstatic.com;
+        img-src 'self' data: https: https://*.google-analytics.com;
+        font-src 'self' https://fonts.gstatic.com;
+        connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://stats.g.doubleclick.net;
+        frame-src 'self' 'unsafe-inline' https://gabrielfs.dev;
+        worker-src 'self' blob:;
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+        upgrade-insecure-requests;
+        block-all-mixed-content
+      `.replace(/\s+/g, ' ').trim(),
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Permissions-Policy': 'geolocation=(), camera=(), microphone=()'
+    }
+  },
   vite: {
     build: {
       cssCodeSplit: true,
