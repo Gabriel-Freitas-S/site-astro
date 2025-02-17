@@ -1,21 +1,45 @@
 ---
 import { ViewTransitions } from 'astro:transitions';
+import crypto from 'node:crypto';
 
 interface Props {
     title: string;
     description?: string;
 }
 
-const { 
+const {
     title,
     description = "Portfolio de Gabriel Freitas Souza - Desenvolvedor de software especializado em desenvolvimento web e mobile"
 } = Astro.props;
+
+const nonce = crypto.randomUUID();
 ---
 
 <!doctype html>
 <html lang="pt-BR">
     <head>
         <meta charset="UTF-8" />
+        <!-- Política de Segurança de Conteúdo (CSP) -->
+        <meta http-equiv="Content-Security-Policy" content={`
+            default-src 'self';
+            script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://*.google-analytics.com;
+            style-src 'self' 'unsafe-inline' https://fonts.gstatic.com;
+            img-src 'self' data: https: https://*.google-analytics.com;
+            font-src 'self' https://fonts.gstatic.com;
+            connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://stats.g.doubleclick.net;
+            frame-src 'none';
+            object-src 'none';
+            base-uri 'self';
+            form-action 'self';
+            frame-ancestors 'none';
+            upgrade-insecure-requests;
+            block-all-mixed-content
+        `.replace(/\s+/g, ' ').trim()} />
+        <!-- Cabeçalhos de Segurança Adicionais -->
+        <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+        <meta http-equiv="X-Frame-Options" content="DENY" />
+        <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+        <meta http-equiv="Permissions-Policy" content="geolocation=(), camera=(), microphone=()" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content={description} />
         <meta name="author" content="Gabriel Freitas Souza" />
@@ -34,8 +58,8 @@ const {
         <meta name="twitter:description" content={description} />
 
         <!-- Google Analytics -->
-        <script type="text/partytown" async src="https://www.googletagmanager.com/gtag/js?id=G-KXJCF6VDEE"></script>
-        <script type="text/partytown">
+        <script type="text/partytown" nonce={nonce} async src="https://www.googletagmanager.com/gtag/js?id=G-KXJCF6VDEE"></script>
+        <script type="text/partytown" nonce={nonce}>
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
@@ -56,7 +80,7 @@ const {
         <title>{title}</title>
         <ViewTransitions />
 
-        <script is:inline>
+        <script nonce={nonce}>
             // Define uma função para configurar o tema
             const setTheme = () => {
                 const theme = localStorage.getItem('theme') || 
