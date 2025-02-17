@@ -6,7 +6,6 @@ import { getCollection } from 'astro:content';
 
 const certifications = await getCollection('certifications');
 const sortedCertifications = certifications.sort((a, b) => {
-    // Ordenar por duração total em horas (assumindo formato "XXh")
     const getHours = (duration: string) => parseInt(duration.replace('h', ''));
     const totalA = getHours(a.data.duration);
     const totalB = getHours(b.data.duration);
@@ -32,15 +31,14 @@ export const prerender = true;
     <main id="main-content">
         <div
             class="page-header"
-            style="contain: content; min-height: 120px;"
             transition:animate={{
                 forwards: {
-                    old: { name: 'fadeOut', duration: '0.3s', easing: 'ease-out' },
-                    new: { name: 'fadeIn', duration: '0.3s', easing: 'ease-out' }
+                    old: { name: 'fadeOut', duration: '0.2s', easing: 'ease-out' },
+                    new: { name: 'fadeIn', duration: '0.2s', easing: 'ease-out' }
                 },
                 backwards: {
-                    old: { name: 'fadeOut', duration: '0.3s', easing: 'ease-out' },
-                    new: { name: 'fadeIn', duration: '0.3s', easing: 'ease-out' }
+                    old: { name: 'fadeOut', duration: '0.2s', easing: 'ease-out' },
+                    new: { name: 'fadeIn', duration: '0.2s', easing: 'ease-out' }
                 }
             }}
         >
@@ -53,11 +51,15 @@ export const prerender = true;
         <section
             class="certifications-grid"
             aria-label="Lista de certificações"
-            style="contain: content style; content-visibility: auto; contain-intrinsic-size: 1000px;"
-            data-astro-transition-scope
+            style="contain: content; content-visibility: auto;"
         >
-            {sortedCertifications.map((certification) => (
-                <CertificationCard certification={certification.data} />
+            {sortedCertifications.map((certification, index) => (
+                <div 
+                    class="card-wrapper"
+                    style={`view-transition-name: cert-${index}; contain: layout;`}
+                >
+                    <CertificationCard certification={certification.data} />
+                </div>
             ))}
         </section>
     </main>
@@ -66,13 +68,12 @@ export const prerender = true;
 <style>
 .page-header {
     text-align: center;
-    margin-bottom: 3rem;
-    contain: content;
-    min-height: 120px;
+    margin-block: 2rem 3rem;
+    container-type: inline-size;
 }
 
 .page-header h1 {
-    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-size: clamp(1.5rem, 5cqi, 2.5rem);
     margin-bottom: 0.75rem;
     background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
     -webkit-background-clip: text;
@@ -80,68 +81,45 @@ export const prerender = true;
     -webkit-text-fill-color: transparent;
     text-fill-color: transparent;
     line-height: 1.3;
-    max-width: 90vw;
-    margin-inline: auto;
-    contain: paint style;
-    min-height: 2em;
 }
 
 .header-description {
     color: var(--text-color);
-    font-size: clamp(0.9rem, 3vw, 1.2rem);
+    font-size: clamp(0.9rem, 3cqi, 1.2rem);
     font-weight: 600;
-    max-width: 85vw;
-    margin-inline: auto;
     line-height: 1.4;
-    contain: content;
-    min-height: 1.4em;
+    max-width: min(85vw, 600px);
+    margin-inline: auto;
 }
 
 .certifications-grid {
     display: grid;
     gap: clamp(1rem, 3vw, 2rem);
-    margin-top: 3rem;
+    margin-block-end: 3rem;
     width: 100%;
-    box-sizing: border-box;
-    contain: content;
-    content-visibility: auto;
-    contain-intrinsic-size: 1000px;
-    padding: 0.1px; /* Previne margin collapse */
+    container-type: inline-size;
 }
 
-@media (max-width: 768px) {
-    .page-header {
-        margin-bottom: 2rem;
-    }
+.card-wrapper {
+    container-type: inline-size;
+    container-name: card;
+}
 
-    .page-header h1 {
-        font-size: clamp(1.3rem, 4vw, 2rem);
-        min-height: 1.6em;
-    }
-
-    .header-description {
-        font-size: 1rem;
-        min-height: 1.2em;
-    }
-
+@container certifications-grid (min-width: 768px) {
     .certifications-grid {
-        gap: 1.5rem;
-        margin-top: 2rem;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 500px), 1fr));
     }
 }
 
-@media (max-width: 480px) {
-    .page-header {
-        margin-bottom: 1.5rem;
-    }
-
+@media (prefers-reduced-motion: reduce) {
+    .page-header,
     .certifications-grid {
-        gap: 1rem;
-        margin-top: 1.5rem;
+        animation: none !important;
+        transition: none !important;
     }
 }
 
-/* Ajustes específicos para tema claro */
+/* Ajustes para tema claro */
 :global(.light-theme) .header-description {
     color: var(--text-color);
     font-weight: 600;

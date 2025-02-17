@@ -80,21 +80,35 @@ export default defineConfig({
           'code-tags',
           'code-braces'
         ]
-      }
+      },
+      svgoOptions: {
+        plugins: [
+          {
+            name: 'preset-default',
+            params: {
+              overrides: {
+                removeViewBox: false,
+                removeUselessStrokeAndFill: false,
+              },
+            },
+          },
+          'removeDimensions',
+        ],
+      },
     })
   ],
   prefetch: {
-    prefetchAll: false,
-    defaultStrategy: 'viewport'
+    prefetchAll: true,
+    defaultStrategy: 'hover'
   },
   image: {
     service: {
       entrypoint: 'astro/assets/services/sharp',
       config: {
-        jpeg: { quality: 75, progressive: true },
-        png: { quality: 75, progressive: true },
-        webp: { quality: 75, effort: 6 },
-        avif: { quality: 75, effort: 6 }
+        jpeg: { quality: 80, progressive: true },
+        png: { quality: 80, progressive: true },
+        webp: { quality: 80, effort: 4 },
+        avif: { quality: 80, effort: 4 }
       }
     },
     domains: [],
@@ -103,14 +117,13 @@ export default defineConfig({
     fallbackFormat: 'webp'
   },
   build: {
-    inlineStylesheets: 'always',
+    inlineStylesheets: 'auto',
     assets: 'assets',
     redirects: true
   },
   output: 'static',
   server: {
     headers: {
-      // CSP básica que não conflita com SafeResource
       'Content-Security-Policy': `
         default-src 'self';
         script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://*.google-analytics.com;
@@ -126,7 +139,6 @@ export default defineConfig({
         object-src 'none';
         upgrade-insecure-requests;
       `.replace(/\s+/g, ' ').trim(),
-      // Headers de segurança adicionais
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
@@ -137,11 +149,15 @@ export default defineConfig({
   vite: {
     build: {
       cssCodeSplit: true,
+      modulePreload: {
+        polyfill: true
+      },
       rollupOptions: {
         output: {
           manualChunks: {
             'vendor': ['astro-icon'],
-            'icons': ['simple-icons/*', 'mdi/*']
+            'icons': ['simple-icons/*', 'mdi/*'],
+            'transitions': ['astro:transitions']
           },
           chunkFileNames: 'assets/js/[hash].js',
           assetFileNames: 'assets/[ext]/[hash][extname]'
@@ -151,7 +167,8 @@ export default defineConfig({
       terserOptions: {
         compress: {
           drop_console: true,
-          drop_debugger: true
+          drop_debugger: true,
+          pure_funcs: ['console.log', 'console.debug', 'console.info']
         }
       }
     },
