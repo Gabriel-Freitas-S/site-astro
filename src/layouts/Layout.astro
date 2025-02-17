@@ -51,14 +51,16 @@ const {
             </script>
         </SafeResource>
 
-        <!-- Google Analytics - Carregado após o tema -->
+        <!-- Google Analytics -->
         <SafeResource>
             <script type="text/partytown" async src="https://www.googletagmanager.com/gtag/js?id=G-KXJCF6VDEE"></script>
-            <script type="text/partytown" define:vars={{ id: 'G-KXJCF6VDEE' }} is:inline>
+        </SafeResource>
+        <SafeResource>
+            <script type="text/partytown" is:inline>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', id);
+                gtag('config', 'G-KXJCF6VDEE');
             </script>
         </SafeResource>
 
