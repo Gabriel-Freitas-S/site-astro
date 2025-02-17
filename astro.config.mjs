@@ -5,12 +5,29 @@ import minify from 'astro-minify-html-swc';
 import sitemap from '@astrojs/sitemap';
 import icon from 'astro-icon';
 import partytown from '@astrojs/partytown';
+import robotsTxt from 'astro-robots-txt';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://gabrielfs.dev',
   compressHTML: true,
   integrations: [
+    robotsTxt({
+      policy: [
+        {
+          userAgent: '*',
+          allow: '/',
+          crawlDelay: 10
+        },
+        {
+          userAgent: 'Googlebot',
+          allow: '/',
+          crawlDelay: 2
+        }
+      ],
+      sitemap: true,
+      host: true
+    }),
     compressor({
       gzip: true,
       brotli: true,
