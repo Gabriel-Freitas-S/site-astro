@@ -20,12 +20,13 @@ const { skill, certifications } = Astro.props;
 const popupId = `popup-${skill.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
 ---
 
-<dialog 
-    id={popupId} 
+<dialog
+    id={popupId}
     class="skill-popup"
     aria-labelledby={`${popupId}-title`}
+    style="content-visibility: auto; contain-intrinsic-size: 600px;"
 >
-    <div class="popup-content" role="document">
+    <div class="popup-content" role="document" style="contain: layout style;">
         <div class="popup-header">
             <h3 id={`${popupId}-title`}>Certificações em {skill}</h3>
             <button 
@@ -187,13 +188,18 @@ h4 {
 }
 
 .duration-badge {
-    background: var(--accent-primary);
+    background: color-mix(in srgb, var(--accent-primary) 85%, black);
     color: white;
     padding: 0.5rem 1rem;
     font-weight: 600;
     border-radius: 20px;
     font-size: 0.9rem;
     white-space: nowrap;
+    contain: layout paint;
+    height: 2rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
 }
 
 .courses {

@@ -61,36 +61,47 @@ export default defineConfig({
     })
   ],
   prefetch: {
-    prefetchAll: true,
-    defaultStrategy: 'hover'
+    prefetchAll: false,
+    defaultStrategy: 'viewport'
   },
   image: {
     service: {
       entrypoint: 'astro/assets/services/sharp',
       config: {
-        jpeg: { quality: 80, progressive: true },
-        png: { quality: 80, progressive: true },
-        webp: { quality: 80, effort: 6 },
-        avif: { quality: 80, effort: 6 }
+        jpeg: { quality: 75, progressive: true },
+        png: { quality: 75, progressive: true },
+        webp: { quality: 75, effort: 6 },
+        avif: { quality: 75, effort: 6 }
       }
     },
     domains: [],
     remotePatterns: [],
-    format: 'webp'
+    format: 'avif',
+    fallbackFormat: 'webp'
   },
   build: {
-    inlineStylesheets: 'auto',
+    inlineStylesheets: 'always',
     assets: 'assets',
     redirects: true
   },
   vite: {
     build: {
-      cssCodeSplit: false,
+      cssCodeSplit: true,
       rollupOptions: {
         output: {
-          manualChunks: undefined,
+          manualChunks: {
+            'vendor': ['astro-icon'],
+            'icons': ['simple-icons/*', 'mdi/*']
+          },
           chunkFileNames: 'assets/js/[hash].js',
           assetFileNames: 'assets/[ext]/[hash][extname]'
+        }
+      },
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true
         }
       }
     },
