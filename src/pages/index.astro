@@ -9,7 +9,6 @@ import '../utils/preloadIcons';
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import { getSkillIcon } from '../utils/iconMapping';
-import { fade } from 'astro:transitions';
 
 export const prerender = true;
 
@@ -83,7 +82,17 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
             class="skills-section"
             aria-labelledby="skills-title"
             data-astro-transition-scope
-            transition:animate={fade({ duration: '0.3s' })}
+            transition:animate={{
+                forwards: {
+                    old: { name: 'fadeOut', duration: '0.3s', easing: 'ease-out' },
+                    new: { name: 'fadeIn', duration: '0.3s', easing: 'ease-out' }
+                },
+                backwards: {
+                    old: { name: 'fadeOut', duration: '0.3s', easing: 'ease-out' },
+                    new: { name: 'fadeIn', duration: '0.3s', easing: 'ease-out' }
+                }
+            }}
+=======
         >
             <h2 id="skills-title" transition:name="page-title">Habilidades</h2>
             <div class="skills-grid">

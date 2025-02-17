@@ -3,7 +3,6 @@ import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 import CertificationCard from '../components/CertificationCard.astro';
 import { getCollection } from 'astro:content';
-import { fade } from 'astro:transitions';
 
 const certifications = await getCollection('certifications');
 const sortedCertifications = certifications.sort((a, b) => {
@@ -34,7 +33,16 @@ export const prerender = true;
         <div
             class="page-header"
             style="contain: content; min-height: 120px;"
-            transition:animate={fade({ duration: '0.3s' })}
+            transition:animate={{
+                forwards: {
+                    old: { name: 'fadeOut', duration: '0.3s', easing: 'ease-out' },
+                    new: { name: 'fadeIn', duration: '0.3s', easing: 'ease-out' }
+                },
+                backwards: {
+                    old: { name: 'fadeOut', duration: '0.3s', easing: 'ease-out' },
+                    new: { name: 'fadeIn', duration: '0.3s', easing: 'ease-out' }
+                }
+            }}
         >
             <h1 transition:name="page-title">Certificações</h1>
             <p class="header-description" transition:name="page-description">
