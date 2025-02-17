@@ -1,5 +1,5 @@
 ---
-import { ViewTransitions } from 'astro:transitions';
+import { ClientRouter } from 'astro:transitions';
 import SafeResource from '@igor.dvlpr/astro-saferesource';
 
 interface Props {
@@ -9,19 +9,25 @@ interface Props {
 
 const {
     title,
-    description = "Portfolio de Gabriel Freitas Souza - Desenvolvedor de software especializado em desenvolvimento web e mobile"
+    description = "Gabriel Freitas Souza - Desenvolvedor de software"
 } = Astro.props;
+
+export const prerender = true;
 ---
 
 <!DOCTYPE html>
 <html lang="pt-BR">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
         <meta name="description" content={description} />
         <meta name="author" content="Gabriel Freitas Souza" />
         <meta name="theme-color" content="#007AFF" />
-        <meta name="color-scheme" content="light dark">
+        <meta name="color-scheme" content="light dark" />
+        <meta name="format-detection" content="telephone=no" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <meta http-equiv="x-dns-prefetch-control" content="on" />
 
         <!-- Open Graph -->
         <meta property="og:title" content={title} />
@@ -35,7 +41,7 @@ const {
         <meta name="twitter:description" content={description} />
 
         <title>{title}</title>
-        <ViewTransitions />
+        <ClientRouter />
 
         <!-- Theme Script - Executado primeiro -->
         <SafeResource>
@@ -43,26 +49,63 @@ const {
                 const setTheme = () => {
                     const theme = localStorage.getItem('theme') ||
                         (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-                    document.documentElement.classList.toggle('light-theme', theme === 'light');
+                    
+                    requestAnimationFrame(() => {
+                        document.documentElement.classList.toggle('light-theme', theme === 'light');
+                        document.documentElement.style.setProperty('--theme-transition', 'none');
+                        
+                        requestAnimationFrame(() => {
+                            document.documentElement.style.removeProperty('--theme-transition');
+                        });
+                    });
                 };
+                
                 setTheme();
-                document.addEventListener('astro:after-swap', setTheme);
-                window.addEventListener('storage', (e) => e.key === 'theme' && setTheme());
+                document.addEventListener('astro:after-swap', () => {
+                    requestAnimationFrame(setTheme);
+                });
+                window.addEventListener('storage', (e) => {
+                    if (e.key === 'theme') {
+                        requestAnimationFrame(setTheme);
+                    }
+                });
+                
+                window.matchMedia('(prefers-color-scheme: dark)').addListener(() => {
+                    if (!localStorage.getItem('theme')) {
+                        requestAnimationFrame(setTheme);
+                    }
+                });
             </script>
         </SafeResource>
 
         <!-- Google Analytics -->
-        <SafeResource>
-            <script type="text/partytown" async src="https://www.googletagmanager.com/gtag/js?id=G-KXJCF6VDEE"></script>
-        </SafeResource>
-        <SafeResource>
-            <script type="text/partytown" is:inline>
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', 'G-KXJCF6VDEE');
-            </script>
-        </SafeResource>
+        <script type="text/partytown" async src="https://www.googletagmanager.com/gtag/js?id=G-KXJCF6VDEE"></script>
+        <script type="text/partytown" define:vars={{ id: 'G-KXJCF6VDEE' }}>
+        {
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                try {
+                    dataLayer.push(arguments);
+                } catch (e) {
+                    console.error('Google Analytics error:', e);
+                }
+            }
+            gtag('js', new Date());
+            gtag('config', id);
+            
+            if (document.readyState === 'complete') {
+                gtag('event', 'page_view');
+            } else {
+                window.addEventListener('load', () => {
+                    gtag('event', 'page_view');
+                });
+            }
+            
+            document.addEventListener('astro:after-swap', () => {
+                gtag('event', 'page_view');
+            });
+        }
+        </script>
 
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link
@@ -74,11 +117,53 @@ const {
         />
     </head>
     <body>
-        <main id="main-content">
+        <main
+            id="main-content"
+            style="contain: content; content-visibility: auto; contain-intrinsic-size: 1000px;"
+            data-astro-transition-scope
+        >
             <slot />
         </main>
     </body>
 </html>
+<style is:global>
+/* Animações de transição entre páginas */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(10px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Aplicar animações nos elementos durante a navegação */
+:root {
+    --page-transition: fadeIn 0.3s ease-out;
+}
+
+/* Animações para os elementos durante a navegação */
+[data-astro-transition-scope] {
+    animation: var(--page-transition);
+}
+
+/* Desabilitar animações quando prefers-reduced-motion estiver ativo */
+@media (prefers-reduced-motion: reduce) {
+    [data-astro-transition-scope] {
+        animation: none !important;
+    }
+}
 
 <style is:global>
 @font-face {

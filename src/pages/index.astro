@@ -9,6 +9,9 @@ import '../utils/preloadIcons';
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import { getSkillIcon } from '../utils/iconMapping';
+import { fade } from 'astro:transitions';
+
+export const prerender = true;
 
 interface Skill {
     name: string;
@@ -76,13 +79,19 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
     <Header />
     
     <main id="main-content">
-        <section class="skills-section" aria-labelledby="skills-title">
-            <h2 id="skills-title">Habilidades</h2>
+        <section
+            class="skills-section"
+            aria-labelledby="skills-title"
+            data-astro-transition-scope
+            transition:animate={fade({ duration: '0.3s' })}
+        >
+            <h2 id="skills-title" transition:name="page-title">Habilidades</h2>
             <div class="skills-grid">
                 {skillCategories.map(category => (
-                    <section 
-                        class="skill-category" 
+                    <section
+                        class="skill-category"
                         aria-labelledby={`category-${category.title.toLowerCase()}`}
+                        transition:name={`category-${category.title.toLowerCase()}`}
                     >
                         <div class="category-header">
                             <h3 id={`category-${category.title.toLowerCase()}`}>
@@ -97,6 +106,8 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
                                         onclick={`openPopup('popup-${skill.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}')`}
                                         disabled={skill.certs.length === 0}
                                         aria-label={`${skill.name}${skill.certs.length > 0 ? ` - ${skill.certs.length} certificações` : ' - Sem certificações'}`}
+                                        transition:name={`skill-${skill.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
+                                        style="contain: content; content-visibility: auto;"
                                     >
                                         <div class="skill-content">
                                             <span class="icon-wrapper" style="contain: strict; height: 20px; width: 20px;">
@@ -404,6 +415,59 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
         transition: none !important;
         transform: none !important;
         box-shadow: none !important;
+    }
+}
+</style>
+
+<script>
+function observeSkillCategories() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '50px'
+    });
+
+    document.querySelectorAll('.skill-category').forEach((category, index) => {
+        if (category instanceof HTMLElement) {
+            category.classList.add('animate');
+            category.style.setProperty('--delay', `${index * 100}ms`);
+            observer.observe(category);
+        }
+    });
+}
+
+document.addEventListener('astro:page-load', observeSkillCategories);
+</script>
+
+<style>
+.skill-category {
+    opacity: 0;
+    transform: translateY(20px);
+    will-change: transform, opacity;
+}
+
+.skill-category.animate {
+    transition: opacity 0.4s ease-out var(--delay), transform 0.4s ease-out var(--delay);
+}
+
+.skill-category.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skill-category,
+    .skill-category.animate,
+    .skill-category.visible {
+        transition: none !important;
+        opacity: 1 !important;
+        transform: none !important;
     }
 }
 </style>
