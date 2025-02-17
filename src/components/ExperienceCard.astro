@@ -1,5 +1,6 @@
 ---
 import BaseCard from './BaseCard.astro';
+import { fade } from 'astro:transitions';
 
 interface Props {
     experience: {
@@ -15,7 +16,7 @@ const { experience } = Astro.props;
 ---
 
 <BaseCard>
-    <article class="experience-card">
+    <article class="experience-card" transition:animate={fade({ duration: '0.3s' })}>
         <header class="card-header">
             <div class="position-info">
                 <h2>{experience.position}</h2>
@@ -29,7 +30,11 @@ const { experience } = Astro.props;
         <p class="description">{experience.description}</p>
 
         {experience.achievements && (
-            <section class="achievements" aria-labelledby="achievements-title">
+            <section 
+                class="achievements" 
+                aria-labelledby="achievements-title"
+                transition:animate={fade({ duration: '0.4s' })}
+            >
                 <h3 id="achievements-title">Principais Conquistas</h3>
                 <ul>
                     {experience.achievements.map(achievement => (
@@ -45,6 +50,8 @@ const { experience } = Astro.props;
 /* Layout */
 .experience-card {
     display: contents;
+    content-visibility: auto;
+    contain: content;
 }
 
 .card-header {
@@ -92,6 +99,8 @@ const { experience } = Astro.props;
 
 .achievements {
     margin-top: 2rem;
+    content-visibility: auto;
+    contain: content;
 }
 
 .achievements h3 {
@@ -207,8 +216,26 @@ li::before {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    * {
+    .experience-card,
+    .achievements {
         transition: none !important;
+        animation: none !important;
     }
 }
 </style>
+
+<script>
+// Implementa lazy loading para achievements
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.target.classList.contains('achievements')) {
+            const element = entry.target as HTMLElement;
+            element.style.contentVisibility = entry.isIntersecting ? 'visible' : 'auto';
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.achievements').forEach(section => {
+    observer.observe(section);
+});
+</script>

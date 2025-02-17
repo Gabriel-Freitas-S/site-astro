@@ -1,5 +1,6 @@
 ---
 import BaseCard from './BaseCard.astro';
+import { fade } from 'astro:transitions';
 
 interface Props {
     certification: {
@@ -21,52 +22,60 @@ const { certification } = Astro.props;
 ---
 
 <BaseCard className="certification-card">
-    <div class="card-header">
-        <h2>{certification.title}</h2>
-        <span class="duration-badge" aria-label={`Duração: ${certification.duration}`}>
-            {certification.duration}
-        </span>
-    </div>
-
-    <div class="content">
-        <div class="section courses">
-            <h3>Cursos</h3>
-            <ul>
-                {certification.courses.map(course => (
-                    <li>
-                        <div class="info-row">
-                            <div class="info-main">
-                                <span class="name">{course.name}</span>
-                                {course.period && (
-                                    <span class="period">({course.period})</span>
-                                )}
-                            </div>
-                            <span class="duration">{course.duration}</span>
-                        </div>
-                    </li>
-                ))}
-            </ul>
+    <div class="card-content" transition:animate={fade({ duration: '0.3s' })}>
+        <div class="card-header">
+            <h2>{certification.title}</h2>
+            <span class="duration-badge" aria-label={`Duração: ${certification.duration}`}>
+                {certification.duration}
+            </span>
         </div>
 
-        {certification.complementaryContent && (
-            <div class="section complementary">
-                <h3>Conteúdos complementares</h3>
+        <div class="content">
+            <div class="section courses">
+                <h3>Cursos</h3>
                 <ul>
-                    {certification.complementaryContent.map(content => (
+                    {certification.courses.map(course => (
                         <li>
                             <div class="info-row">
-                                <span class="name">{content.name}</span>
-                                <span class="duration">{content.duration}</span>
+                                <div class="info-main">
+                                    <span class="name">{course.name}</span>
+                                    {course.period && (
+                                        <span class="period">({course.period})</span>
+                                    )}
+                                </div>
+                                <span class="duration">{course.duration}</span>
                             </div>
                         </li>
                     ))}
                 </ul>
             </div>
-        )}
+
+            {certification.complementaryContent && (
+                <div class="section complementary" transition:animate={fade({ duration: '0.4s' })}>
+                    <h3>Conteúdos complementares</h3>
+                    <ul>
+                        {certification.complementaryContent.map(content => (
+                            <li>
+                                <div class="info-row">
+                                    <span class="name">{content.name}</span>
+                                    <span class="duration">{content.duration}</span>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+        </div>
     </div>
 </BaseCard>
 
 <style>
+/* Layout */
+.card-content {
+    content-visibility: auto;
+    contain: content;
+}
+
 /* Header */
 .card-header {
     display: flex;
@@ -96,6 +105,11 @@ const { certification } = Astro.props;
 /* Content Sections */
 .section {
     margin-bottom: 2rem;
+}
+
+.section.complementary {
+    content-visibility: auto;
+    contain: content;
 }
 
 .section h3 {
@@ -235,4 +249,28 @@ li {
         font-weight: 600;
     }
 }
+
+@media (prefers-reduced-motion: reduce) {
+    .card-content,
+    .section.complementary {
+        animation: none !important;
+        transition: none !important;
+    }
+}
 </style>
+
+<script>
+// Implementa lazy loading para conteúdos complementares
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.target.classList.contains('complementary')) {
+            const element = entry.target as HTMLElement;
+            element.style.contentVisibility = entry.isIntersecting ? 'visible' : 'auto';
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.complementary').forEach(section => {
+    observer.observe(section);
+});
+</script>

@@ -19,11 +19,12 @@ const { className = '' } = Astro.props;
     box-shadow: var(--card-shadow) rgba(var(--text-color-rgb), 0.05);
     transition: transform var(--transition-duration) var(--transition-timing),
                 box-shadow var(--transition-duration) var(--transition-timing);
-    /* Apenas usar will-change se houver interação de hover */
-    will-change: transform, box-shadow;
     touch-action: manipulation;
+    content-visibility: auto;
+    contain: layout style paint;
 }
 
+/* Para o card que está no viewport */
 .base-card:hover,
 .base-card:active {
     box-shadow: 0 4px 12px rgba(var(--text-color-rgb), 0.1);
@@ -47,7 +48,6 @@ const { className = '' } = Astro.props;
     .base-card {
         transition: none;
         transform: none;
-        will-change: auto;
     }
     
     .base-card:hover,
@@ -57,11 +57,31 @@ const { className = '' } = Astro.props;
 }
 
 :global(.light-theme) .base-card {
-    /* Usar as variáveis CSS já definidas */
     box-shadow: var(--card-shadow) var(--border-color);
 }
 
 :global(.light-theme) .base-card:hover {
     box-shadow: 0 4px 12px var(--border-color);
 }
+
+/* Quando o card está fora do viewport */
+.base-card:not(:where(:hover, :active)) {
+    transform: translateY(0);
+    box-shadow: var(--card-shadow) rgba(var(--text-color-rgb), 0.05);
+}
 </style>
+
+<script>
+// Adiciona o atributo inert para cards fora do viewport
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.target.classList.contains('base-card')) {
+            entry.target.toggleAttribute('inert', !entry.isIntersecting);
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.base-card').forEach(card => {
+    observer.observe(card);
+});
+</script>

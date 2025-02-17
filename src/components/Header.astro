@@ -1,5 +1,5 @@
 ---
-import { Picture } from 'astro:assets';
+import { Image } from 'astro:assets';
 import profileImage from '../assets/images/profile-280.webp';
 
 // CSS crítico inline para elementos LCP
@@ -54,16 +54,16 @@ const criticalStyles = `
     <div class="header-content">
         <div class="profile">
             <div class="profile-image-container">
-                <Picture
+                <Image
                     src={profileImage}
                     alt="Foto de perfil de Gabriel Freitas Souza"
-                    formats={['avif', 'webp']}
-                    widths={[100, 120, 140, 280]}
-                    sizes="(max-width: 480px) 100px, (max-width: 768px) 120px, 140px"
+                    width={280}
+                    height={280}
                     loading="eager"
                     fetchpriority="high"
                     class="profile-image"
                     quality={90}
+                    format="webp"
                 />
             </div>
             <h1 class="title">Gabriel Freitas Souza</h1>

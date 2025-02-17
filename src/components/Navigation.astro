@@ -1,4 +1,6 @@
 ---
+import { fade } from 'astro:transitions';
+
 const navItems = [
     { href: "/", label: "Início" },
     { href: "/certificacoes", label: "Certificações" },
@@ -10,7 +12,7 @@ const isCurrentPage = (href: string) =>
     href === '/' ? currentPath === href : currentPath.startsWith(href);
 ---
 
-<div class="nav-wrapper" id="nav-wrapper">
+<div class="nav-wrapper" id="nav-wrapper" transition:animate={fade({ duration: '0.3s' })}>
     <nav class="navigation" aria-label="Navegação principal">
         <div class="nav-container">
             <button 
@@ -23,13 +25,14 @@ const isCurrentPage = (href: string) =>
                 <span class="hamburger"></span>
             </button>
             
-            <ul class="nav-links" id="nav-links">
+            <ul class="nav-links" id="nav-links" role="list">
                 {navItems.map(item => (
                     <li class="nav-item">
                         <a 
                             href={item.href}
                             class:list={['nav-link', { active: isCurrentPage(item.href) }]}
                             aria-current={isCurrentPage(item.href) ? "page" : undefined}
+                            data-astro-prefetch
                         >
                             {item.label}
                         </a>
@@ -86,20 +89,16 @@ const isCurrentPage = (href: string) =>
 </div>
 
 <style>
-*, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
 .nav-wrapper {
     --nav-height: clamp(48px, 8vh, 64px);
+    --nav-item-gap: 0.75rem;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     z-index: 1000;
     height: var(--nav-height);
+    contain: layout size;
 }
 
 .navigation {
@@ -133,7 +132,7 @@ const isCurrentPage = (href: string) =>
 
 .nav-links {
     display: flex;
-    gap: 1rem;
+    gap: var(--nav-item-gap);
     list-style: none;
     margin: 0;
     padding: 0;
@@ -142,6 +141,7 @@ const isCurrentPage = (href: string) =>
 .nav-item {
     margin: 0;
     padding: 0;
+    position: relative;
 }
 
 .nav-link {
@@ -152,20 +152,25 @@ const isCurrentPage = (href: string) =>
     border-radius: var(--border-radius);
     transition: all 0.2s ease;
     opacity: 0.8;
-    display: block;
-    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    min-width: 100px;
+    margin: 0 0.25rem;
 }
 
 .nav-link:hover,
 .nav-link:focus-visible {
     opacity: 1;
-    background: var(--accent-quaternary);
+    background: color-mix(in srgb, var(--accent-primary) 10%, var(--background-color));
 }
 
 .nav-link.active {
     color: white;
     background: var(--accent-primary);
     opacity: 1;
+    font-weight: 600;
 }
 
 .nav-actions {
@@ -257,18 +262,19 @@ const isCurrentPage = (href: string) =>
         left: 0;
         right: 0;
         width: 100%;
-        max-width: 100vw;
+        max-width: 100%;
         box-sizing: border-box;
         height: calc(100vh - var(--nav-height));
         background: var(--background-color);
         flex-direction: column;
-        gap: 0;
+        gap: 0.5rem;
         transform: translateX(-100%);
         visibility: hidden;
         transition: transform 0.3s ease;
-        padding: 0;
+        padding: 1rem;
         margin: 0;
         overflow-x: hidden;
+        contain: content;
     }
 
     .nav-links.active {
@@ -278,14 +284,25 @@ const isCurrentPage = (href: string) =>
 
     .nav-item {
         width: 100%;
-        padding: 0.5rem 1rem;
+        max-width: 400px;
+        margin: 0 auto;
+        opacity: 0;
+        transform: translateX(-20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .nav-links.active .nav-item {
+        opacity: 1;
+        transform: translateX(0);
+        transition-delay: calc(var(--item-index, 0) * 0.1s);
     }
 
     .nav-link {
-        text-align: center;
-        padding: 1rem;
-        width: calc(100% - 2rem);
-        margin: 0 1rem;
+        margin: 0;
+        padding: 0.8rem;
+        height: auto;
+        min-width: 0;
+        width: 100%;
     }
 
     .nav-actions {
@@ -325,9 +342,12 @@ const isCurrentPage = (href: string) =>
         height: 20px;
     }
 
+    .nav-item {
+        max-width: 300px;
+    }
+
     .nav-link {
-        width: calc(100% - 1rem);
-        margin: 0 0.5rem;
+        padding: 0.8rem;
     }
 }
 
@@ -336,49 +356,63 @@ const isCurrentPage = (href: string) =>
     .nav-links,
     .hamburger,
     .hamburger::before,
-    .hamburger::after {
+    .hamburger::after,
+    .nav-item {
         transition: none !important;
+        animation: none !important;
     }
 }
 </style>
 
 <script>
+const state = {
+    isMenuOpen: false,
+    currentTheme: localStorage.getItem('theme') || 'dark'
+};
+
 function toggleMobileMenu(force?: boolean) {
     const menuToggle = document.getElementById('menu-toggle');
     const navLinks = document.getElementById('nav-links');
     
     if (!menuToggle || !navLinks) return;
     
-    const isExpanded = force ?? menuToggle.getAttribute('aria-expanded') !== 'true';
+    state.isMenuOpen = force ?? !state.isMenuOpen;
     
-    menuToggle.setAttribute('aria-expanded', String(isExpanded));
-    navLinks.classList.toggle('active', isExpanded);
-    document.body.style.overflow = isExpanded ? 'hidden' : '';
+    menuToggle.setAttribute('aria-expanded', String(state.isMenuOpen));
+    navLinks.classList.toggle('active', state.isMenuOpen);
+    document.body.style.overflow = state.isMenuOpen ? 'hidden' : '';
+
+    if (state.isMenuOpen) {
+        navLinks.querySelectorAll('.nav-item').forEach((item, index) => {
+            (item as HTMLElement).style.setProperty('--item-index', index.toString());
+        });
+    }
 }
 
 function toggleTheme() {
-    const currentTheme = localStorage.getItem('theme') || 'dark';
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
-    localStorage.setItem('theme', newTheme);
-    document.documentElement.classList.toggle('light-theme', newTheme === 'light');
+    state.currentTheme = state.currentTheme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('theme', state.currentTheme);
+    document.documentElement.classList.toggle('light-theme', state.currentTheme === 'light');
 }
 
 document.addEventListener('astro:page-load', () => {
-    const menuToggle = document.getElementById('menu-toggle');
-    const navLinks = document.getElementById('nav-links');
-    const themeToggle = document.getElementById('theme-toggle');
-    
-    menuToggle?.addEventListener('click', () => toggleMobileMenu());
-    
-    navLinks?.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => toggleMobileMenu(false));
+    const nav = document.getElementById('nav-wrapper');
+    if (!nav) return;
+
+    nav.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        
+        if (target.closest('#menu-toggle')) {
+            toggleMobileMenu();
+        } else if (target.closest('#theme-toggle')) {
+            toggleTheme();
+        } else if (target.closest('.nav-link')) {
+            toggleMobileMenu(false);
+        }
     });
 
-    themeToggle?.addEventListener('click', toggleTheme);
-
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
+        if (e.key === 'Escape' && state.isMenuOpen) {
             toggleMobileMenu(false);
         }
     });
