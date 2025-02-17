@@ -108,6 +108,32 @@ export default defineConfig({
     redirects: true
   },
   output: 'static',
+  server: {
+    headers: {
+      // CSP básica que não conflita com SafeResource
+      'Content-Security-Policy': `
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://*.google-analytics.com;
+        style-src 'self' 'unsafe-inline' https://fonts.gstatic.com;
+        connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://stats.g.doubleclick.net;
+        img-src 'self' data: https: https://*.google-analytics.com;
+        font-src 'self' https://fonts.gstatic.com;
+        worker-src 'self' blob:;
+        frame-src 'self';
+        frame-ancestors 'none';
+        base-uri 'self';
+        form-action 'self';
+        object-src 'none';
+        upgrade-insecure-requests;
+      `.replace(/\s+/g, ' ').trim(),
+      // Headers de segurança adicionais
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
+    }
+  },
   vite: {
     build: {
       cssCodeSplit: true,
