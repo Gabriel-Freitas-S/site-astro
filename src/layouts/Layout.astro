@@ -13,7 +13,7 @@ const {
 } = Astro.props;
 ---
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
     <head>
         <meta charset="UTF-8" />
@@ -33,50 +33,43 @@ const {
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
-<!-- Google Analytics -->
-<SafeResource>
-    <script type="text/partytown" async src="https://www.googletagmanager.com/gtag/js?id=G-KXJCF6VDEE"></script>
-    <script type="text/partytown" is:inline>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-KXJCF6VDEE');
-    </script>
-</SafeResource>
 
-<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <title>{title}</title>
+        <ViewTransitions />
 
-<!-- Otimização de fonte usando sistema nativo do Astro 5 -->
-<link
-    rel="preload"
-    href="https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2"
-    as="font"
-    type="font/woff2"
-    crossorigin
-/>
+        <!-- Theme Script - Executado primeiro -->
+        <SafeResource>
+            <script is:inline>
+                const setTheme = () => {
+                    const theme = localStorage.getItem('theme') ||
+                        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                    document.documentElement.classList.toggle('light-theme', theme === 'light');
+                };
+                setTheme();
+                document.addEventListener('astro:after-swap', setTheme);
+                window.addEventListener('storage', (e) => e.key === 'theme' && setTheme());
+            </script>
+        </SafeResource>
 
-<title>{title}</title>
-<ViewTransitions />
+        <!-- Google Analytics - Carregado após o tema -->
+        <SafeResource>
+            <script type="text/partytown" async src="https://www.googletagmanager.com/gtag/js?id=G-KXJCF6VDEE"></script>
+            <script type="text/partytown" define:vars={{ id: 'G-KXJCF6VDEE' }} is:inline>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', id);
+            </script>
+        </SafeResource>
 
-<!-- Theme Script -->
-<SafeResource>
-    <script is:inline>
-        // Define uma função para configurar o tema
-        const setTheme = () => {
-            const theme = localStorage.getItem('theme') ||
-                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            document.documentElement.classList.toggle('light-theme', theme === 'light');
-        };
-
-        // Executa imediatamente para evitar flash
-        setTheme();
-
-        // Registra os event listeners após o carregamento do documento
-        document.addEventListener('astro:after-swap', setTheme);
-        window.addEventListener('storage', (e) => e.key === 'theme' && setTheme());
-    </script>
-</SafeResource>
-        </script>
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link
+            rel="preload"
+            href="https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2"
+            as="font"
+            type="font/woff2"
+            crossorigin
+        />
     </head>
     <body>
         <main id="main-content">

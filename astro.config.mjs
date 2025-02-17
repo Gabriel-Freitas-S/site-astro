@@ -48,7 +48,14 @@ export default defineConfig({
     sitemap(),
     partytown({
       config: {
+        debug: true,
         forward: ["dataLayer.push"],
+        resolveUrl: (url) => {
+          if (url.hostname.includes('google-analytics.com')) {
+            return url;
+          }
+          return new URL(url, 'https://gabrielfs.dev');
+        }
       },
     }),
     icon({
@@ -112,16 +119,20 @@ export default defineConfig({
     headers: {
       'Content-Security-Policy': `
         default-src 'self';
-        img-src 'self' data: https:;
+        script-src 'self' 'unsafe-eval' https://www.googletagmanager.com https://*.google-analytics.com 'unsafe-inline';
+        img-src 'self' data: https: https://*.google-analytics.com;
         font-src 'self' https://fonts.gstatic.com;
         connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://stats.g.doubleclick.net;
-        frame-src 'self';
+        frame-src 'self' blob: 'unsafe-inline';
         worker-src 'self' blob:;
+        style-src 'self' 'unsafe-inline' https://fonts.gstatic.com;
         manifest-src 'self';
         base-uri 'self';
         form-action 'self';
         upgrade-insecure-requests;
-      `.replace(/\s+/g, ' ').trim()
+      `.replace(/\s+/g, ' ').trim(),
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp'
     }
   },
   vite: {
