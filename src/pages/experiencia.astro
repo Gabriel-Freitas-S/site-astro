@@ -34,15 +34,15 @@ const description = latestExperience
 >
     <main id="main-content">
             <Navigation />
-            <div class="page-header" style="content-visibility: visible;">
+            <div class="page-header">
                 <h1>Experiência Profissional</h1>
-                <p style="content-visibility: visible;">Minha trajetória e conquistas profissionais</p>
+                <p>Minha trajetória e conquistas profissionais</p>
             </div>
     
             <section
                 class="timeline"
                 aria-label="Linha do tempo de experiências profissionais"
-                style="content-visibility: auto; contain-intrinsic-size: 0 500px;"
+                style="content-visibility: auto; contain-intrinsic-size: 1000px;"
             >
             {sortedExperiences.map((exp, index) => (
                 <div class="timeline-item visible" data-index={index}>
@@ -247,36 +247,44 @@ const description = latestExperience
 function observeTimelineItems() {
     const items = document.querySelectorAll('.timeline-item');
     
-    // Marca todos os itens como visíveis imediatamente
-    requestAnimationFrame(() => {
-        items.forEach(item => {
-            const element = item as HTMLElement;
-            element.style.opacity = '1';
-            element.style.transform = 'none';
-            element.classList.add('visible');
-            
-            // Garante que o conteúdo interno esteja visível
-            const card = element.querySelector('.experience-card');
-            if (card) {
-                (card as HTMLElement).style.opacity = '1';
-                (card as HTMLElement).style.visibility = 'visible';
-            }
-        });
+    // Define os estados iniciais
+    items.forEach(item => {
+        const element = item as HTMLElement;
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(20px)';
     });
 
-    // Desativa content-visibility para garantir que o conteúdo permaneça visível
-    const timeline = document.querySelector('.timeline');
-    if (timeline) {
-        timeline.setAttribute('style', 'content-visibility: visible !important');
-    }
-}
-
-// Limpa as classes ao desmontar
-function cleanup() {
-    const items = document.querySelectorAll('.timeline-item');
-    items.forEach(item => item.classList.remove('visible'));
+    // Anima os elementos após um pequeno delay
+    setTimeout(() => {
+        requestAnimationFrame(() => {
+            items.forEach((item, index) => {
+                const element = item as HTMLElement;
+                // Aplica a animação com delay progressivo
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    }, 100);
 }
 
 document.addEventListener('astro:page-load', observeTimelineItems);
-document.addEventListener('astro:before-swap', cleanup);
 </script>
+
+<style>
+.timeline-item {
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    opacity: 0;
+    transform: translateY(20px);
+    will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .timeline-item {
+        transition: none;
+        opacity: 1;
+        transform: none;
+    }
+}
+</style>

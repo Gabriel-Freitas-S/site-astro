@@ -36,8 +36,6 @@ const {
 
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         
-        <GoogleAnalytics id="G-KXJCF6VDEE" />
-
         <!-- Otimização de fonte usando sistema nativo do Astro 5 -->
         <link
             rel="preload"
@@ -70,6 +68,7 @@ const {
         <main id="main-content">
             <slot />
         </main>
+        <GoogleAnalytics id="G-KXJCF6VDEE" client:idle />
     </body>
 </html>
 
