@@ -13,16 +13,25 @@ interface Props {
 }
 
 const { experience } = Astro.props;
+export const prerender = true;
 ---
 
-<BaseCard>
-    <article class="experience-card">
-        <header class="card-header">
+<BaseCard transition:persist>
+    <article
+        class="experience-card"
+        transition:animate={fade({ duration: '0.3s' })}
+        data-astro-transition-scope
+    >
+        <header class="card-header" transition:name={`exp-header-${experience.company}`}>
             <div class="position-info">
-                <h2>{experience.position}</h2>
-                <h3>{experience.company}</h3>
+                <h2 transition:name={`exp-position-${experience.position}`}>{experience.position}</h2>
+                <h3 transition:name={`exp-company-${experience.company}`}>{experience.company}</h3>
             </div>
-            <span class="duration-badge" aria-label={`Período: ${experience.period}`}>
+            <span
+                class="duration-badge"
+                aria-label={`Período: ${experience.period}`}
+                transition:name={`exp-period-${experience.period}`}
+            >
                 {experience.period}
             </span>
         </header>

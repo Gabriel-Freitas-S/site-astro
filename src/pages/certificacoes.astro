@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 import CertificationCard from '../components/CertificationCard.astro';
 import { getCollection } from 'astro:content';
+import { fade } from 'astro:transitions';
 
 const certifications = await getCollection('certifications');
 const sortedCertifications = certifications.sort((a, b) => {
@@ -19,6 +20,8 @@ const totalHours = sortedCertifications.reduce((acc, cert) => {
 }, 0);
 
 const description = `Certificações e cursos em desenvolvimento de software, totalizando ${totalHours} horas de estudo em diversas tecnologias e frameworks.`;
+
+export const prerender = true;
 ---
 
 <Layout 
@@ -28,9 +31,13 @@ const description = `Certificações e cursos em desenvolvimento de software, to
     <Navigation />
     
     <main id="main-content">
-        <div class="page-header" style="contain: content; min-height: 120px;">
-            <h1>Certificações</h1>
-            <p class="header-description">
+        <div
+            class="page-header"
+            style="contain: content; min-height: 120px;"
+            transition:animate={fade({ duration: '0.3s' })}
+        >
+            <h1 transition:name="page-title">Certificações</h1>
+            <p class="header-description" transition:name="page-description">
                 Total de {totalHours} horas de estudo e aperfeiçoamento profissional
             </p>
         </div>
@@ -38,7 +45,8 @@ const description = `Certificações e cursos em desenvolvimento de software, to
         <section
             class="certifications-grid"
             aria-label="Lista de certificações"
-            style="contain: content; content-visibility: auto; contain-intrinsic-size: 1000px;"
+            style="contain: content style; content-visibility: auto; contain-intrinsic-size: 1000px;"
+            data-astro-transition-scope
         >
             {sortedCertifications.map((certification) => (
                 <CertificationCard certification={certification.data} />

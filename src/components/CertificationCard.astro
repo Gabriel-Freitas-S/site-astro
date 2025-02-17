@@ -19,15 +19,24 @@ interface Props {
 }
 
 const { certification } = Astro.props;
+export const prerender = true;
 ---
-
-<BaseCard className="certification-card">
-    <div class="card-content" transition:animate={fade({ duration: '0.3s' })}>
-        <div class="card-header">
+<BaseCard className="certification-card" transition:persist>
+    <div
+        class="card-content"
+        transition:animate={fade({ duration: '0.3s' })}
+        data-astro-transition-scope
+    >
+        <div class="card-header" transition:name={`cert-header-${certification.title}`}>
             <h2>{certification.title}</h2>
-            <span class="duration-badge" aria-label={`Duração: ${certification.duration}`}>
+            <span
+                class="duration-badge"
+                aria-label={`Duração: ${certification.duration}`}
+                transition:name={`cert-duration-${certification.duration}`}
+            >
                 {certification.duration}
             </span>
+        </div>
         </div>
 
         <div class="content">

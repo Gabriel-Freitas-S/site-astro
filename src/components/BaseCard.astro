@@ -4,6 +4,7 @@ interface Props {
 }
 
 const { className = '' } = Astro.props;
+export const prerender = true;
 ---
 
 <div class:list={['base-card', className]}>

@@ -3,8 +3,10 @@ import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 import ExperienceCard from '../components/ExperienceCard.astro';
 import { getCollection } from 'astro:content';
+import { fade } from 'astro:transitions';
 
 const experiences = await getCollection('experience');
+export const prerender = true;
 const sortedExperiences = experiences.sort((a, b) => {
     const getDate = (period: string) => {
         const startDate = period.split(' - ')[0];
@@ -34,15 +36,20 @@ const description = latestExperience
 >
     <main id="main-content">
             <Navigation />
-            <div class="page-header">
-                <h1>Experiência Profissional</h1>
-                <p>Minha trajetória e conquistas profissionais</p>
+            <div
+                class="page-header"
+                transition:animate={fade({ duration: '0.3s' })}
+                style="contain: content; min-height: 120px;"
+            >
+                <h1 transition:name="page-title">Experiência Profissional</h1>
+                <p transition:name="page-description">Minha trajetória e conquistas profissionais</p>
             </div>
     
             <section
                 class="timeline"
                 aria-label="Linha do tempo de experiências profissionais"
-                style="content-visibility: auto; contain-intrinsic-size: 1000px;"
+                style="content-visibility: auto; contain: content style; contain-intrinsic-size: 1000px;"
+                data-astro-transition-scope
             >
             {sortedExperiences.map((exp, index) => (
                 <div class="timeline-item visible" data-index={index}>
