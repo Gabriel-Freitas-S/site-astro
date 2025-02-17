@@ -72,8 +72,11 @@ const { certification } = Astro.props;
 <style>
 /* Layout */
 .card-content {
-    content-visibility: auto;
-    contain: content;
+    contain: style layout;
+    min-height: 200px;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 2rem;
 }
 
 /* Header */
@@ -92,7 +95,7 @@ const { certification } = Astro.props;
 }
 
 .duration-badge {
-    background: var(--accent-primary);
+    background: color-mix(in srgb, var(--accent-primary) 85%, black);
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 20px;
@@ -100,6 +103,11 @@ const { certification } = Astro.props;
     white-space: nowrap;
     font-weight: 600;
     box-shadow: var(--card-shadow) var(--border-color);
+    contain: layout style;
+    height: 2rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
 }
 
 /* Content Sections */
@@ -108,8 +116,8 @@ const { certification } = Astro.props;
 }
 
 .section.complementary {
-    content-visibility: auto;
-    contain: content;
+    contain: style layout;
+    min-height: 100px;
 }
 
 .section h3 {
@@ -259,18 +267,44 @@ li {
 }
 </style>
 
-<script>
-// Implementa lazy loading para conteúdos complementares
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.target.classList.contains('complementary')) {
-            const element = entry.target as HTMLElement;
-            element.style.contentVisibility = entry.isIntersecting ? 'visible' : 'auto';
-        }
-    });
-}, { threshold: 0.1 });
+<style is:global>
+.card-content {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    will-change: transform, opacity;
+}
 
-document.querySelectorAll('.complementary').forEach(section => {
-    observer.observe(section);
+.card-content.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .card-content {
+        transition: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('astro:page-load', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '50px'
+    });
+
+    document.querySelectorAll('.card-content').forEach(card => {
+        observer.observe(card);
+    });
 });
 </script>
