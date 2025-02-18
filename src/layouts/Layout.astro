@@ -46,6 +46,7 @@ export const prerender = true;
         <!-- Theme Script - Executado primeiro -->
         <SafeResource>
             <script is:inline>
+                // Theme management
                 const setTheme = () => {
                     const theme = localStorage.getItem('theme') ||
                         (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -59,11 +60,16 @@ export const prerender = true;
                         });
                     });
                 };
-                
+
+                // Initial theme setup
                 setTheme();
-                document.addEventListener('astro:after-swap', () => {
+
+                // Handle page transitions
+                document.addEventListener('astro:page-load', () => {
                     requestAnimationFrame(setTheme);
                 });
+
+                // Handle theme changes
                 window.addEventListener('storage', (e) => {
                     if (e.key === 'theme') {
                         requestAnimationFrame(setTheme);
@@ -74,6 +80,22 @@ export const prerender = true;
                     if (!localStorage.getItem('theme')) {
                         requestAnimationFrame(setTheme);
                     }
+                });
+
+                // Preload content for visible sections
+                document.addEventListener('astro:page-load', () => {
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                entry.target.style.contentVisibility = 'visible';
+                                observer.unobserve(entry.target);
+                            }
+                        });
+                    }, { rootMargin: '50px' });
+
+                    document.querySelectorAll('[style*="content-visibility"]').forEach(el => {
+                        observer.observe(el);
+                    });
                 });
             </script>
         </SafeResource>

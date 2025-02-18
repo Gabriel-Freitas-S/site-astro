@@ -21,10 +21,9 @@ interface Props {
 const { certification } = Astro.props;
 export const prerender = true;
 ---
-<BaseCard className="certification-card" transition:persist>
+<BaseCard className="certification-card">
     <div
         class="card-content lazy-load"
-        transition:animate={fade({ duration: '0.2s' })}
         data-astro-transition-scope
     >
         <div class="card-header" transition:name={`cert-header-${certification.title}`}>
@@ -87,6 +86,13 @@ export const prerender = true;
     gap: 1.5rem;
     opacity: 0;
     transform: translateY(10px);
+    border-radius: inherit;
+    overflow: hidden;
+}
+
+/* Garantir que elementos internos mantenham o border-radius */
+.card-content > * {
+    border-radius: inherit;
 }
 
 /* Header */
@@ -184,8 +190,9 @@ ul {
 
     li {
         padding: 0.5rem;
-        border-radius: 8px;
+        border-radius: var(--border-radius);
         background: rgba(var(--text-color-rgb), 0.05);
+        overflow: hidden;
     }
 }
 
@@ -228,25 +235,56 @@ const loadCards = () => {
     const cards = document.querySelectorAll('.lazy-load');
     if (!cards.length) return;
 
+    // Carregar cards imediatamente visíveis
+    const loadCard = (element: Element) => {
+        if (element instanceof HTMLElement && !element.classList.contains('visible')) {
+            requestAnimationFrame(() => {
+                element.classList.add('visible');
+            });
+        }
+    };
+
+    // Verificar cards inicialmente visíveis
+    cards.forEach(element => {
+        if (element instanceof HTMLElement) {
+            const rect = element.getBoundingClientRect();
+            if (rect.top < window.innerHeight) {
+                loadCard(element);
+            }
+        }
+    });
+
+    // Configurar observer para os demais cards
     const observer = new IntersectionObserver(
         (entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    requestAnimationFrame(() => {
-                        entry.target.classList.add('visible');
-                    });
+                    loadCard(entry.target);
                     observer.unobserve(entry.target);
                 }
             });
         },
         {
-            threshold: 0.1,
+            threshold: 0,
             rootMargin: '50px'
         }
     );
 
-    cards.forEach(card => observer.observe(card));
+    cards.forEach(element => {
+        if (element instanceof HTMLElement && !element.classList.contains('visible')) {
+            observer.observe(element);
+        }
+    });
 };
 
+// Carregar cards em diferentes eventos
 document.addEventListener('astro:page-load', loadCards, { passive: true });
+document.addEventListener('astro:after-swap', loadCards, { passive: true });
+
+// Cleanup para o observer quando a página for descarregada
+document.addEventListener('astro:before-swap', () => {
+    document.querySelectorAll('.lazy-load').forEach(card => {
+        card.classList.remove('visible');
+    });
+});
 </script>

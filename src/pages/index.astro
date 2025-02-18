@@ -174,16 +174,21 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
 
 .skill-category {
     background: var(--secondary-color);
-    border-radius: 12px;
+    border-radius: var(--border-radius);
     border: 1px solid var(--accent-tertiary);
     opacity: 0;
     transform: translateY(20px);
+    overflow: hidden;
+    position: relative;
 }
 
 .category-header {
     background: var(--accent-tertiary);
     padding: clamp(0.75rem, 3vw, 1.25rem);
     border-bottom: 1px solid var(--accent-tertiary);
+    border-radius: inherit;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .skill-category h3 {
@@ -209,13 +214,16 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
     font-weight: 500;
     font-size: clamp(0.875rem, 2.5vw, 1rem);
     padding: clamp(0.6rem, 2vw, 0.8rem) clamp(0.8rem, 2vw, 1.2rem);
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
     min-height: 44px;
     touch-action: manipulation;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .skill-content {
@@ -246,10 +254,18 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
     color: white;
     font-weight: 600;
     padding: clamp(0.15rem, 1vw, 0.2rem) clamp(0.4rem, 2vw, 0.6rem);
-    border-radius: 12px;
+    border-radius: var(--border-radius);
     font-size: clamp(0.75rem, 2vw, 0.8rem);
     min-width: 1.2rem;
     text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* Garantir que não há elementos com bordas quadradas */
+.skill-category *,
+.skill-button * {
+    border-radius: inherit;
 }
 
 @media (hover: hover) {
