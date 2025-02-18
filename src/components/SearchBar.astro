@@ -8,7 +8,7 @@ const { className = '', initialSearchTerm = null } = Astro.props;
 ---
 
 <div class:list={["search-container", className]}>
-    <form id="search-form" class="search-wrapper">
+    <div class="search-wrapper">
         <span class="search-icon">
             <span class="sr-only">Ícone de pesquisa</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
@@ -24,13 +24,7 @@ const { className = '', initialSearchTerm = null } = Astro.props;
             aria-label="Pesquisar certificações"
             value={initialSearchTerm || ''}
         />
-        <button type="submit" class="search-submit">
-            <span class="sr-only">Pesquisar</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5S14 7.01 14 9.5S11.99 14 9.5 14zm6 0h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-4.77-5.59-4.77A6.505 6.505 0 0 0 3 9.5C3 11.11 3.63 12.59 4.71 13.67C5.79 14.75 7.27 15.38 8.88 15.38c1.31 0 2.53-.36 3.57-.97l.27.28v.79l5 4.99L19.49 19l-4.99-5z"/>
-            </svg>
-        </button>
-    </form>
+    </div>
 </div>
 
 <style>
@@ -75,6 +69,7 @@ const { className = '', initialSearchTerm = null } = Astro.props;
     background: transparent;
     color: var(--text-color);
     font-size: 1rem;
+    width: 100%;
 }
 
 .search-input::placeholder {
@@ -84,23 +79,6 @@ const { className = '', initialSearchTerm = null } = Astro.props;
 
 .search-input:focus {
     outline: none;
-}
-
-.search-submit {
-    padding: 0.5rem 1rem;
-    background: var(--accent-primary);
-    border: none;
-    border-radius: 0 var(--border-radius) var(--border-radius) 0;
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s ease;
-}
-
-.search-submit:hover {
-    background: color-mix(in srgb, var(--accent-primary) 85%, black);
 }
 
 @media (max-width: 640px) {
@@ -134,10 +112,9 @@ const { className = '', initialSearchTerm = null } = Astro.props;
 
 <script>
 function initializeSearch() {
-    const searchForm = document.getElementById('search-form') as HTMLFormElement;
     const searchInput = document.getElementById('certification-search') as HTMLInputElement;
 
-    if (!searchForm || !searchInput) return;
+    if (!searchInput) return;
 
     function performSearch(searchTerm: string) {
         console.log('Iniciando busca com termo:', searchTerm); // Debug
@@ -158,17 +135,13 @@ function initializeSearch() {
         searchTimeout = setTimeout(() => performSearch(searchTerm), 300);
     }
 
-    // Event listeners
-    searchForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        performSearch(searchInput.value.trim());
-    });
-
+    // Event listener para input
     searchInput.addEventListener('input', () => {
-        debouncedSearch(searchInput.value.trim());
+        const searchTerm = searchInput.value.trim();
+        debouncedSearch(searchTerm);
     });
 
-    // Se houver um valor inicial, realizar a busca
+    // Aplicar filtro inicial
     const initialValue = searchInput.value.trim();
     if (initialValue) {
         console.log('SearchBar - Valor inicial:', initialValue); // Debug
