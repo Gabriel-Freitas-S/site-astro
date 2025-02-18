@@ -16,10 +16,9 @@ const { experience } = Astro.props;
 export const prerender = true;
 ---
 
-<BaseCard transition:persist>
+<BaseCard>
     <article
-        class="experience-card"
-        transition:animate={fade({ duration: '0.3s' })}
+        class="experience-card lazy-load"
         data-astro-transition-scope
     >
         <header class="card-header" transition:name={`exp-header-${experience.company}`}>
@@ -62,13 +61,52 @@ export const prerender = true;
     min-height: 150px;
     opacity: 0;
     transform: translateY(10px);
-    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
     will-change: transform, opacity;
 }
 
 .experience-card.visible {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Garantir que o conteúdo interno tenha uma transição mais suave */
+.card-header,
+.description,
+.achievements {
+    opacity: 0;
+    transform: translateY(5px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    will-change: opacity, transform;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+.experience-card.visible .card-header {
+    opacity: 1;
+    transform: translateY(0) translateZ(0);
+    transition-delay: 0.1s;
+}
+
+.experience-card.visible .description {
+    opacity: 1;
+    transform: translateY(0) translateZ(0);
+    transition-delay: 0.2s;
+}
+
+.experience-card.visible .achievements {
+    opacity: 1;
+    transform: translateY(0) translateZ(0);
+    transition-delay: 0.3s;
+}
+
+/* Garantir que os elementos mantenham sua visibilidade */
+.experience-card.visible .card-header,
+.experience-card.visible .description,
+.experience-card.visible .achievements {
+    visibility: visible;
+    pointer-events: auto;
 }
 
 .card-header {
@@ -246,41 +284,81 @@ li::before {
 
 @media (prefers-reduced-motion: reduce) {
     .experience-card,
+    .card-header,
+    .description,
     .achievements {
         transition: none !important;
         animation: none !important;
-        opacity: 1;
-        transform: none;
+        opacity: 1 !important;
+        transform: none !important;
+        visibility: visible !important;
     }
+}
+
+/* Garantir visibilidade após o carregamento */
+.experience-card.lazy-load.visible,
+.experience-card.lazy-load.visible .card-header,
+.experience-card.lazy-load.visible .description,
+.experience-card.lazy-load.visible .achievements {
+    visibility: visible;
+    pointer-events: auto;
 }
 </style>
 
 <script>
-const loadExperienceCards = () => {
+const initializeExperienceCards = () => {
     const cards = document.querySelectorAll<HTMLElement>('.experience-card.lazy-load');
     if (!cards.length) return;
 
-    // Carregar cards imediatamente visíveis
+    let observer: IntersectionObserver;
+
     const loadCard = (element: Element) => {
         if (element instanceof HTMLElement && !element.classList.contains('visible')) {
-            requestAnimationFrame(() => {
-                element.classList.add('visible');
+            // Primeiro, remove qualquer estado anterior
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(10px)';
+            
+            // Força um reflow
+            void element.offsetHeight;
+            
+            // Aplica as classes e estilos necessários
+            element.classList.add('visible');
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+            
+            // Ativa os elementos internos com delay
+            const internals = element.querySelectorAll('.card-header, .description, .achievements');
+            internals.forEach((internal: Element, index) => {
+                if (internal instanceof HTMLElement) {
+                    setTimeout(() => {
+                        internal.style.opacity = '1';
+                        internal.style.transform = 'translateY(0) translateZ(0)';
+                        internal.style.visibility = 'visible';
+                    }, index * 100);
+                }
             });
         }
     };
 
-    // Verificar cards inicialmente visíveis
-    cards.forEach(element => {
-        if (element instanceof HTMLElement) {
-            const rect = element.getBoundingClientRect();
-            if (rect.top < window.innerHeight) {
-                loadCard(element);
-            }
+    const cleanup = () => {
+        if (observer) {
+            observer.disconnect();
         }
-    });
+        cards.forEach(card => {
+            if (card instanceof HTMLElement) {
+                card.classList.remove('visible');
+                const internals = card.querySelectorAll('.card-header, .description, .achievements');
+                internals.forEach((internal: Element) => {
+                    if (internal instanceof HTMLElement) {
+                        internal.style.opacity = '0';
+                        internal.style.transform = 'translateY(5px)';
+                    }
+                });
+            }
+        });
+    };
 
-    // Configurar observer para os demais cards
-    const observer = new IntersectionObserver(
+    observer = new IntersectionObserver(
         (entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -290,27 +368,39 @@ const loadExperienceCards = () => {
             });
         },
         {
-            threshold: 0,
+            threshold: 0.1,
             rootMargin: '50px'
         }
     );
 
-    cards.forEach(element => {
-        if (element instanceof HTMLElement && !element.classList.contains('visible')) {
-            observer.observe(element);
-        }
+    // Limpa estados anteriores
+    cleanup();
+
+    // Inicia observação dos cards
+    requestAnimationFrame(() => {
+        cards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            if (rect.top < window.innerHeight) {
+                loadCard(card);
+            } else {
+                observer.observe(card);
+            }
+        });
     });
 };
 
-// Carregar cards em diferentes eventos
-document.addEventListener('astro:page-load', loadExperienceCards, { passive: true });
-document.addEventListener('astro:after-swap', loadExperienceCards, { passive: true });
+// Inicializa os cards em diferentes eventos
+document.addEventListener('astro:page-load', initializeExperienceCards, { passive: true });
+document.addEventListener('astro:after-swap', initializeExperienceCards, { passive: true });
 
-// Cleanup para o observer quando a página for descarregada
+// Cleanup antes de trocar de página
 document.addEventListener('astro:before-swap', () => {
-    document.querySelectorAll('.experience-card.lazy-load').forEach(card => {
+    const cards = document.querySelectorAll('.experience-card.lazy-load');
+    cards.forEach(card => {
         if (card instanceof HTMLElement) {
             card.classList.remove('visible');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(10px)';
         }
     });
 });
