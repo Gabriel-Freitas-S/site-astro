@@ -1,6 +1,42 @@
 {
   "title": "Engenharia de software",
   "duration": "85h",
+  "skills": [
+    {
+      "title": "Ferramentas",
+      "technologies": [
+        {
+          "name": "Git",
+          "icon": "logos:git"
+        },
+        {
+          "name": "Docker",
+          "icon": "logos:docker-icon"
+        },
+        {
+          "name": "Jenkins",
+          "icon": "vscode-icons:file-type-jenkins"
+        }
+      ]
+    },
+    {
+      "title": "Práticas",
+      "technologies": [
+        {
+          "name": "DevOps",
+          "icon": "mdi:microsoft-azure-devops"
+        },
+        {
+          "name": "Scrum",
+          "icon": "simple-icons:scrumalliance"
+        },
+        {
+          "name": "TDD",
+          "icon": "simple-icons:testinglibrary"
+        }
+      ]
+    }
+  ],
   "courses": [
     {
       "name": "Quality Assurance: plano de testes e gestão de bugs",

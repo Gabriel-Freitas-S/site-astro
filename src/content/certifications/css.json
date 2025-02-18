@@ -1,6 +1,25 @@
 {
   "title": "CSS: aprofunde em estilos",
   "duration": "36h",
+  "skills": [
+    {
+      "title": "Frontend",
+      "technologies": [
+        {
+          "name": "CSS",
+          "icon": "logos:css-3"
+        },
+        {
+          "name": "Tailwind",
+          "icon": "logos:tailwindcss-icon"
+        },
+        {
+          "name": "SASS",
+          "icon": "logos:sass"
+        }
+      ]
+    }
+  ],
   "courses": [
     {
       "name": "CSS: Flexbox e layouts responsivos",

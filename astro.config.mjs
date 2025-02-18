@@ -74,11 +74,31 @@ export default defineConfig({
           'rust',
           'astro',
           'visualstudiocode',
-          'expo'
+          'expo',
+          'devops',
+          'scrumalliance',
+          'testinglibrary'
         ],
         mdi: [
           'code-tags',
-          'code-braces'
+          'code-braces',
+          'open-in-new',
+          'microsoft-azure-devops'
+        ],
+        logos: [
+          'typescript-icon',
+          'javascript',
+          'css-3',
+          'tailwindcss-icon',
+          'sass',
+          'dart',
+          'flutter',
+          'nodejs-icon',
+          'git',
+          'docker-icon'
+        ],
+        'vscode-icons': [
+          'file-type-jenkins'
         ]
       },
       svgoOptions: {
@@ -112,9 +132,7 @@ export default defineConfig({
       }
     },
     domains: [],
-    remotePatterns: [],
-    format: 'avif',
-    fallbackFormat: 'webp'
+    remotePatterns: []
   },
   build: {
     inlineStylesheets: 'auto',
@@ -156,7 +174,7 @@ export default defineConfig({
         output: {
           manualChunks: {
             'vendor': ['astro-icon'],
-            'icons': ['simple-icons/*', 'mdi/*'],
+            'icons': ['simple-icons/*', 'mdi/*', 'logos/*', 'vscode-icons/*'],
             'transitions': ['astro:transitions']
           },
           chunkFileNames: 'assets/js/[hash].js',

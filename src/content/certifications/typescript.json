@@ -1,6 +1,30 @@
 {
   "title": "Melhore sua experiência de desenvolvimento com TypeScript",
   "duration": "32h",
+  "skills": [
+    {
+      "title": "Linguagens",
+      "technologies": [
+        {
+          "name": "TypeScript",
+          "icon": "logos:typescript-icon"
+        },
+        {
+          "name": "JavaScript",
+          "icon": "logos:javascript"
+        }
+      ]
+    },
+    {
+      "title": "Frameworks",
+      "technologies": [
+        {
+          "name": "Node.js",
+          "icon": "logos:nodejs-icon"
+        }
+      ]
+    }
+  ],
   "courses": [
     {
       "name": "TypeScript Part 1: Evolving Your JavaScript",

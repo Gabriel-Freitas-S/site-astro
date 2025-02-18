@@ -1,0 +1,111 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Technology {
+    name: string;
+    icon: string;
+}
+
+interface Props {
+    title: string;
+    technologies: Technology[];
+}
+
+const { title, technologies } = Astro.props;
+---
+
+<div class="skill-section">
+    <h3>{title}</h3>
+    <div class="technologies-list">
+        {technologies.map((tech) => (
+            <a
+                href={`/certificacoes?skill=${encodeURIComponent(tech.name)}`}
+                class="tech-item"
+                data-astro-prefetch
+                aria-label={`Filtrar certificações por ${tech.name}`}
+            >
+                <span class="tech-name">{tech.name}</span>
+                <Icon name="mdi:open-in-new" class="filter-icon" />
+            </a>
+        ))}
+    </div>
+</div>
+
+<style>
+.skill-section {
+    padding: 1.5rem;
+    background: var(--secondary-color);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--accent-tertiary);
+}
+
+.skill-section h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.technologies-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.tech-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--accent-quaternary);
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    color: var(--text-color);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.tech-item:hover {
+    transform: translateX(4px);
+    background: color-mix(in srgb, var(--accent-quaternary) 95%, var(--accent-primary));
+}
+
+.tech-name {
+    position: relative;
+}
+
+.filter-icon {
+    width: 1rem;
+    height: 1rem;
+    opacity: 0.7;
+}
+
+@media (max-width: 640px) {
+    .skill-section {
+        padding: 1rem;
+    }
+
+    .technologies-list {
+        gap: 0.5rem;
+    }
+
+    .tech-item {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .filter-icon {
+        width: 0.875rem;
+        height: 0.875rem;
+    }
+}
+
+/* Theme Adjustments */
+:global(.light-theme) .tech-item {
+    background: var(--accent-quaternary);
+}
+</style>

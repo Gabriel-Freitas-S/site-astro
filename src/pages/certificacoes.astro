@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 import CertificationCard from '../components/CertificationCard.astro';
+import SearchBar from '../components/SearchBar.astro';
 import { getCollection } from 'astro:content';
 
 const certifications = await getCollection('certifications');
@@ -19,6 +20,10 @@ const totalHours = sortedCertifications.reduce((acc, cert) => {
 
 const description = `Certificações e cursos em desenvolvimento de software, totalizando ${totalHours} horas de estudo em diversas tecnologias e frameworks.`;
 
+// Recuperar o filtro da URL se existir
+const url = new URL(Astro.request.url);
+const skillFilter = url.searchParams.get('skill');
+
 export const prerender = true;
 ---
 
@@ -29,39 +34,30 @@ export const prerender = true;
     <Navigation />
     
     <main id="main-content">
-        <div
-            class="page-header"
-            transition:animate={{
-                forwards: {
-                    old: { name: 'fadeOut', duration: '0.2s', easing: 'ease-out' },
-                    new: { name: 'fadeIn', duration: '0.2s', easing: 'ease-out' }
-                },
-                backwards: {
-                    old: { name: 'fadeOut', duration: '0.2s', easing: 'ease-out' },
-                    new: { name: 'fadeIn', duration: '0.2s', easing: 'ease-out' }
-                }
-            }}
-        >
+        <div class="page-header">
             <h1 transition:name="page-title">Certificações</h1>
             <p class="header-description" transition:name="page-description">
                 Total de {totalHours} horas de estudo e aperfeiçoamento profissional
             </p>
         </div>
 
+        <SearchBar initialSearchTerm={skillFilter} />
+
         <section
             class="certifications-grid"
             aria-label="Lista de certificações"
-            style="contain: content;"
+            data-initial-filter={skillFilter}
         >
             {sortedCertifications.map((certification, index) => (
                 <div
-                    class="card-wrapper lazy-load"
-                    style={`view-transition-name: cert-${index}; contain: layout;`}
+                    class="card-wrapper"
                     data-index={index}
+                    style={`--delay: ${index * 100}ms`}
                 >
                     <CertificationCard certification={certification.data} />
                 </div>
             ))}
+            <p class="no-results hidden">Nenhuma certificação encontrada.</p>
         </section>
     </main>
 </Layout>
@@ -104,19 +100,14 @@ export const prerender = true;
 .card-wrapper {
     container-type: inline-size;
     container-name: card;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease-out var(--delay), transform 0.4s ease-out var(--delay);
 }
 
 @container certifications-grid (min-width: 768px) {
     .certifications-grid {
         grid-template-columns: repeat(auto-fill, minmax(min(100%, 500px), 1fr));
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .page-header,
-    .certifications-grid {
-        animation: none !important;
-        transition: none !important;
     }
 }
 
@@ -127,49 +118,141 @@ export const prerender = true;
 }
 
 /* Estilos de carregamento progressivo */
-.card-wrapper {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-}
-
 .card-wrapper.visible {
     opacity: 1;
     transform: translateY(0);
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .card-wrapper {
-        transition: none;
-        opacity: 1;
-        transform: none;
-    }
+.no-results {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-color);
+    opacity: 0.8;
+    font-size: 1.1rem;
+    grid-column: 1 / -1;
+}
+
+.hidden {
+    display: none !important;
 }
 </style>
 
 <script>
-function observeCertifications() {
-    const cards = document.querySelectorAll('.card-wrapper.lazy-load');
-    if (!cards.length) return;
+interface Certification {
+    title: string;
+    skills: {
+        title: string;
+        technologies: {
+            name: string;
+            icon: string;
+        }[];
+    }[];
+    courses: {
+        name: string;
+        period?: string;
+        duration: string;
+    }[];
+    complementaryContent?: {
+        name: string;
+        duration: string;
+    }[];
+}
 
+function shouldShowCard(searchTerm: string, certification: Certification): boolean {
+    if (!searchTerm) return true;
+
+    const searchTermLower = searchTerm.toLowerCase();
+
+    // Verificar título
+    if (certification.title.toLowerCase().includes(searchTermLower)) return true;
+
+    // Verificar skills
+    const hasSkillMatch = certification.skills.some(skill =>
+        skill.technologies.some(tech => tech.name.toLowerCase().includes(searchTermLower))
+    );
+    if (hasSkillMatch) return true;
+
+    // Verificar cursos
+    const hasCourseMatch = certification.courses.some(course =>
+        course.name.toLowerCase().includes(searchTermLower)
+    );
+    if (hasCourseMatch) return true;
+
+    // Verificar conteúdo complementar
+    if (certification.complementaryContent?.some(content =>
+        content.name.toLowerCase().includes(searchTermLower)
+    )) return true;
+
+    return false;
+}
+
+function filterCertifications(searchTerm: string) {
+    console.log('Filtrando certificações com termo:', searchTerm); // Debug
+
+    // Se não houver termo de busca, mostrar todos os cards
+    if (!searchTerm) {
+        document.querySelectorAll('.card-wrapper').forEach(wrapper => {
+            wrapper.classList.remove('hidden');
+        });
+        document.querySelector('.no-results')?.classList.add('hidden');
+
+        // Limpar destaques
+        const event = new CustomEvent('globalSearch', {
+            bubbles: true,
+            detail: { searchTerm: '' }
+        });
+        document.dispatchEvent(event);
+        return;
+    }
+
+    // Filtrar cards
+    const grid = document.querySelector('.certifications-grid');
+    const cards = document.querySelectorAll<HTMLElement>('.certification-card');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+        if (!card.dataset.certification) return;
+
+        try {
+            const certification: Certification = JSON.parse(card.dataset.certification);
+            const shouldShow = shouldShowCard(searchTerm, certification);
+            const wrapper = card.closest('.card-wrapper');
+            if (wrapper) {
+                wrapper.classList.toggle('hidden', !shouldShow);
+                if (shouldShow) visibleCount++;
+            }
+        } catch (error) {
+            console.error('Erro ao processar certificação:', error);
+        }
+    });
+
+    // Atualizar mensagem de resultados
+    const noResults = grid?.querySelector('.no-results');
+    if (noResults) {
+        noResults.classList.toggle('hidden', visibleCount > 0);
+    }
+
+    // Disparar evento de busca para destacar conteúdo
+    requestAnimationFrame(() => {
+        const event = new CustomEvent('globalSearch', {
+            bubbles: true,
+            detail: { searchTerm: searchTerm.toLowerCase() }
+        });
+        document.dispatchEvent(event);
+    });
+}
+
+function initializeCertificationsPage() {
+    // Lazy loading dos cards
     const observer = new IntersectionObserver(
         (entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                    const element = entry.target as HTMLElement;
-                    const index = element.dataset.index ? parseInt(element.dataset.index) : 0;
-                    
+                    const target = entry.target as HTMLElement;
                     requestAnimationFrame(() => {
-                        element.style.transitionDelay = `${index * 100}ms`;
-                        element.classList.add('visible');
+                        target.classList.add('visible');
                     });
-                    
-                    observer.unobserve(entry.target);
-                    
-                    // Limpar o delay após a animação
-                    element.addEventListener('transitionend', () => {
-                        element.style.transitionDelay = '';
-                    }, { once: true });
+                    observer.unobserve(target);
                 }
             });
         },
@@ -179,19 +262,46 @@ function observeCertifications() {
         }
     );
 
-    cards.forEach(card => observer.observe(card));
-}
+    // Observar cards para lazy loading
+    document.querySelectorAll('.card-wrapper').forEach(card => {
+        observer.observe(card);
+    });
 
-// Inicializar observação em diferentes eventos
-document.addEventListener('astro:page-load', observeCertifications, { passive: true });
-document.addEventListener('astro:after-swap', observeCertifications, { passive: true });
+    // Se houver um filtro inicial, aplicá-lo após carregar a página
+    const grid = document.querySelector<HTMLElement>('.certifications-grid');
+    const initialFilter = grid?.dataset.initialFilter;
 
-// Limpar estados quando a página for descarregada
-document.addEventListener('astro:before-swap', () => {
-    document.querySelectorAll('.card-wrapper.lazy-load').forEach(card => {
-        if (card instanceof HTMLElement) {
-            card.classList.remove('visible');
+    // Aguardar um pouco para garantir que a página foi carregada
+    if (initialFilter) {
+        setTimeout(() => {
+            console.log('Aplicando filtro inicial:', initialFilter); // Debug
+            filterCertifications(initialFilter);
+            
+            // Atualizar input de busca
+            const searchInput = document.querySelector<HTMLInputElement>('#certification-search');
+            if (searchInput) searchInput.value = initialFilter;
+        }, 100);
+    }
+
+    // Ouvir mudanças de navegação
+    document.addEventListener('astro:after-navigation', () => {
+        const params = new URLSearchParams(window.location.search);
+        const skillFilter = params.get('skill');
+        if (skillFilter) {
+            console.log('Navegação detectada, aplicando filtro:', skillFilter); // Debug
+            filterCertifications(skillFilter);
         }
     });
+}
+
+// Inicializar em diferentes eventos do Astro
+document.addEventListener('astro:page-load', () => {
+    console.log('Inicializando página...'); // Debug
+    initializeCertificationsPage();
+});
+
+document.addEventListener('astro:after-swap', () => {
+    console.log('Reinicializando após navegação...'); // Debug
+    initializeCertificationsPage();
 });
 </script>
