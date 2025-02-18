@@ -19,9 +19,11 @@ const { title, technologies } = Astro.props;
     <div class="technologies-list">
         {technologies.map((tech) => (
             <button
+                type="button"
                 class="tech-item"
                 data-skill={tech.name}
-                aria-label={`Filtrar por ${tech.name}`}
+                data-href={`/certificacoes?skill=${encodeURIComponent(tech.name)}`}
+                aria-label={`Filtrar certificações por ${tech.name}`}
             >
                 <span class="tech-name">{tech.name}</span>
                 <Icon name="mdi:open-in-new" class="filter-icon" />
@@ -65,6 +67,7 @@ const { title, technologies } = Astro.props;
     font-size: 0.9rem;
     font-weight: 500;
     line-height: 1;
+    text-decoration: none;
 }
 
 .tech-item:hover {
@@ -109,28 +112,39 @@ const { title, technologies } = Astro.props;
 </style>
 
 <script>
+function handleButtonClick(e: Event) {
+    const button = e.currentTarget as HTMLButtonElement;
+    const href = button.dataset.href;
+    
+    if (!href) return;
+    
+    // Forçar redirecionamento direto
+    window.location.replace(href);
+}
+
 function initializeSkillCards() {
     document.querySelectorAll('.tech-item').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const skill = (e.currentTarget as HTMLElement).dataset.skill;
-            if (skill) {
-                // Criar e disparar um evento customizado
-                const searchEvent = new CustomEvent('searchUpdate', {
-                    detail: { searchTerm: skill.toLowerCase() },
-                    bubbles: true
-                });
-
-                // Disparar o evento no documento
-                document.dispatchEvent(searchEvent);
-
-                // Redirecionar para a página de certificações com o filtro
-                window.location.href = `/certificacoes?skill=${encodeURIComponent(skill)}`;
-            }
-        });
+        button.addEventListener('click', handleButtonClick);
     });
 }
 
-// Inicializar em diferentes eventos do Astro
-document.addEventListener('astro:page-load', initializeSkillCards);
-document.addEventListener('astro:after-swap', initializeSkillCards);
+// Limpar event listeners antes de reinicializar
+function cleanupSkillCards() {
+    document.querySelectorAll('.tech-item').forEach(button => {
+        button.removeEventListener('click', handleButtonClick);
+    });
+}
+
+// Inicializar quando o DOM estiver pronto
+document.addEventListener('astro:page-load', () => {
+    console.log('Inicializando SkillCards...'); // Debug
+    cleanupSkillCards();
+    initializeSkillCards();
+});
+
+document.addEventListener('astro:after-swap', () => {
+    console.log('Reinicializando SkillCards após navegação...'); // Debug
+    cleanupSkillCards();
+    initializeSkillCards();
+});
 </script>

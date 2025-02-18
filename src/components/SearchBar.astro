@@ -1,9 +1,10 @@
 ---
 interface Props {
     className?: string;
+    initialSearchTerm?: string | null;
 }
 
-const { className = '' } = Astro.props;
+const { className = '', initialSearchTerm = null } = Astro.props;
 ---
 
 <div class:list={["search-container", className]}>
@@ -21,6 +22,7 @@ const { className = '' } = Astro.props;
             placeholder="Pesquisar por título ou tecnologia..."
             class="search-input"
             aria-label="Pesquisar certificações"
+            value={initialSearchTerm || ''}
         />
         <button type="submit" class="search-submit">
             <span class="sr-only">Pesquisar</span>
@@ -29,7 +31,6 @@ const { className = '' } = Astro.props;
             </svg>
         </button>
     </form>
-    <div class="filter-tags" id="active-filters"></div>
 </div>
 
 <style>
@@ -102,36 +103,6 @@ const { className = '' } = Astro.props;
     background: color-mix(in srgb, var(--accent-primary) 85%, black);
 }
 
-.filter-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
-
-.filter-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: var(--accent-primary);
-    color: white;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.filter-tag:hover {
-    background: color-mix(in srgb, var(--accent-primary) 85%, black);
-}
-
-.filter-tag .remove-icon {
-    display: flex;
-    align-items: center;
-}
-
 @media (max-width: 640px) {
     .search-container {
         padding-inline: 0.5rem;
@@ -162,123 +133,59 @@ const { className = '' } = Astro.props;
 </style>
 
 <script>
-interface Technology {
-    name: string;
-    icon: string;
-}
-
-interface Skill {
-    title: string;
-    technologies: Technology[];
-}
-
-interface Certification {
-    title: string;
-    skills: Skill[];
-}
-
 function initializeSearch() {
     const searchForm = document.getElementById('search-form') as HTMLFormElement;
     const searchInput = document.getElementById('certification-search') as HTMLInputElement;
-    const activeFilters = document.getElementById('active-filters');
-    const cards = document.querySelectorAll('.certification-card');
-    const appliedFilters = new Set<string>();
 
-    if (!searchInput || !activeFilters || !searchForm) return;
+    if (!searchForm || !searchInput) return;
 
-    function broadcastSearchUpdate(searchTerm: string) {
-        requestAnimationFrame(() => {
-            const event = new CustomEvent('globalSearch', {
-                bubbles: true,
-                detail: { searchTerm: searchTerm.toLowerCase() }
-            });
-            document.dispatchEvent(event);
-        });
-    }
+    function performSearch(searchTerm: string) {
+        console.log('Iniciando busca com termo:', searchTerm); // Debug
 
-    function triggerSearch(searchTerm: string, skillFilter: string = '') {
-        let visibleCount = 0;
-
-        cards.forEach(card => {
-            const certificationData = (card as HTMLElement).dataset.certification;
-            if (!certificationData) return;
-            
-            try {
-                const certification = JSON.parse(certificationData) as Certification;
-                const title = certification.title.toLowerCase();
-                const skills = certification.skills.flatMap(skill => 
-                    skill.technologies.map(tech => tech.name.toLowerCase())
-                );
-                
-                const matchesSearch = searchTerm === '' || 
-                    title.includes(searchTerm.toLowerCase()) || 
-                    skills.some(skill => skill.includes(searchTerm.toLowerCase()));
-                
-                const matchesFilter = skillFilter === '' || 
-                    skills.includes(skillFilter.toLowerCase());
-
-                const shouldShow = matchesSearch && (skillFilter === '' || matchesFilter);
-                
-                card.classList.toggle('hidden', !shouldShow);
-                if (shouldShow) visibleCount++;
-            } catch (error) {
-                console.error('Erro ao processar certificação:', error);
-            }
+        // Disparar evento de busca
+        const event = new CustomEvent('globalSearch', {
+            bubbles: true,
+            detail: { searchTerm: searchTerm.toLowerCase() }
         });
 
-        // Propagar a busca para o conteúdo interno
-        broadcastSearchUpdate(searchTerm);
-
-        // Atualizar mensagem de resultados
-        let noResults = document.querySelector('.no-results');
-        if (visibleCount === 0) {
-            if (!noResults) {
-                noResults = document.createElement('div');
-                noResults.className = 'no-results';
-                noResults.textContent = 'Nenhuma certificação encontrada.';
-                document.querySelector('.certifications-grid')?.appendChild(noResults);
-            }
-        } else if (noResults) {
-            noResults.remove();
-        }
+        document.dispatchEvent(event);
     }
 
-    function clearFilters() {
-        appliedFilters.clear();
-        if (activeFilters) {
-            activeFilters.innerHTML = '';
-        }
-
-        // Limpar parâmetro da URL
-        const url = new URL(window.location.href);
-        url.searchParams.delete('skill');
-        window.history.replaceState({}, '', url);
-
-        // Propagar a limpeza dos filtros
-        broadcastSearchUpdate('');
+    // Debounce para busca em tempo real
+    let searchTimeout: NodeJS.Timeout;
+    function debouncedSearch(searchTerm: string) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => performSearch(searchTerm), 300);
     }
 
+    // Event listeners
     searchForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        clearFilters();
-        triggerSearch(searchInput.value);
+        performSearch(searchInput.value.trim());
     });
 
     searchInput.addEventListener('input', () => {
-        clearFilters();
-        triggerSearch(searchInput.value);
+        debouncedSearch(searchInput.value.trim());
     });
 
-    // Lidar com filtro inicial da URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const skillFilter = urlParams.get('skill');
-    if (skillFilter) {
-        appliedFilters.add(skillFilter);
-        triggerSearch('', skillFilter);
+    // Se houver um valor inicial, realizar a busca
+    const initialValue = searchInput.value.trim();
+    if (initialValue) {
+        console.log('SearchBar - Valor inicial:', initialValue); // Debug
+        requestAnimationFrame(() => {
+            performSearch(initialValue);
+        });
     }
 }
 
 // Inicializar em diferentes eventos do Astro
-document.addEventListener('astro:page-load', initializeSearch);
-document.addEventListener('astro:after-swap', initializeSearch);
+document.addEventListener('astro:page-load', () => {
+    console.log('Inicializando SearchBar...'); // Debug
+    initializeSearch();
+});
+
+document.addEventListener('astro:after-swap', () => {
+    console.log('Reinicializando SearchBar após navegação...'); // Debug
+    initializeSearch();
+});
 </script>
