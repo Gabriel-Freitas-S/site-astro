@@ -261,45 +261,56 @@ const description = latestExperience
 <script>
 function observeTimelineItems() {
     const items = document.querySelectorAll('.timeline-item');
-    
-    // Define os estados iniciais
-    items.forEach(item => {
+    if (!items.length) return;
+
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    const element = entry.target as HTMLElement;
+                    requestAnimationFrame(() => {
+                        element.style.transitionDelay = `${index * 100}ms`;
+                        element.style.opacity = '1';
+                        element.style.transform = 'translateY(0)';
+                    });
+                    observer.unobserve(entry.target);
+                }
+            });
+        },
+        {
+            threshold: 0.1,
+            rootMargin: '50px'
+        }
+    );
+
+    // Configurar estados iniciais
+    items.forEach((item) => {
         const element = item as HTMLElement;
         element.style.opacity = '0';
         element.style.transform = 'translateY(20px)';
+        element.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
+        observer.observe(element);
     });
 
-    // Anima os elementos após um pequeno delay
-    setTimeout(() => {
-        requestAnimationFrame(() => {
-            items.forEach((item, index) => {
-                const element = item as HTMLElement;
-                // Aplica a animação com delay progressivo
-                setTimeout(() => {
-                    element.style.opacity = '1';
-                    element.style.transform = 'translateY(0)';
-                }, index * 100);
-            });
-        });
-    }, 100);
+    // Limpar transitionDelay após a animação
+    items.forEach((item) => {
+        item.addEventListener('transitionend', () => {
+            (item as HTMLElement).style.transitionDelay = '';
+        }, { once: true });
+    });
 }
 
-document.addEventListener('astro:page-load', observeTimelineItems);
+// Carregar items em diferentes eventos
+document.addEventListener('astro:page-load', observeTimelineItems, { passive: true });
+document.addEventListener('astro:after-swap', observeTimelineItems, { passive: true });
+
+// Limpar estados quando a página for descarregada
+document.addEventListener('astro:before-swap', () => {
+    document.querySelectorAll('.timeline-item').forEach(item => {
+        if (item instanceof HTMLElement) {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+        }
+    });
+});
 </script>
-
-<style>
-.timeline-item {
-    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-    opacity: 0;
-    transform: translateY(20px);
-    will-change: transform, opacity;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .timeline-item {
-        transition: none;
-        opacity: 1;
-        transform: none;
-    }
-}
-</style>

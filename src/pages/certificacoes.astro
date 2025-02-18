@@ -51,12 +51,13 @@ export const prerender = true;
         <section
             class="certifications-grid"
             aria-label="Lista de certificações"
-            style="contain: content; content-visibility: auto;"
+            style="contain: content;"
         >
             {sortedCertifications.map((certification, index) => (
-                <div 
-                    class="card-wrapper"
+                <div
+                    class="card-wrapper lazy-load"
                     style={`view-transition-name: cert-${index}; contain: layout;`}
+                    data-index={index}
                 >
                     <CertificationCard certification={certification.data} />
                 </div>
@@ -124,4 +125,73 @@ export const prerender = true;
     color: var(--text-color);
     font-weight: 600;
 }
+
+/* Estilos de carregamento progressivo */
+.card-wrapper {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+
+.card-wrapper.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .card-wrapper {
+        transition: none;
+        opacity: 1;
+        transform: none;
+    }
+}
 </style>
+
+<script>
+function observeCertifications() {
+    const cards = document.querySelectorAll('.card-wrapper.lazy-load');
+    if (!cards.length) return;
+
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    const element = entry.target as HTMLElement;
+                    const index = element.dataset.index ? parseInt(element.dataset.index) : 0;
+                    
+                    requestAnimationFrame(() => {
+                        element.style.transitionDelay = `${index * 100}ms`;
+                        element.classList.add('visible');
+                    });
+                    
+                    observer.unobserve(entry.target);
+                    
+                    // Limpar o delay após a animação
+                    element.addEventListener('transitionend', () => {
+                        element.style.transitionDelay = '';
+                    }, { once: true });
+                }
+            });
+        },
+        {
+            threshold: 0.1,
+            rootMargin: '50px'
+        }
+    );
+
+    cards.forEach(card => observer.observe(card));
+}
+
+// Inicializar observação em diferentes eventos
+document.addEventListener('astro:page-load', observeCertifications, { passive: true });
+document.addEventListener('astro:after-swap', observeCertifications, { passive: true });
+
+// Limpar estados quando a página for descarregada
+document.addEventListener('astro:before-swap', () => {
+    document.querySelectorAll('.card-wrapper.lazy-load').forEach(card => {
+        if (card instanceof HTMLElement) {
+            card.classList.remove('visible');
+        }
+    });
+});
+</script>

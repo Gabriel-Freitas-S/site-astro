@@ -58,11 +58,17 @@ export const prerender = true;
 /* Layout */
 .experience-card {
     display: block;
-    contain: paint style;
+    contain: content;
     min-height: 150px;
-    visibility: visible !important;
-    opacity: 1 !important;
-    transition: none !important;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    will-change: transform, opacity;
+}
+
+.experience-card.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .card-header {
@@ -243,6 +249,69 @@ li::before {
     .achievements {
         transition: none !important;
         animation: none !important;
+        opacity: 1;
+        transform: none;
     }
 }
 </style>
+
+<script>
+const loadExperienceCards = () => {
+    const cards = document.querySelectorAll<HTMLElement>('.experience-card.lazy-load');
+    if (!cards.length) return;
+
+    // Carregar cards imediatamente visíveis
+    const loadCard = (element: Element) => {
+        if (element instanceof HTMLElement && !element.classList.contains('visible')) {
+            requestAnimationFrame(() => {
+                element.classList.add('visible');
+            });
+        }
+    };
+
+    // Verificar cards inicialmente visíveis
+    cards.forEach(element => {
+        if (element instanceof HTMLElement) {
+            const rect = element.getBoundingClientRect();
+            if (rect.top < window.innerHeight) {
+                loadCard(element);
+            }
+        }
+    });
+
+    // Configurar observer para os demais cards
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadCard(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        },
+        {
+            threshold: 0,
+            rootMargin: '50px'
+        }
+    );
+
+    cards.forEach(element => {
+        if (element instanceof HTMLElement && !element.classList.contains('visible')) {
+            observer.observe(element);
+        }
+    });
+};
+
+// Carregar cards em diferentes eventos
+document.addEventListener('astro:page-load', loadExperienceCards, { passive: true });
+document.addEventListener('astro:after-swap', loadExperienceCards, { passive: true });
+
+// Cleanup para o observer quando a página for descarregada
+document.addEventListener('astro:before-swap', () => {
+    document.querySelectorAll('.experience-card.lazy-load').forEach(card => {
+        if (card instanceof HTMLElement) {
+            card.classList.remove('visible');
+        }
+    });
+});
+</script>
