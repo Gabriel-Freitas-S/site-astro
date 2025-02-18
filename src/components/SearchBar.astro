@@ -7,7 +7,7 @@ const { className = '' } = Astro.props;
 ---
 
 <div class:list={["search-container", className]}>
-    <div class="search-wrapper">
+    <form id="search-form" class="search-wrapper">
         <span class="search-icon">
             <span class="sr-only">Ícone de pesquisa</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
@@ -17,11 +17,18 @@ const { className = '' } = Astro.props;
         <input 
             type="search" 
             id="certification-search"
+            name="search"
             placeholder="Pesquisar por título ou tecnologia..."
             class="search-input"
             aria-label="Pesquisar certificações"
         />
-    </div>
+        <button type="submit" class="search-submit">
+            <span class="sr-only">Pesquisar</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5S14 7.01 14 9.5S11.99 14 9.5 14zm6 0h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-4.77-5.59-4.77A6.505 6.505 0 0 0 3 9.5C3 11.11 3.63 12.59 4.71 13.67C5.79 14.75 7.27 15.38 8.88 15.38c1.31 0 2.53-.36 3.57-.97l.27.28v.79l5 4.99L19.49 19l-4.99-5z"/>
+            </svg>
+        </button>
+    </form>
     <div class="filter-tags" id="active-filters"></div>
 </div>
 
@@ -40,6 +47,8 @@ const { className = '' } = Astro.props;
     border-radius: var(--border-radius);
     box-shadow: var(--card-shadow);
     transition: box-shadow 0.3s ease;
+    display: flex;
+    align-items: center;
 }
 
 .search-wrapper:focus-within {
@@ -58,7 +67,7 @@ const { className = '' } = Astro.props;
 }
 
 .search-input {
-    width: 100%;
+    flex: 1;
     padding: 1rem 1rem 1rem 3rem;
     border: none;
     border-radius: inherit;
@@ -74,6 +83,23 @@ const { className = '' } = Astro.props;
 
 .search-input:focus {
     outline: none;
+}
+
+.search-submit {
+    padding: 0.5rem 1rem;
+    background: var(--accent-primary);
+    border: none;
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+
+.search-submit:hover {
+    background: color-mix(in srgb, var(--accent-primary) 85%, black);
 }
 
 .filter-tags {
@@ -121,6 +147,18 @@ const { className = '' } = Astro.props;
     background: var(--card-bg);
     box-shadow: var(--card-shadow);
 }
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
 </style>
 
 <script>
@@ -139,58 +177,28 @@ interface Certification {
     skills: Skill[];
 }
 
-function getSkillsFromCertification(certification: Certification): string[] {
-    const skills: string[] = [];
-    if (certification.skills) {
-        certification.skills.forEach((skill) => {
-            skill.technologies.forEach((tech) => {
-                if (!skills.includes(tech.name)) {
-                    skills.push(tech.name);
-                }
-            });
-        });
-    }
-    return skills;
-}
-
 function initializeSearch() {
-    const searchInput = document.getElementById('certification-search') as HTMLInputElement | null;
+    const searchForm = document.getElementById('search-form') as HTMLFormElement;
+    const searchInput = document.getElementById('certification-search') as HTMLInputElement;
     const activeFilters = document.getElementById('active-filters');
     const cards = document.querySelectorAll('.certification-card');
     const appliedFilters = new Set<string>();
 
-    // Se os elementos necessários não existirem, retornar
-    if (!searchInput || !activeFilters) return;
+    if (!searchInput || !activeFilters || !searchForm) return;
 
-    function updateFilters() {
-        if (!activeFilters) return;
-        
-        activeFilters.innerHTML = '';
-        appliedFilters.forEach(filter => {
-            const tag = document.createElement('span');
-            tag.className = 'filter-tag';
-            tag.innerHTML = `
-                ${filter}
-                <span class="remove-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M6.4 19L5 17.6l5.6-5.6L5 6.4L6.4 5l5.6 5.6L17.6 5L19 6.4L13.4 12l5.6 5.6l-1.4 1.4l-5.6-5.6z"/>
-                    </svg>
-                </span>
-            `;
-            tag.addEventListener('click', () => {
-                appliedFilters.delete(filter);
-                updateFilters();
-                filterCards();
+    function broadcastSearchUpdate(searchTerm: string) {
+        requestAnimationFrame(() => {
+            const event = new CustomEvent('globalSearch', {
+                bubbles: true,
+                detail: { searchTerm: searchTerm.toLowerCase() }
             });
-            activeFilters.appendChild(tag);
+            document.dispatchEvent(event);
         });
     }
 
-    function filterCards() {
-        if (!searchInput) return;
-        
-        const searchTerm = searchInput.value.toLowerCase();
-        
+    function triggerSearch(searchTerm: string, skillFilter: string = '') {
+        let visibleCount = 0;
+
         cards.forEach(card => {
             const certificationData = (card as HTMLElement).dataset.certification;
             if (!certificationData) return;
@@ -198,34 +206,76 @@ function initializeSearch() {
             try {
                 const certification = JSON.parse(certificationData) as Certification;
                 const title = certification.title.toLowerCase();
-                const skills = getSkillsFromCertification(certification);
+                const skills = certification.skills.flatMap(skill => 
+                    skill.technologies.map(tech => tech.name.toLowerCase())
+                );
                 
                 const matchesSearch = searchTerm === '' || 
-                    title.includes(searchTerm) || 
-                    skills.some(skill => skill.toLowerCase().includes(searchTerm));
+                    title.includes(searchTerm.toLowerCase()) || 
+                    skills.some(skill => skill.includes(searchTerm.toLowerCase()));
                 
-                const matchesFilters = appliedFilters.size === 0 || 
-                    Array.from(appliedFilters).every(filter => 
-                        skills.some(skill => skill.toLowerCase() === filter.toLowerCase())
-                    );
+                const matchesFilter = skillFilter === '' || 
+                    skills.includes(skillFilter.toLowerCase());
 
-                card.classList.toggle('hidden', !matchesSearch || !matchesFilters);
+                const shouldShow = matchesSearch && (skillFilter === '' || matchesFilter);
+                
+                card.classList.toggle('hidden', !shouldShow);
+                if (shouldShow) visibleCount++;
             } catch (error) {
                 console.error('Erro ao processar certificação:', error);
             }
         });
+
+        // Propagar a busca para o conteúdo interno
+        broadcastSearchUpdate(searchTerm);
+
+        // Atualizar mensagem de resultados
+        let noResults = document.querySelector('.no-results');
+        if (visibleCount === 0) {
+            if (!noResults) {
+                noResults = document.createElement('div');
+                noResults.className = 'no-results';
+                noResults.textContent = 'Nenhuma certificação encontrada.';
+                document.querySelector('.certifications-grid')?.appendChild(noResults);
+            }
+        } else if (noResults) {
+            noResults.remove();
+        }
     }
 
-    searchInput.addEventListener('input', filterCards);
-
-    document.addEventListener('applySkillFilter', ((event: CustomEvent) => {
-        const skill = event.detail.skill.toLowerCase();
-        if (!appliedFilters.has(skill)) {
-            appliedFilters.add(skill);
-            updateFilters();
-            filterCards();
+    function clearFilters() {
+        appliedFilters.clear();
+        if (activeFilters) {
+            activeFilters.innerHTML = '';
         }
-    }) as EventListener);
+
+        // Limpar parâmetro da URL
+        const url = new URL(window.location.href);
+        url.searchParams.delete('skill');
+        window.history.replaceState({}, '', url);
+
+        // Propagar a limpeza dos filtros
+        broadcastSearchUpdate('');
+    }
+
+    searchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        clearFilters();
+        triggerSearch(searchInput.value);
+    });
+
+    searchInput.addEventListener('input', () => {
+        clearFilters();
+        triggerSearch(searchInput.value);
+    });
+
+    // Lidar com filtro inicial da URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const skillFilter = urlParams.get('skill');
+    if (skillFilter) {
+        appliedFilters.add(skillFilter);
+        triggerSearch('', skillFilter);
+    }
 }
 
 // Inicializar em diferentes eventos do Astro

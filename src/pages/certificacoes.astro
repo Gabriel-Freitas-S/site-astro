@@ -59,6 +59,7 @@ export const prerender = true;
             class="certifications-grid"
             aria-label="Lista de certificações"
             style="contain: content;"
+            data-skill-filter={skillFilter}
         >
             {sortedCertifications.map((certification, index) => (
                 <div
@@ -145,42 +146,34 @@ export const prerender = true;
     transform: translateY(0);
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .card-wrapper {
-        transition: none;
-        opacity: 1;
-        transform: none;
-    }
-}
-
 .hidden {
-    display: none;
+    display: none !important;
 }
 </style>
 
 <script>
-function observeCertifications() {
-    const cards = document.querySelectorAll('.card-wrapper.lazy-load');
-    if (!cards.length) return;
-
+function initializeCertificationsPage() {
     const observer = new IntersectionObserver(
         (entries) => {
             entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    const element = entry.target as HTMLElement;
-                    const index = element.dataset.index ? parseInt(element.dataset.index) : 0;
+                if (entry.isIntersecting && entry.target instanceof HTMLElement) {
+                    const index = entry.target.dataset.index ? parseInt(entry.target.dataset.index) : 0;
                     
                     requestAnimationFrame(() => {
-                        element.style.transitionDelay = `${index * 100}ms`;
-                        element.classList.add('visible');
+                        if (entry.target instanceof HTMLElement) {
+                            entry.target.style.transitionDelay = `${index * 100}ms`;
+                            entry.target.classList.add('visible');
+
+                            // Limpar o delay após a animação
+                            entry.target.addEventListener('transitionend', () => {
+                                if (entry.target instanceof HTMLElement) {
+                                    entry.target.style.transitionDelay = '';
+                                }
+                            }, { once: true });
+                        }
                     });
                     
                     observer.unobserve(entry.target);
-                    
-                    // Limpar o delay após a animação
-                    element.addEventListener('transitionend', () => {
-                        element.style.transitionDelay = '';
-                    }, { once: true });
                 }
             });
         },
@@ -190,39 +183,13 @@ function observeCertifications() {
         }
     );
 
-    cards.forEach(card => observer.observe(card));
-}
-
-function applyUrlFilter() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const skillFilter = urlParams.get('skill');
-    
-    if (skillFilter) {
-        // Disparar o evento de filtro
-        const event = new CustomEvent('applySkillFilter', {
-            detail: { skill: skillFilter }
-        });
-        document.dispatchEvent(event);
-    }
-}
-
-// Inicializar observação em diferentes eventos
-document.addEventListener('astro:page-load', () => {
-    observeCertifications();
-    applyUrlFilter();
-}, { passive: true });
-
-document.addEventListener('astro:after-swap', () => {
-    observeCertifications();
-    applyUrlFilter();
-}, { passive: true });
-
-// Limpar estados quando a página for descarregada
-document.addEventListener('astro:before-swap', () => {
-    document.querySelectorAll('.card-wrapper.lazy-load').forEach(card => {
-        if (card instanceof HTMLElement) {
-            card.classList.remove('visible');
-        }
+    // Observar os cards para lazy loading
+    document.querySelectorAll('.card-wrapper').forEach(card => {
+        observer.observe(card);
     });
-});
+}
+
+// Inicializar em diferentes eventos do Astro
+document.addEventListener('astro:page-load', initializeCertificationsPage);
+document.addEventListener('astro:after-swap', initializeCertificationsPage);
 </script>

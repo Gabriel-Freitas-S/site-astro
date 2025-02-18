@@ -35,7 +35,7 @@ export const prerender = true;
 
 <BaseCard className="certification-card" data-certification={JSON.stringify(certification)}>
     <div
-        class="card-content lazy-load"
+        class="card-content lazy-load filtered-content"
         data-astro-transition-scope
     >
         <div class="card-header" transition:name={`cert-header-${certification.title}`}>
@@ -52,9 +52,9 @@ export const prerender = true;
         <div class="content">
             <div class="section courses">
                 <h3>Cursos</h3>
-                <ul>
+                <ul class="course-list">
                     {certification.courses.map(course => (
-                        <li>
+                        <li class="course-item" data-content={course.name.toLowerCase()}>
                             <div class="info-row">
                                 <div class="info-main">
                                     <span class="name">{course.name}</span>
@@ -66,21 +66,27 @@ export const prerender = true;
                             </div>
                         </li>
                     ))}
+                    <li class="no-results-course hidden">
+                        Nenhum curso encontrado para o filtro aplicado.
+                    </li>
                 </ul>
             </div>
 
             {certification.complementaryContent && (
                 <div class="section complementary">
                     <h3>Conteúdos complementares</h3>
-                    <ul>
+                    <ul class="complementary-list">
                         {certification.complementaryContent.map(content => (
-                            <li>
+                            <li class="complementary-item" data-content={content.name.toLowerCase()}>
                                 <div class="info-row">
                                     <span class="name">{content.name}</span>
                                     <span class="duration">{content.duration}</span>
                                 </div>
                             </li>
                         ))}
+                        <li class="no-results-complementary hidden">
+                            Nenhum conteúdo complementar encontrado para o filtro aplicado.
+                        </li>
                     </ul>
                 </div>
             )}
@@ -89,7 +95,6 @@ export const prerender = true;
 </BaseCard>
 
 <style>
-/* Layout */
 .card-content {
     container-type: inline-size;
     container-name: card;
@@ -102,12 +107,6 @@ export const prerender = true;
     overflow: hidden;
 }
 
-/* Garantir que elementos internos mantenham o border-radius */
-.card-content > * {
-    border-radius: inherit;
-}
-
-/* Header */
 .card-header {
     display: flex;
     justify-content: space-between;
@@ -137,7 +136,6 @@ export const prerender = true;
     align-items: center;
 }
 
-/* Content Sections */
 .section {
     margin-bottom: 1.5rem;
 }
@@ -148,7 +146,6 @@ export const prerender = true;
     font-weight: 600;
 }
 
-/* Lists */
 ul {
     list-style: none;
     padding: 0;
@@ -157,7 +154,6 @@ ul {
     gap: 0.75rem;
 }
 
-/* Info Rows */
 .info-row {
     display: flex;
     justify-content: space-between;
@@ -189,7 +185,17 @@ ul {
     opacity: 0.85;
 }
 
-/* Responsive Layout */
+.no-results-course,
+.no-results-complementary {
+    text-align: center;
+    padding: 1rem;
+    color: var(--text-color);
+    opacity: 0.8;
+    font-size: 0.9rem;
+    background: rgba(var(--text-color-rgb), 0.05);
+    border-radius: var(--border-radius);
+}
+
 @container card (max-width: 480px) {
     .card-header {
         flex-direction: column;
@@ -200,7 +206,7 @@ ul {
         gap: 0.5rem;
     }
 
-    li {
+    li:not(.no-results-course):not(.no-results-complementary) {
         padding: 0.5rem;
         border-radius: var(--border-radius);
         background: rgba(var(--text-color-rgb), 0.05);
@@ -208,7 +214,6 @@ ul {
     }
 }
 
-/* Theme Adjustments */
 :global(.light-theme) {
     .card-header h2 {
         font-weight: 700;
@@ -219,7 +224,6 @@ ul {
     }
 }
 
-/* Animations */
 @media (prefers-reduced-motion: no-preference) {
     .card-content.lazy-load {
         view-transition-name: card;
@@ -240,63 +244,72 @@ ul {
         transition: none;
     }
 }
+
+.course-item.filtered,
+.complementary-item.filtered {
+    display: none !important;
+}
+
+.hidden {
+    display: none !important;
+}
 </style>
 
 <script>
-const loadCards = () => {
-    const cards = document.querySelectorAll('.lazy-load');
-    if (!cards.length) return;
+function initializeContentFiltering() {
+    document.querySelectorAll<HTMLElement>('.certification-card').forEach(card => {
+        if (!card) return;
 
-    // Carregar cards imediatamente visíveis
-    const loadCard = (element: Element) => {
-        if (element instanceof HTMLElement && !element.classList.contains('visible')) {
-            requestAnimationFrame(() => {
-                element.classList.add('visible');
+        function updateVisibility(
+            elements: NodeListOf<HTMLElement>, 
+            noResultsElement: HTMLElement | null, 
+            searchTerm: string
+        ) {
+            let visibleCount = 0;
+            elements.forEach(element => {
+                const content = element.dataset.content || '';
+                const shouldShow = !searchTerm || content.includes(searchTerm.toLowerCase());
+                element.classList.toggle('filtered', !shouldShow);
+                if (shouldShow) visibleCount++;
             });
-        }
-    };
 
-    // Verificar cards inicialmente visíveis
-    cards.forEach(element => {
-        if (element instanceof HTMLElement) {
-            const rect = element.getBoundingClientRect();
-            if (rect.top < window.innerHeight) {
-                loadCard(element);
+            if (noResultsElement) {
+                noResultsElement.classList.toggle('hidden', visibleCount > 0);
             }
+
+            return visibleCount;
+        }
+
+        function filterCardContent(searchTerm: string) {
+            const contentWrapper = card.querySelector<HTMLElement>('.filtered-content');
+            if (!contentWrapper) return;
+
+            const courses = contentWrapper.querySelectorAll<HTMLElement>('.course-item');
+            const complementaryItems = contentWrapper.querySelectorAll<HTMLElement>('.complementary-item');
+            const noResultsCourse = contentWrapper.querySelector<HTMLElement>('.no-results-course');
+            const noResultsComplementary = contentWrapper.querySelector<HTMLElement>('.no-results-complementary');
+
+            updateVisibility(courses, noResultsCourse, searchTerm);
+            updateVisibility(complementaryItems, noResultsComplementary, searchTerm);
+        }
+
+        // Observar eventos globais de busca
+        document.addEventListener('globalSearch', ((event: CustomEvent) => {
+            if (card.classList.contains('hidden')) return;
+            const searchTerm = event.detail?.searchTerm || '';
+            filterCardContent(searchTerm);
+        }) as EventListener);
+
+        // Aplicar filtro inicial da URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const skillFilter = urlParams.get('skill');
+        if (skillFilter && !card.classList.contains('hidden')) {
+            filterCardContent(skillFilter);
         }
     });
+}
 
-    // Configurar observer para os demais cards
-    const observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    loadCard(entry.target);
-                    observer.unobserve(entry.target);
-                }
-            });
-        },
-        {
-            threshold: 0,
-            rootMargin: '50px'
-        }
-    );
-
-    cards.forEach(element => {
-        if (element instanceof HTMLElement && !element.classList.contains('visible')) {
-            observer.observe(element);
-        }
-    });
-};
-
-// Carregar cards em diferentes eventos
-document.addEventListener('astro:page-load', loadCards, { passive: true });
-document.addEventListener('astro:after-swap', loadCards, { passive: true });
-
-// Cleanup para o observer quando a página for descarregada
-document.addEventListener('astro:before-swap', () => {
-    document.querySelectorAll('.lazy-load').forEach(card => {
-        card.classList.remove('visible');
-    });
-});
+// Inicializar quando o DOM estiver pronto
+document.addEventListener('astro:page-load', initializeContentFiltering);
+document.addEventListener('astro:after-swap', initializeContentFiltering);
 </script>

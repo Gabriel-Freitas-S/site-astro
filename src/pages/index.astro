@@ -68,7 +68,7 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
             <h2 id="skills-title" transition:name="page-title">Habilidades</h2>
             <div class="skills-grid">
                 {skillCategories.map(category => (
-                    <section
+                    <div
                         class="skill-category lazy-load"
                         aria-labelledby={`category-${category.title.toLowerCase()}`}
                         transition:name={`category-${category.title.toLowerCase()}`}
@@ -77,7 +77,7 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
                             title={category.title}
                             technologies={category.technologies}
                         />
-                    </section>
+                    </div>
                 ))}
             </div>
         </section>
@@ -89,7 +89,6 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
     padding: clamp(2rem, 4vw, 4rem) clamp(1rem, 2vw, 2rem);
     max-width: 1200px;
     margin: 0 auto;
-    container-type: inline-size;
 }
 
 .skills-section h2 {
@@ -107,15 +106,20 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
 
 .skills-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 500px), 1fr));
     gap: clamp(1rem, 3vw, 2rem);
     width: 100%;
-    container-type: inline-size;
 }
 
 .skill-category {
     opacity: 0;
     transform: translateY(20px);
+}
+
+@media (max-width: 640px) {
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
