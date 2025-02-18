@@ -18,16 +18,15 @@ const { title, technologies } = Astro.props;
     <h3>{title}</h3>
     <div class="technologies-list">
         {technologies.map((tech) => (
-            <button
-                type="button"
+            <a
+                href={`/certificacoes?skill=${encodeURIComponent(tech.name)}`}
                 class="tech-item"
-                data-skill={tech.name}
-                data-href={`/certificacoes?skill=${encodeURIComponent(tech.name)}`}
+                data-astro-prefetch
                 aria-label={`Filtrar certificações por ${tech.name}`}
             >
                 <span class="tech-name">{tech.name}</span>
                 <Icon name="mdi:open-in-new" class="filter-icon" />
-            </button>
+            </a>
         ))}
     </div>
 </div>
@@ -110,41 +109,3 @@ const { title, technologies } = Astro.props;
     background: var(--accent-quaternary);
 }
 </style>
-
-<script>
-function handleButtonClick(e: Event) {
-    const button = e.currentTarget as HTMLButtonElement;
-    const href = button.dataset.href;
-    
-    if (!href) return;
-    
-    // Forçar redirecionamento direto
-    window.location.replace(href);
-}
-
-function initializeSkillCards() {
-    document.querySelectorAll('.tech-item').forEach(button => {
-        button.addEventListener('click', handleButtonClick);
-    });
-}
-
-// Limpar event listeners antes de reinicializar
-function cleanupSkillCards() {
-    document.querySelectorAll('.tech-item').forEach(button => {
-        button.removeEventListener('click', handleButtonClick);
-    });
-}
-
-// Inicializar quando o DOM estiver pronto
-document.addEventListener('astro:page-load', () => {
-    console.log('Inicializando SkillCards...'); // Debug
-    cleanupSkillCards();
-    initializeSkillCards();
-});
-
-document.addEventListener('astro:after-swap', () => {
-    console.log('Reinicializando SkillCards após navegação...'); // Debug
-    cleanupSkillCards();
-    initializeSkillCards();
-});
-</script>

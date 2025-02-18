@@ -267,19 +267,30 @@ function initializeCertificationsPage() {
         observer.observe(card);
     });
 
-    // Se houver um filtro inicial, aplicá-lo após um pequeno delay
+    // Se houver um filtro inicial, aplicá-lo após carregar a página
     const grid = document.querySelector<HTMLElement>('.certifications-grid');
-    if (grid?.dataset.initialFilter) {
+    const initialFilter = grid?.dataset.initialFilter;
+
+    // Aguardar um pouco para garantir que a página foi carregada
+    if (initialFilter) {
         setTimeout(() => {
-            filterCertifications(grid.dataset.initialFilter || '');
+            console.log('Aplicando filtro inicial:', initialFilter); // Debug
+            filterCertifications(initialFilter);
+            
+            // Atualizar input de busca
+            const searchInput = document.querySelector<HTMLInputElement>('#certification-search');
+            if (searchInput) searchInput.value = initialFilter;
         }, 100);
     }
 
-    // Ouvir mudanças de URL
-    window.addEventListener('popstate', () => {
+    // Ouvir mudanças de navegação
+    document.addEventListener('astro:after-navigation', () => {
         const params = new URLSearchParams(window.location.search);
         const skillFilter = params.get('skill');
-        filterCertifications(skillFilter || '');
+        if (skillFilter) {
+            console.log('Navegação detectada, aplicando filtro:', skillFilter); // Debug
+            filterCertifications(skillFilter);
+        }
     });
 }
 
