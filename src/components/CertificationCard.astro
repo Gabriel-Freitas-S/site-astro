@@ -2,10 +2,21 @@
 import BaseCard from './BaseCard.astro';
 import { fade } from 'astro:transitions';
 
+interface Technology {
+    name: string;
+    icon: string;
+}
+
+interface Skill {
+    title: string;
+    technologies: Technology[];
+}
+
 interface Props {
     certification: {
         title: string;
         duration: string;
+        skills: Skill[];
         courses: {
             name: string;
             period?: string;
@@ -21,7 +32,8 @@ interface Props {
 const { certification } = Astro.props;
 export const prerender = true;
 ---
-<BaseCard className="certification-card">
+
+<BaseCard className="certification-card" data-certification={JSON.stringify(certification)}>
     <div
         class="card-content lazy-load"
         data-astro-transition-scope

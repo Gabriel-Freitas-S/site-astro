@@ -1,6 +1,26 @@
 {
   "title": "A partir do zero: crie projetos em Dart, a linguagem utilizada no Flutter",
   "duration": "55h",
+  "skills": [
+    {
+      "title": "Linguagens",
+      "technologies": [
+        {
+          "name": "Dart",
+          "icon": "logos:dart"
+        }
+      ]
+    },
+    {
+      "title": "Frameworks",
+      "technologies": [
+        {
+          "name": "Flutter",
+          "icon": "logos:flutter"
+        }
+      ]
+    }
+  ],
   "courses": [
     {
       "name": "Dart: criando e manipulando variáveis e listas",

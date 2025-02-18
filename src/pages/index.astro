@@ -2,71 +2,44 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Navigation from '../components/Navigation.astro';
-import SkillPopup from '../components/SkillPopup.astro';
-import { Icon } from 'astro-icon/components';
-import '../utils/preloadIcons';
+import SkillCard from '../components/SkillCard.astro';
 import { getCollection } from 'astro:content';
-import type { CollectionEntry } from 'astro:content';
-import { getSkillIcon } from '../utils/iconMapping';
 
 export const prerender = true;
 
-interface Skill {
+interface Technology {
     name: string;
-    certs: CollectionEntry<'certifications'>[];
+    icon: string;
 }
 
-interface SkillCategory {
+interface Skill {
     title: string;
-    skills: Skill[];
+    technologies: Technology[];
 }
 
 const certifications = await getCollection('certifications');
 
-const skillCategories: SkillCategory[] = [
-    {
-        title: "Linguagens",
-        skills: [
-            { name: "TypeScript/JavaScript", certs: certifications.filter(cert => 
-                cert.data.title.toLowerCase().includes('typescript') || 
-                cert.data.title.toLowerCase().includes('javascript')) },
-            { name: "Dart", certs: certifications.filter(cert => 
-                cert.data.title.toLowerCase().includes('dart')) },
-            { name: "Rust", certs: certifications.filter(cert => 
-                cert.data.title.toLowerCase().includes('rust')) },
-            { name: "HTML/CSS", certs: certifications.filter(cert => 
-                cert.data.title.toLowerCase().includes('html') ||
-                cert.data.title.toLowerCase().includes('css')) }
-        ]
-    },
-    {
-        title: "Frameworks",
-        skills: [
-            { name: "React", certs: certifications.filter(cert => 
-                cert.data.title.toLowerCase().includes('react')) },
-            { name: "Flutter", certs: certifications.filter(cert => 
-                cert.data.courses.some(course => course.name.toLowerCase().includes('flutter'))) },
-            { name: "Astro", certs: [] }
-        ]
-    },
-    {
-        title: "Ferramentas",
-        skills: [
-            { name: "Git", certs: certifications.filter(cert => 
-                cert.data.title.toLowerCase().includes('git')) },
-            { name: "Docker", certs: certifications.filter(cert => 
-                cert.data.title.toLowerCase().includes('docker')) },
-            { name: "VSCode", certs: certifications.filter(cert => 
-                cert.data.title.toLowerCase().includes('vscode')) }
-        ]
-    }
-];
+// Agrupar todas as skills por categoria
+const allSkills = new Map<string, Set<Technology>>();
 
-const totalCertifications = skillCategories.reduce((total, category) => {
-    return total + category.skills.reduce((sum, skill) => sum + skill.certs.length, 0);
-}, 0);
+certifications.forEach(cert => {
+    cert.data.skills.forEach(skill => {
+        if (!allSkills.has(skill.title)) {
+            allSkills.set(skill.title, new Set());
+        }
+        skill.technologies.forEach(tech => {
+            allSkills.get(skill.title)?.add(tech);
+        });
+    });
+});
 
-const description = `Desenvolvedor de software especializado em desenvolvimento web e mobile, com ${totalCertifications} certificações em diversas tecnologias e frameworks.`;
+// Converter para o formato necessário para renderização
+const skillCategories = Array.from(allSkills.entries()).map(([title, techs]) => ({
+    title,
+    technologies: Array.from(techs)
+}));
+
+const description = `Desenvolvedor de software especializado em desenvolvimento web e mobile, com experiência em diversas tecnologias e frameworks.`;
 ---
 
 <Layout 
@@ -100,42 +73,10 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
                         aria-labelledby={`category-${category.title.toLowerCase()}`}
                         transition:name={`category-${category.title.toLowerCase()}`}
                     >
-                        <div class="category-header">
-                            <h3 id={`category-${category.title.toLowerCase()}`}>
-                                {category.title}
-                            </h3>
-                        </div>
-                        <ul class="skill-list" role="list">
-                            {category.skills.map(skill => (
-                                <li role="listitem">
-                                    <button
-                                        class="skill-button"
-                                        onclick={`openPopup('popup-${skill.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}')`}
-                                        disabled={skill.certs.length === 0}
-                                        aria-label={`${skill.name}${skill.certs.length > 0 ? ` - ${skill.certs.length} certificações` : ' - Sem certificações'}`}
-                                        transition:name={`skill-${skill.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
-                                    >
-                                        <div class="skill-content">
-                                            <span class="icon-wrapper">
-                                                <Icon
-                                                    name={getSkillIcon(skill.name)}
-                                                    class="skill-icon"
-                                                    width={20}
-                                                    height={20}
-                                                />
-                                            </span>
-                                            <span>{skill.name}</span>
-                                        </div>
-                                        {skill.certs.length > 0 && (
-                                            <span class="cert-count" aria-hidden="true">
-                                                {skill.certs.length}
-                                            </span>
-                                        )}
-                                    </button>
-                                    <SkillPopup skill={skill.name} certifications={skill.certs.map(cert => cert.data)} />
-                                </li>
-                            ))}
-                        </ul>
+                        <SkillCard 
+                            title={category.title}
+                            technologies={category.technologies}
+                        />
                     </section>
                 ))}
             </div>
@@ -173,133 +114,16 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
 }
 
 .skill-category {
-    background: var(--secondary-color);
-    border-radius: var(--border-radius);
-    border: 1px solid var(--accent-tertiary);
     opacity: 0;
     transform: translateY(20px);
-    overflow: hidden;
-    position: relative;
-}
-
-.category-header {
-    background: var(--accent-tertiary);
-    padding: clamp(0.75rem, 3vw, 1.25rem);
-    border-bottom: 1px solid var(--accent-tertiary);
-    border-radius: inherit;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-}
-
-.skill-category h3 {
-    font-size: clamp(1.2rem, 3vw, 1.5rem);
-    color: var(--text-color);
-    margin: 0;
-}
-
-.skill-list {
-    list-style: none;
-    padding: clamp(0.75rem, 3vw, 1.5rem);
-    margin: 0;
-    display: grid;
-    gap: clamp(0.4rem, 2vw, 0.8rem);
-}
-
-.skill-button {
-    width: 100%;
-    text-align: left;
-    background: var(--accent-quaternary);
-    border: none;
-    color: var(--text-color);
-    font-weight: 500;
-    font-size: clamp(0.875rem, 2.5vw, 1rem);
-    padding: clamp(0.6rem, 2vw, 0.8rem) clamp(0.8rem, 2vw, 1.2rem);
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    min-height: 44px;
-    touch-action: manipulation;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.skill-content {
-    display: flex;
-    align-items: center;
-    gap: clamp(0.5rem, 2vw, 0.8rem);
-    flex: 1;
-    min-width: 0;
-}
-
-.icon-wrapper {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: clamp(16px, 4vw, 20px);
-    height: clamp(16px, 4vw, 20px);
-}
-
-.skill-icon {
-    color: var(--text-color);
-    opacity: 0.9;
-    width: 100%;
-    height: 100%;
-}
-
-.cert-count {
-    background: var(--accent-primary);
-    color: white;
-    font-weight: 600;
-    padding: clamp(0.15rem, 1vw, 0.2rem) clamp(0.4rem, 2vw, 0.6rem);
-    border-radius: var(--border-radius);
-    font-size: clamp(0.75rem, 2vw, 0.8rem);
-    min-width: 1.2rem;
-    text-align: center;
-    position: relative;
-    z-index: 1;
-}
-
-/* Garantir que não há elementos com bordas quadradas */
-.skill-category *,
-.skill-button * {
-    border-radius: inherit;
-}
-
-@media (hover: hover) {
-    .skill-button:not(:disabled):hover {
-        background: color-mix(in srgb, var(--accent-quaternary) 95%, var(--accent-primary));
-        transform: translateX(4px);
-    }
-
-    .skill-category {
-        transition: transform 0.2s ease;
-    }
-
-    .skill-category:hover {
-        transform: translateY(-4px);
-    }
-}
-
-.skill-button:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-    background: rgba(var(--text-color-rgb), 0.1);
-    color: var(--text-color-secondary);
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .skill-category,
-    .skill-button {
-        transition: none !important;
-        animation: none !important;
-        transform: none !important;
-    }
-    
     .skill-category {
         opacity: 1;
+        transform: none;
+        transition: none !important;
+        animation: none !important;
     }
 }
 </style>

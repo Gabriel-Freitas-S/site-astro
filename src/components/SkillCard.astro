@@ -1,0 +1,141 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Technology {
+    name: string;
+    icon: string;
+}
+
+interface Props {
+    title: string;
+    technologies: Technology[];
+}
+
+const { title, technologies } = Astro.props;
+---
+
+<div class="skill-section">
+    <h3>{title}</h3>
+    <div class="technologies-grid">
+        {technologies.map((tech) => (
+            <button
+                class="tech-item"
+                data-skill={tech.name}
+                aria-label={`Filtrar por ${tech.name}`}
+            >
+                <Icon name={tech.icon} class="tech-icon" />
+                <span class="tech-name">{tech.name}</span>
+                <Icon name="mdi:open-in-new" class="filter-icon" />
+            </button>
+        ))}
+    </div>
+</div>
+
+<style>
+.skill-section {
+    margin-bottom: 1.5rem;
+}
+
+.skill-section h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.technologies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem;
+}
+
+.tech-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    color: var(--text-color);
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--card-shadow);
+}
+
+.tech-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.tech-icon {
+    width: 2rem;
+    height: 2rem;
+}
+
+.tech-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.filter-icon {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 1rem;
+    height: 1rem;
+    opacity: 0.7;
+}
+
+@media (max-width: 640px) {
+    .technologies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .tech-item {
+        padding: 0.75rem;
+    }
+
+    .tech-icon {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+
+    .tech-name {
+        font-size: 0.8rem;
+    }
+}
+
+/* Theme Adjustments */
+:global(.light-theme) .tech-item {
+    background: var(--card-bg);
+}
+</style>
+
+<script>
+function initializeSkillCards() {
+    document.querySelectorAll('.tech-item').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const skill = (e.currentTarget as HTMLElement).dataset.skill;
+            if (skill) {
+                // Criar e disparar um evento customizado
+                const event = new CustomEvent('applySkillFilter', {
+                    detail: { skill }
+                });
+                document.dispatchEvent(event);
+
+                // Redirecionar para a página de certificações com o filtro
+                window.location.href = `/certificacoes?skill=${encodeURIComponent(skill)}`;
+            }
+        });
+    });
+}
+
+// Inicializar em diferentes eventos do Astro
+document.addEventListener('astro:page-load', initializeSkillCards);
+document.addEventListener('astro:after-swap', initializeSkillCards);
+</script>

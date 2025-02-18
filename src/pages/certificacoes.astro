@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 import CertificationCard from '../components/CertificationCard.astro';
+import SearchBar from '../components/SearchBar.astro';
 import { getCollection } from 'astro:content';
 
 const certifications = await getCollection('certifications');
@@ -18,6 +19,10 @@ const totalHours = sortedCertifications.reduce((acc, cert) => {
 }, 0);
 
 const description = `Certificações e cursos em desenvolvimento de software, totalizando ${totalHours} horas de estudo em diversas tecnologias e frameworks.`;
+
+// Recuperar o filtro da URL se existir
+const url = new URL(Astro.request.url);
+const skillFilter = url.searchParams.get('skill');
 
 export const prerender = true;
 ---
@@ -47,6 +52,8 @@ export const prerender = true;
                 Total de {totalHours} horas de estudo e aperfeiçoamento profissional
             </p>
         </div>
+
+        <SearchBar />
 
         <section
             class="certifications-grid"
@@ -145,6 +152,10 @@ export const prerender = true;
         transform: none;
     }
 }
+
+.hidden {
+    display: none;
+}
 </style>
 
 <script>
@@ -182,9 +193,29 @@ function observeCertifications() {
     cards.forEach(card => observer.observe(card));
 }
 
+function applyUrlFilter() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const skillFilter = urlParams.get('skill');
+    
+    if (skillFilter) {
+        // Disparar o evento de filtro
+        const event = new CustomEvent('applySkillFilter', {
+            detail: { skill: skillFilter }
+        });
+        document.dispatchEvent(event);
+    }
+}
+
 // Inicializar observação em diferentes eventos
-document.addEventListener('astro:page-load', observeCertifications, { passive: true });
-document.addEventListener('astro:after-swap', observeCertifications, { passive: true });
+document.addEventListener('astro:page-load', () => {
+    observeCertifications();
+    applyUrlFilter();
+}, { passive: true });
+
+document.addEventListener('astro:after-swap', () => {
+    observeCertifications();
+    applyUrlFilter();
+}, { passive: true });
 
 // Limpar estados quando a página for descarregada
 document.addEventListener('astro:before-swap', () => {
