@@ -3,13 +3,13 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Navigation from '../components/Navigation.astro';
 import SkillCard from '../components/SkillCard.astro';
+import SafeResource from '@igor.dvlpr/astro-saferesource';
 import { getCollection } from 'astro:content';
 
 export const prerender = true;
 
 interface Technology {
     name: string;
-    icon: string;
 }
 
 interface Skill {
@@ -132,46 +132,48 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
 }
 </style>
 
-<script>
-function observeSkillCategories() {
-    const observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    requestAnimationFrame(() => {
-                        const element = entry.target as HTMLElement;
-                        element.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
-                        element.style.opacity = '1';
-                        element.style.transform = 'translateY(0)';
-                    });
-                    observer.unobserve(entry.target);
-                }
-            });
-        },
-        {
-            threshold: 0.1,
-            rootMargin: '50px'
-        }
-    );
+<SafeResource>
+    <script is:inline>
+    function observeSkillCategories() {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        requestAnimationFrame(() => {
+                            const element = entry.target;
+                            element.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
+                            element.style.opacity = '1';
+                            element.style.transform = 'translateY(0)';
+                        });
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            {
+                threshold: 0.1,
+                rootMargin: '50px'
+            }
+        );
 
-    document.querySelectorAll('.lazy-load').forEach((category, index) => {
-        if (category instanceof HTMLElement) {
-            category.style.transitionDelay = `${index * 100}ms`;
-            observer.observe(category);
-        }
-    });
-}
-
-document.addEventListener('astro:page-load', () => {
-    if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
-        observeSkillCategories();
-    } else {
-        document.querySelectorAll('.lazy-load').forEach(el => {
-            if (el instanceof HTMLElement) {
-                el.style.opacity = '1';
-                el.style.transform = 'none';
+        document.querySelectorAll('.lazy-load').forEach((category, index) => {
+            if (category instanceof HTMLElement) {
+                category.style.transitionDelay = `${index * 100}ms`;
+                observer.observe(category);
             }
         });
     }
-}, { passive: true });
-</script>
+
+    document.addEventListener('astro:page-load', () => {
+        if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+            observeSkillCategories();
+        } else {
+            document.querySelectorAll('.lazy-load').forEach(el => {
+                if (el instanceof HTMLElement) {
+                    el.style.opacity = '1';
+                    el.style.transform = 'none';
+                }
+            });
+        }
+    }, { passive: true });
+    </script>
+</SafeResource>

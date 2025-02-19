@@ -6,12 +6,10 @@
       "title": "Linguagens",
       "technologies": [
         {
-          "name": "TypeScript",
-          "icon": "logos:typescript-icon"
+          "name": "TypeScript"
         },
         {
-          "name": "JavaScript",
-          "icon": "logos:javascript"
+          "name": "JavaScript"
         }
       ]
     },
@@ -19,8 +17,7 @@
       "title": "Frameworks",
       "technologies": [
         {
-          "name": "Node.js",
-          "icon": "logos:nodejs-icon"
+          "name": "Node.js"
         }
       ]
     }

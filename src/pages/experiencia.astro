@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 import ExperienceCard from '../components/ExperienceCard.astro';
+import SafeResource from '@igor.dvlpr/astro-saferesource';
 import { getCollection } from 'astro:content';
 
 const experiences = await getCollection('experience');
@@ -258,59 +259,59 @@ const description = latestExperience
 }
 </style>
 
-<script>
-function observeTimelineItems() {
-    const items = document.querySelectorAll('.timeline-item');
-    if (!items.length) return;
+<SafeResource>
+    <script is:inline>
+    function observeTimelineItems() {
+        const items = document.querySelectorAll('.timeline-item');
+        if (!items.length) return;
 
-    const observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry, index) => {
-                if (entry.isIntersecting) {
-                    const element = entry.target as HTMLElement;
-                    requestAnimationFrame(() => {
-                        element.style.transitionDelay = `${index * 100}ms`;
-                        element.style.opacity = '1';
-                        element.style.transform = 'translateY(0)';
-                    });
-                    observer.unobserve(entry.target);
-                }
-            });
-        },
-        {
-            threshold: 0.1,
-            rootMargin: '50px'
-        }
-    );
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        const element = entry.target;
+                        requestAnimationFrame(() => {
+                            element.style.transitionDelay = `${index * 100}ms`;
+                            element.style.opacity = '1';
+                            element.style.transform = 'translateY(0)';
+                        });
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            {
+                threshold: 0.1,
+                rootMargin: '50px'
+            }
+        );
 
-    // Configurar estados iniciais
-    items.forEach((item) => {
-        const element = item as HTMLElement;
-        element.style.opacity = '0';
-        element.style.transform = 'translateY(20px)';
-        element.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
-        observer.observe(element);
-    });
+        // Configurar estados iniciais
+        items.forEach((item) => {
+            const element = item;
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(20px)';
+            element.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
+            observer.observe(element);
+        });
 
-    // Limpar transitionDelay após a animação
-    items.forEach((item) => {
-        item.addEventListener('transitionend', () => {
-            (item as HTMLElement).style.transitionDelay = '';
-        }, { once: true });
-    });
-}
+        // Limpar transitionDelay após a animação
+        items.forEach((item) => {
+            item.addEventListener('transitionend', () => {
+                item.style.transitionDelay = '';
+            }, { once: true });
+        });
+    }
 
-// Carregar items em diferentes eventos
-document.addEventListener('astro:page-load', observeTimelineItems, { passive: true });
-document.addEventListener('astro:after-swap', observeTimelineItems, { passive: true });
+    // Carregar items em diferentes eventos
+    document.addEventListener('astro:page-load', observeTimelineItems, { passive: true });
+    document.addEventListener('astro:after-swap', observeTimelineItems, { passive: true });
 
-// Limpar estados quando a página for descarregada
-document.addEventListener('astro:before-swap', () => {
-    document.querySelectorAll('.timeline-item').forEach(item => {
-        if (item instanceof HTMLElement) {
+    // Limpar estados quando a página for descarregada
+    document.addEventListener('astro:before-swap', () => {
+        document.querySelectorAll('.timeline-item').forEach(item => {
             item.style.opacity = '0';
             item.style.transform = 'translateY(20px)';
-        }
+        });
     });
-});
-</script>
+    </script>
+</SafeResource>

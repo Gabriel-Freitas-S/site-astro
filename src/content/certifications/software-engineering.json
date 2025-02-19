@@ -6,16 +6,13 @@
       "title": "Ferramentas",
       "technologies": [
         {
-          "name": "Git",
-          "icon": "logos:git"
+          "name": "Git"
         },
         {
-          "name": "Docker",
-          "icon": "logos:docker-icon"
+          "name": "Docker"
         },
         {
-          "name": "Jenkins",
-          "icon": "vscode-icons:file-type-jenkins"
+          "name": "Jenkins"
         }
       ]
     },
@@ -23,16 +20,13 @@
       "title": "Práticas",
       "technologies": [
         {
-          "name": "DevOps",
-          "icon": "mdi:microsoft-azure-devops"
+          "name": "DevOps"
         },
         {
-          "name": "Scrum",
-          "icon": "simple-icons:scrumalliance"
+          "name": "Scrum"
         },
         {
-          "name": "TDD",
-          "icon": "simple-icons:testinglibrary"
+          "name": "TDD"
         }
       ]
     }

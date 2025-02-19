@@ -6,16 +6,13 @@
       "title": "Frontend",
       "technologies": [
         {
-          "name": "CSS",
-          "icon": "logos:css-3"
+          "name": "CSS"
         },
         {
-          "name": "Tailwind",
-          "icon": "logos:tailwindcss-icon"
+          "name": "Tailwind"
         },
         {
-          "name": "SASS",
-          "icon": "logos:sass"
+          "name": "SASS"
         }
       ]
     }

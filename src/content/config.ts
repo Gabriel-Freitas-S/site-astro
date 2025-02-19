@@ -10,8 +10,7 @@ const certificationCollection = defineCollection({
                 title: z.string(),
                 technologies: z.array(
                     z.object({
-                        name: z.string(),
-                        icon: z.string()
+                        name: z.string()
                     })
                 )
             })
