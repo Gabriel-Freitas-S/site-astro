@@ -169,8 +169,6 @@ export const prerender = true;
     }
 
     function filterCertifications(searchTerm) {
-        console.log('Filtrando certificações com termo:', searchTerm); // Debug
-
         // Se não houver termo de busca, mostrar todos os cards
         if (!searchTerm) {
             document.querySelectorAll('.card-wrapper').forEach(wrapper => {
@@ -256,7 +254,6 @@ export const prerender = true;
         // Aguardar um pouco para garantir que a página foi carregada
         if (initialFilter) {
             setTimeout(() => {
-                console.log('Aplicando filtro inicial:', initialFilter); // Debug
                 filterCertifications(initialFilter);
                 
                 // Atualizar input de busca
@@ -270,7 +267,6 @@ export const prerender = true;
             const params = new URLSearchParams(window.location.search);
             const skillFilter = params.get('skill');
             if (skillFilter) {
-                console.log('Navegação detectada, aplicando filtro:', skillFilter); // Debug
                 filterCertifications(skillFilter);
             }
         });
@@ -278,12 +274,10 @@ export const prerender = true;
 
     // Inicializar em diferentes eventos do Astro
     document.addEventListener('astro:page-load', () => {
-        console.log('Inicializando página...'); // Debug
         initializeCertificationsPage();
     });
 
     document.addEventListener('astro:after-swap', () => {
-        console.log('Reinicializando após navegação...'); // Debug
         initializeCertificationsPage();
     });
     </script>
