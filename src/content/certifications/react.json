@@ -1,0 +1,76 @@
+{
+  "title": "Explore React com JavaScript",
+  "duration": "66h",
+  "skills": [
+    {
+      "title": "Frontend",
+      "technologies": [
+        {
+          "name": "React"
+        }
+      ]
+    },
+    {
+      "title": "Linguagens",
+      "technologies": [
+        {
+          "name": "JavaScript"
+        },
+        {
+          "name": "TypeScript"
+        }
+      ]
+    }
+  ],
+  "courses": [
+    {
+      "name": "React: desenvolvendo com JavaScript",
+      "period": "21/12/2023 a 22/12/2023",
+      "duration": "14h"
+    },
+    {
+      "name": "React: como os componentes funcionam",
+      "period": "22/12/2023 a 26/12/2023",
+      "duration": "8h"
+    },
+    {
+      "name": "React: desenvolvendo em React Router com JavaScript",
+      "period": "26/12/2023 a 26/12/2023",
+      "duration": "8h"
+    },
+    {
+      "name": "React: estilize componentes com Styled Components e manipule arquivos estáticos",
+      "period": "26/12/2023 a 26/12/2023",
+      "duration": "10h"
+    },
+    {
+      "name": "React: gerencie estados globalmente com Context API",
+      "period": "26/12/2023 a 26/12/2023",
+      "duration": "8h"
+    },
+    {
+      "name": "React: praticando React com Js",
+      "period": "26/12/2023 a 26/12/2023",
+      "duration": "8h"
+    },
+    {
+      "name": "React: migrando para TypeScript",
+      "period": "26/12/2023 a 26/12/2023",
+      "duration": "8h"
+    }
+  ],
+  "complementaryContent": [
+    {
+      "name": "Alura+: Hooks do React: useEffect",
+      "duration": "20min"
+    },
+    {
+      "name": "Artigo: Node.js para Frameworks Front-end",
+      "duration": "30min"
+    },
+    {
+      "name": "Artigo: React, front end e o mercado",
+      "duration": "30min"
+    }
+  ]
+}

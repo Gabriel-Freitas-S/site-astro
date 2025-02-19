@@ -1,0 +1,46 @@
+{
+  "title": "Segurança de software com OWASP",
+  "duration": "42h",
+  "skills": [
+    {
+      "title": "Segurança",
+      "technologies": [
+        {
+          "name": "OWASP"
+        }
+      ]
+    }
+  ],
+  "courses": [
+    {
+      "name": "OWASP Top 10: de Injections a Broken Access Control",
+      "period": "24/01/2024 a 25/01/2024",
+      "duration": "4h"
+    },
+    {
+      "name": "OWASP Top 10: Security misconfiguration, logging e monitoramento",
+      "period": "25/01/2024 a 25/01/2024",
+      "duration": "6h"
+    },
+    {
+      "name": "OWASP: padrão de verificação de segurança de aplicações",
+      "period": "25/01/2024 a 25/01/2024",
+      "duration": "6h"
+    },
+    {
+      "name": "OWASP: padrão de verificação de segurança de aplicações V5 a V8",
+      "period": "26/01/2024 a 26/01/2024",
+      "duration": "7h"
+    },
+    {
+      "name": "OWASP: padrão de verificação de segurança de aplicações V9 a V14",
+      "period": "26/01/2024 a 26/01/2024",
+      "duration": "7h"
+    },
+    {
+      "name": "OWASP: melhorando a segurança com Clojure",
+      "period": "30/01/2024 a 30/01/2024",
+      "duration": "12h"
+    }
+  ]
+}

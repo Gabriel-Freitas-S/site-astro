@@ -1,50 +1,94 @@
-# Gabriel Freitas Souza -gabrielfs.dev
----
-# Astro Starter Kit: Basics
+# Portfolio Pessoal
 
-```sh
-npm create astro@latest -- --template basics
+Site pessoal desenvolvido com Astro, focado em performance, SEO e boas práticas de desenvolvimento.
+
+## 🚀 Estrutura do Projeto
+
 ```
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
 ├── src/
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
+│   ├── assets/          # Recursos estáticos (imagens, SVGs)
+│   ├── components/      # Componentes Astro reutilizáveis
+│   ├── content/         # Dados estruturados em JSON
+│   ├── layouts/         # Layouts base
+│   └── pages/          # Páginas da aplicação
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+### 📄 Páginas
 
-## 🧞 Commands
+- `index.astro` - Página inicial
+- `certificacoes.astro` - Lista de certificações
+- `experiencia.astro` - Experiência profissional
 
-All commands are run from the root of the project, from a terminal:
+### 🧱 Componentes
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+- `BaseCard.astro` - Card base reutilizável
+- `CertificationCard.astro` - Card para exibição de certificações
+- `ExperienceCard.astro` - Card para exibição de experiência profissional
+- `Header.astro` - Cabeçalho do site
+- `Navigation.astro` - Navegação principal
+- `SearchBar.astro` - Barra de pesquisa
+- `SkillCard.astro` - Card para exibição de habilidades
 
-## 👀 Want to learn more?
+## 🛠️ Tecnologias Utilizadas
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- **[Astro](https://astro.build/)** v5.3.0
+- **[@astrojs/sitemap](https://www.npmjs.com/package/@astrojs/sitemap)** - Geração automática de sitemap
+- **[astro-robots-txt](https://www.npmjs.com/package/astro-robots-txt)** - Geração de robots.txt
+- **[astro-icon](https://www.npmjs.com/package/astro-icon)** - Integração com ícones
+- **[astro-compressor](https://www.npmjs.com/package/astro-compressor)** - Compressão de assets
+- **[astro-minify-html-swc](https://www.npmjs.com/package/astro-minify-html-swc)** - Minificação de HTML
+
+## ⚡ Otimizações
+
+### Performance
+- Compressão de assets (Gzip e Brotli)
+- Minificação de HTML, CSS e JavaScript
+- Prefetch automático de recursos
+- Code splitting e lazy loading
+- Otimização de imagens com Sharp
+
+### SEO
+- Sitemap automático
+- Robots.txt configurável
+- Meta tags otimizadas
+
+### Segurança
+- Content Security Policy (CSP) configurado
+- Headers de segurança:
+  - X-Content-Type-Options
+  - X-Frame-Options
+  - Referrer-Policy
+  - Permissions-Policy
+  - Strict-Transport-Security
+
+## 🚦 Scripts Disponíveis
+
+```bash
+# Desenvolvimento
+npm run dev
+
+# Build
+npm run build
+
+# Preview da build
+npm run preview
+
+# Build e preview local
+npm run local
+```
+
+## 📝 Content Collections
+
+O conteúdo dinâmico é gerenciado através de collections em JSON:
+
+- `certifications/` - Certificações e formações
+- `experience/` - Experiência profissional
+
+## 🏗️ Build e Deploy
+
+O site é construído como uma aplicação estática (`output: 'static'`) com as seguintes otimizações:
+
+- Inline de stylesheets quando apropriado
+- Otimização de assets
+- Suporte a redirecionamentos
+- Chunk splitting otimizado para vendor, icons e transitions
