@@ -9,20 +9,6 @@
           "name": "JavaScript"
         }
       ]
-    },
-    {
-      "title": "Conceitos",
-      "technologies": [
-        {
-          "name": "OOP"
-        },
-        {
-          "name": "Threads"
-        },
-        {
-          "name": "Concorrência"
-        }
-      ]
     }
   ],
   "courses": [

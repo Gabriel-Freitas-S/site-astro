@@ -9,17 +9,6 @@
           "name": "JavaScript"
         }
       ]
-    },
-    {
-      "title": "Frontend",
-      "technologies": [
-        {
-          "name": "DOM"
-        },
-        {
-          "name": "localStorage"
-        }
-      ]
     }
   ],
   "courses": [

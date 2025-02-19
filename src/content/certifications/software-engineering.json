@@ -3,30 +3,10 @@
   "duration": "85h",
   "skills": [
     {
-      "title": "Ferramentas",
-      "technologies": [
-        {
-          "name": "Git"
-        },
-        {
-          "name": "Docker"
-        },
-        {
-          "name": "Jenkins"
-        }
-      ]
-    },
-    {
       "title": "Práticas",
       "technologies": [
         {
-          "name": "DevOps"
-        },
-        {
           "name": "Scrum"
-        },
-        {
-          "name": "TDD"
         }
       ]
     }
