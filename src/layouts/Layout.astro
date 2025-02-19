@@ -25,8 +25,11 @@ export const prerender = true;
         <meta name="theme-color" content="#007AFF" />
         <meta name="color-scheme" content="light dark" />
         <meta name="format-detection" content="telephone=no" />
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <meta http-equiv="x-dns-prefetch-control" content="on" />
 
         <!-- Open Graph -->
@@ -47,40 +50,45 @@ export const prerender = true;
         <SafeResource>
             <script is:inline>
                 // Theme management
-                const setTheme = () => {
-                    const theme = localStorage.getItem('theme') ||
-                        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-                    
-                    requestAnimationFrame(() => {
-                        document.documentElement.classList.toggle('light-theme', theme === 'light');
-                        document.documentElement.style.setProperty('--theme-transition', 'none');
+                (function() {
+                    if (window.__themeInitialized) return;
+                    window.__themeInitialized = true;
+
+                    function updateTheme() {
+                        const theme = localStorage.getItem('theme') ||
+                            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
                         
                         requestAnimationFrame(() => {
-                            document.documentElement.style.removeProperty('--theme-transition');
+                            document.documentElement.classList.toggle('light-theme', theme === 'light');
+                            document.documentElement.style.setProperty('--theme-transition', 'none');
+                            
+                            requestAnimationFrame(() => {
+                                document.documentElement.style.removeProperty('--theme-transition');
+                            });
                         });
+                    }
+
+                    // Initial theme setup
+                    updateTheme();
+
+                    // Handle page transitions
+                    document.addEventListener('astro:page-load', () => {
+                        requestAnimationFrame(updateTheme);
                     });
-                };
 
-                // Initial theme setup
-                setTheme();
-
-                // Handle page transitions
-                document.addEventListener('astro:page-load', () => {
-                    requestAnimationFrame(setTheme);
-                });
-
-                // Handle theme changes
-                window.addEventListener('storage', (e) => {
-                    if (e.key === 'theme') {
-                        requestAnimationFrame(setTheme);
-                    }
-                });
-                
-                window.matchMedia('(prefers-color-scheme: dark)').addListener(() => {
-                    if (!localStorage.getItem('theme')) {
-                        requestAnimationFrame(setTheme);
-                    }
-                });
+                    // Handle theme changes
+                    window.addEventListener('storage', (e) => {
+                        if (e.key === 'theme') {
+                            requestAnimationFrame(updateTheme);
+                        }
+                    });
+                    
+                    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                        if (!localStorage.getItem('theme')) {
+                            requestAnimationFrame(updateTheme);
+                        }
+                    });
+                })();
 
                 // Preload content for visible sections
                 document.addEventListener('astro:page-load', () => {
@@ -102,41 +110,24 @@ export const prerender = true;
 
         <!-- Google Analytics -->
         <script type="text/partytown" async src="https://www.googletagmanager.com/gtag/js?id=G-KXJCF6VDEE"></script>
-        <script type="text/partytown" define:vars={{ id: 'G-KXJCF6VDEE' }}>
-        {
+        <script type="text/partytown">
             window.dataLayer = window.dataLayer || [];
             function gtag() {
-                try {
-                    dataLayer.push(arguments);
-                } catch (e) {
-                    console.error('Google Analytics error:', e);
-                }
+                dataLayer.push(arguments);
             }
             gtag('js', new Date());
-            gtag('config', id);
-            
-            if (document.readyState === 'complete') {
-                gtag('event', 'page_view');
-            } else {
-                window.addEventListener('load', () => {
-                    gtag('event', 'page_view');
-                });
-            }
+            gtag('config', 'G-KXJCF6VDEE', {
+                page_path: window.location.pathname,
+            });
             
             document.addEventListener('astro:after-swap', () => {
-                gtag('event', 'page_view');
+                gtag('config', 'G-KXJCF6VDEE', {
+                    page_path: window.location.pathname,
+                });
             });
-        }
         </script>
 
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        <link
-            rel="preload"
-            href="https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2"
-            as="font"
-            type="font/woff2"
-            crossorigin
-        />
     </head>
     <body>
         <main
@@ -195,13 +186,6 @@ export const prerender = true;
     }
 }
 
-@font-face {
-    font-family: 'Inter';
-    src: url('https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2') format('woff2');
-    font-weight: 400 700;
-    font-style: normal;
-    font-display: swap;
-}
 
 :root {
     color-scheme: dark light;

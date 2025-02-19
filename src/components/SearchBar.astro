@@ -120,9 +120,6 @@ const { className = '', initialSearchTerm = null } = Astro.props;
         if (!searchInput) return;
 
         function performSearch(searchTerm) {
-            console.log('Iniciando busca com termo:', searchTerm); // Debug
-
-            // Disparar evento de busca
             const event = new CustomEvent('globalSearch', {
                 bubbles: true,
                 detail: { searchTerm: searchTerm.toLowerCase() }
@@ -147,7 +144,6 @@ const { className = '', initialSearchTerm = null } = Astro.props;
         // Aplicar filtro inicial
         const initialValue = searchInput.value.trim();
         if (initialValue) {
-            console.log('SearchBar - Valor inicial:', initialValue); // Debug
             requestAnimationFrame(() => {
                 performSearch(initialValue);
             });
@@ -156,12 +152,10 @@ const { className = '', initialSearchTerm = null } = Astro.props;
 
     // Inicializar em diferentes eventos do Astro
     document.addEventListener('astro:page-load', () => {
-        console.log('Inicializando SearchBar...'); // Debug
         initializeSearch();
     });
 
     document.addEventListener('astro:after-swap', () => {
-        console.log('Reinicializando SearchBar após navegação...'); // Debug
         initializeSearch();
     });
     </script>

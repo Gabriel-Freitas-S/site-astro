@@ -31,47 +31,12 @@ export default defineConfig({
     compressor({
       gzip: true,
       brotli: true,
-      fileExtensions: [
-        '.css',
-        '.js',
-        '.html',
-        '.xml',
-        '.cjs',
-        '.mjs',
-        '.svg',
-        '.txt',
-        '.json',
-        '.ts'
-      ]
+      fileExtensions: ['.css', '.js', '.html', '.xml', '.svg', '.json']
     }),
     minify(),
     sitemap(),
-    partytown({
-      config: {
-        forward: ["dataLayer.push"],
-      },
-    }),
-    icon({
-      include: {
-        mdi: [
-          'open-in-new'
-        ]
-      },
-      svgoOptions: {
-        plugins: [
-          {
-            name: 'preset-default',
-            params: {
-              overrides: {
-                removeViewBox: false,
-                removeUselessStrokeAndFill: false,
-              },
-            },
-          },
-          'removeDimensions',
-        ],
-      },
-    })
+    partytown(),
+    icon({ include: { mdi: ['open-in-new'] } })
   ],
   prefetch: {
     prefetchAll: true,
@@ -86,9 +51,7 @@ export default defineConfig({
         webp: { quality: 80, effort: 4 },
         avif: { quality: 80, effort: 4 }
       }
-    },
-    domains: [],
-    remotePatterns: []
+    }
   },
   build: {
     inlineStylesheets: 'auto',
@@ -98,26 +61,24 @@ export default defineConfig({
   output: 'static',
   server: {
     headers: {
-      'Content-Security-Policy': `
-        default-src 'self';
-        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://*.google-analytics.com;
-        style-src 'self' 'unsafe-inline' https://fonts.gstatic.com;
-        connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://stats.g.doubleclick.net;
-        img-src 'self' data: https: https://*.google-analytics.com;
-        font-src 'self' https://fonts.gstatic.com;
-        worker-src 'self' blob:;
-        frame-src 'self';
-        frame-ancestors 'none';
-        base-uri 'self';
-        form-action 'self';
-        object-src 'none';
-        upgrade-insecure-requests;
-      `.replace(/\s+/g, ' ').trim(),
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
       'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
+      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+      'Cache-Control': 'public, max-age=31536000, immutable',
+      'Content-Security-Policy': [
+        "default-src 'self'",
+        "script-src 'self' https://www.googletagmanager.com",
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: https:;",
+        "font-src 'self' https://fonts.gstatic.com",
+        "connect-src 'self' https://www.google-analytics.com",
+        "frame-src 'none'",
+        "form-action 'none'",
+        "base-uri 'self'",
+        "object-src 'none'"
+      ].join('; ')
     }
   },
   vite: {
