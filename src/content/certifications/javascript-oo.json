@@ -1,0 +1,63 @@
+{
+  "title": "Desenvolva aplicações Web em JavaScript com tarefas concorrentes e orientadas a objetos",
+  "duration": "23h",
+  "skills": [
+    {
+      "title": "Linguagens",
+      "technologies": [
+        {
+          "name": "JavaScript"
+        }
+      ]
+    },
+    {
+      "title": "Conceitos",
+      "technologies": [
+        {
+          "name": "OOP"
+        },
+        {
+          "name": "Threads"
+        },
+        {
+          "name": "Concorrência"
+        }
+      ]
+    }
+  ],
+  "courses": [
+    {
+      "name": "JavaScript: manipulando objetos",
+      "period": "20/12/2023 a 20/12/2023",
+      "duration": "8h"
+    },
+    {
+      "name": "JavaScript: classes e heranças no desenvolvimento de aplicações com orientação a objetos",
+      "period": "20/12/2023 a 20/12/2023",
+      "duration": "6h"
+    },
+    {
+      "name": "JavaScript: trabalhando com threads para requisições simultâneas",
+      "period": "20/12/2023 a 20/12/2023",
+      "duration": "6h"
+    }
+  ],
+  "complementaryContent": [
+    {
+      "name": "Video: Orientação a objetos com Roberta Arcoverde",
+      "duration": "60min"
+    },
+    {
+      "name": "Artigo: Prototype: descubra como quase tudo no JavaScript é um Objeto",
+      "duration": "30min"
+    },
+    {
+      "name": "Artigo: This, Getters e Setters nas classes Javascript",
+      "duration": "30min"
+    },
+    {
+      "name": "Artigo: Arquitetura do Node.js: entenda o que são threads e processos",
+      "duration": "30min"
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "title": "Desenvolva aplicações Web com JavaScript",
+  "duration": "62h",
+  "skills": [
+    {
+      "title": "Linguagens",
+      "technologies": [
+        {
+          "name": "JavaScript"
+        }
+      ]
+    },
+    {
+      "title": "Frontend",
+      "technologies": [
+        {
+          "name": "DOM"
+        },
+        {
+          "name": "localStorage"
+        }
+      ]
+    }
+  ],
+  "courses": [
+    {
+      "name": "JavaScript para Web: Crie páginas dinâmicas",
+      "period": "19/12/2023 a 19/12/2023",
+      "duration": "10h"
+    },
+    {
+      "name": "JavaScript: manipulando elementos no DOM",
+      "period": "19/12/2023 a 19/12/2023",
+      "duration": "6h"
+    },
+    {
+      "name": "JavaScript: explorando a manipulação de elementos e da localStorage",
+      "period": "19/12/2023 a 19/12/2023",
+      "duration": "8h"
+    },
+    {
+      "name": "JavaScript: validações e reconhecimento de voz",
+      "period": "19/12/2023 a 19/12/2023",
+      "duration": "6h"
+    },
+    {
+      "name": "JavaScript: consumindo e tratando dados de uma API",
+      "period": "19/12/2023 a 19/12/2023",
+      "duration": "6h"
+    },
+    {
+      "name": "JavaScript: métodos de array",
+      "period": "19/12/2023 a 19/12/2023",
+      "duration": "8h"
+    },
+    {
+      "name": "JavaScript: criando requisições",
+      "period": "19/12/2023 a 20/12/2023",
+      "duration": "8h"
+    },
+    {
+      "name": "JavaScript: validando formulários",
+      "period": "20/12/2023 a 20/12/2023",
+      "duration": "8h"
+    }
+  ],
+  "complementaryContent": [
+    {
+      "name": "Alura+: Dark Mode: um projeto em HTML/CSS",
+      "duration": "10min"
+    },
+    {
+      "name": "Alura+: Funções no JavaScript que você precisa conhecer",
+      "duration": "11min"
+    },
+    {
+      "name": "Artigo: Começar a programar é com JavaScript",
+      "duration": "30min"
+    },
+    {
+      "name": "Artigo: JavaScript: para que serve um Array?",
+      "duration": "30min"
+    },
+    {
+      "name": "Artigo: Como iniciar os estudos no Front-end",
+      "duration": "30min"
+    }
+  ]
+}

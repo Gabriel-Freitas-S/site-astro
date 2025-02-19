@@ -1,0 +1,75 @@
+{
+  "title": "A partir do zero: HTML e CSS para projetos web",
+  "duration": "51h",
+  "skills": [
+    {
+      "title": "Frontend",
+      "technologies": [
+        {
+          "name": "HTML"
+        },
+        {
+          "name": "CSS"
+        }
+      ]
+    }
+  ],
+  "courses": [
+    {
+      "name": "HTML e CSS: ambientes de desenvolvimento, estrutura de arquivos e tags",
+      "period": "12/12/2023 a 12/12/2023",
+      "duration": "8h"
+    },
+    {
+      "name": "HTML e CSS: Classes, posicionamento e Flexbox",
+      "period": "12/12/2023 a 12/12/2023",
+      "duration": "8h"
+    },
+    {
+      "name": "HTML e CSS: cabeçalho, footer e variáveis CSS",
+      "period": "12/12/2023 a 12/12/2023",
+      "duration": "6h"
+    },
+    {
+      "name": "HTML e CSS: trabalhando com responsividade e publicação de projetos",
+      "period": "12/12/2023 a 13/12/2023",
+      "duration": "6h"
+    },
+    {
+      "name": "HTML e CSS: praticando HTML/CSS",
+      "period": "13/12/2023 a 13/12/2023",
+      "duration": "8h"
+    },
+    {
+      "name": "HTML e CSS: responsividade com mobile-first",
+      "period": "13/12/2023 a 15/12/2023",
+      "duration": "12h"
+    }
+  ],
+  "complementaryContent": [
+    {
+      "name": "Alura+: GitHub: diferentes maneiras de compartilhar seu projeto",
+      "duration": "13min"
+    },
+    {
+      "name": "Alura+: Transformando um site em responsivo",
+      "duration": "10min"
+    },
+    {
+      "name": "Artigo: HTML: o que é, como aprender e um Guia para iniciantes",
+      "duration": "30min"
+    },
+    {
+      "name": "Artigo: CSS: o que é, como usar no HTML e um Guia para iniciar",
+      "duration": "30min"
+    },
+    {
+      "name": "Artigo: Como colocar seu projeto no ar com o Github Pages?",
+      "duration": "30min"
+    },
+    {
+      "name": "Artigo: Srcset: Trabalhando com imagens responsivas",
+      "duration": "30min"
+    }
+  ]
+}

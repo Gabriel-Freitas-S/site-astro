@@ -118,6 +118,146 @@
     {
       "name": "Alura+: O que é Behavior-Driven Development (BDD)?",
       "duration": "11min"
+    },
+    {
+      "name": "Alura+: Entenda a Pirâmide de Teste",
+      "duration": "16min"
+    },
+    {
+      "name": "Alura+: API: Testes de contrato",
+      "duration": "20min"
+    },
+    {
+      "name": "Alura+: Cobertura de Código",
+      "duration": "9min"
+    },
+    {
+      "name": "Alura+: Testes de Mutação - Testando seus testes",
+      "duration": "12min"
+    },
+    {
+      "name": "Alura+: O que é uma API?",
+      "duration": "8min"
+    },
+    {
+      "name": "Alura+: O que é REST?",
+      "duration": "14min"
+    },
+    {
+      "name": "Alura+: Boas práticas na Modelagem de API's REST",
+      "duration": "15min"
+    },
+    {
+      "name": "Alura+: O que são Microsserviços?",
+      "duration": "16min"
+    },
+    {
+      "name": "Alura+: Tipos de Microservices",
+      "duration": "6min"
+    },
+    {
+      "name": "Hipsters Ponto Tech: Monolitos",
+      "duration": "48min"
+    },
+    {
+      "name": "Hipsters Ponto Tech: Microserviços",
+      "duration": "44min"
+    },
+    {
+      "name": "Alura+: O que é um API Gateway?",
+      "duration": "10min"
+    },
+    {
+      "name": "Alura+: O que é Service Mesh?",
+      "duration": "8min"
+    },
+    {
+      "name": "Alura+: O que é DevOps?",
+      "duration": "11min"
+    },
+    {
+      "name": "Hipsters Ponto Tech: Primeiros passos com Devops",
+      "duration": "52min"
+    },
+    {
+      "name": "Alura+: O que é DevSecOps?",
+      "duration": "16min"
+    },
+    {
+      "name": "Hipsters Ponto Tech: DevOps: Observabilidade",
+      "duration": "53min"
+    },
+    {
+      "name": "Alura+: SRE - Engenharia de Confiabilidade de Sites",
+      "duration": "15min"
+    },
+    {
+      "name": "Hipsters Ponto Tech: SRE: Site Reliability Engineering",
+      "duration": "51min"
+    },
+    {
+      "name": "Alura+: O que é Observabilidade?",
+      "duration": "18min"
+    },
+    {
+      "name": "Alura+: Monitorando aplicações: 4 Golden Signals",
+      "duration": "10min"
+    },
+    {
+      "name": "Alura+: Monitoramento com Netdata",
+      "duration": "14min"
+    },
+    {
+      "name": "Hipsters Ponto Tech: Monitoramento: não receba mais telefonemas de madrugada!",
+      "duration": "46min"
+    },
+    {
+      "name": "Alura+: O que são Containers?",
+      "duration": "14min"
+    },
+    {
+      "name": "Alura+: O que é Serverless?",
+      "duration": "26min"
+    },
+    {
+      "name": "Alura+: O que é Infraestrutura como Código (IaC)?",
+      "duration": "13min"
+    },
+    {
+      "name": "Hipsters Ponto Tech: Agilidade",
+      "duration": "47min"
+    },
+    {
+      "name": "Alura+: Cascata vs Ágil",
+      "duration": "14min"
+    },
+    {
+      "name": "Hipsters Ponto Tech: Kanban e o fluxo de trabalho",
+      "duration": "55min"
+    },
+    {
+      "name": "Alura+: Scrum x Kanban",
+      "duration": "10min"
+    },
+    {
+      "name": "Alura+: O que é eXtreme Programming?",
+      "duration": "7min"
+    },
+    {
+      "name": "Artigo: REST: Conceito e fundamentos",
+      "duration": "30min"
+    },
+    {
+      "name": "Artigo: Microsserviços com .NET Core: Comunicação Entre Serviços",
+      "duration": "30min"
+    },
+    {
+      "name": "Artigo: Devops: o que é e principais práticas",
+      "duration": "30min"
+    },
+    {
+      "name": "Artigo: Kanban: o que é e como funciona",
+      "duration": "30min"
     }
   ]
 }

@@ -19,25 +19,43 @@ interface Skill {
 
 const certifications = await getCollection('certifications');
 
-// Agrupar todas as skills por categoria
-const allSkills = new Map<string, Set<Technology>>();
+// Agrupar todas as skills por categoria, usando um Map para garantir unicidade
+const allSkills = new Map<string, Map<string, Technology>>();
 
 certifications.forEach(cert => {
     cert.data.skills.forEach(skill => {
         if (!allSkills.has(skill.title)) {
-            allSkills.set(skill.title, new Set());
+            allSkills.set(skill.title, new Map());
         }
+        const techMap = allSkills.get(skill.title)!;
         skill.technologies.forEach(tech => {
-            allSkills.get(skill.title)?.add(tech);
+            // Usa o nome como chave para garantir unicidade
+            techMap.set(tech.name, tech);
         });
     });
 });
 
-// Converter para o formato necessário para renderização
-const skillCategories = Array.from(allSkills.entries()).map(([title, techs]) => ({
-    title,
-    technologies: Array.from(techs)
-}));
+// Converter para o formato necessário para renderização, ordenando as categorias
+const skillCategories = Array.from(allSkills.entries())
+    .map(([title, techMap]) => ({
+        title,
+        technologies: Array.from(techMap.values())
+    }))
+    .sort((a, b) => {
+        // Ordenação personalizada das categorias
+        const order = [
+            "Linguagens",
+            "Frontend",
+            "Frameworks",
+            "Ferramentas",
+            "Práticas",
+            "Segurança",
+            "Conceitos"
+        ];
+        const indexA = order.indexOf(a.title);
+        const indexB = order.indexOf(b.title);
+        return indexA - indexB;
+    });
 
 const description = `Desenvolvedor de software especializado em desenvolvimento web e mobile, com experiência em diversas tecnologias e frameworks.`;
 ---

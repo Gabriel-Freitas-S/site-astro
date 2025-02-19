@@ -1,0 +1,32 @@
+{
+  "title": "Linguagem Rust",
+  "duration": "17h",
+  "skills": [
+    {
+      "title": "Linguagens",
+      "technologies": [
+        {
+          "name": "Rust"
+        }
+      ]
+    }
+  ],
+  "courses": [
+    {
+      "name": "Rust: a linguagem de programação performática e segura",
+      "period": "24/04/2024 a 29/04/2024",
+      "duration": "8h"
+    },
+    {
+      "name": "Rust: aprenda mais sobre tipos",
+      "period": "29/04/2024 a 30/04/2024",
+      "duration": "8h"
+    }
+  ],
+  "complementaryContent": [
+    {
+      "name": "Hipsters Ponto Tech: Rust",
+      "duration": "48min"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "title": "Melhore sua experiência de desenvolvimento com TypeScript",
-  "duration": "32h",
+  "duration": "31h",
   "skills": [
     {
       "title": "Linguagens",
@@ -41,15 +41,7 @@
   ],
   "complementaryContent": [
     {
-      "name": "Video: Quais são as principais vantagens do Typescript?",
-      "duration": "60min"
-    },
-    {
-      "name": "Artigo: TypeScript com JavaScript Vanilla",
-      "duration": "30min"
-    },
-    {
-      "name": "Artigo: JavaScript ou TypeScript? Entenda as principais diferenças",
+      "name": "Artigo: Javascript ou Typescript?",
       "duration": "30min"
     }
   ]
