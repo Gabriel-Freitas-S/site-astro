@@ -6,8 +6,7 @@
       "title": "Linguagens",
       "technologies": [
         {
-          "name": "Dart",
-          "icon": "logos:dart"
+          "name": "Dart"
         }
       ]
     },
@@ -15,8 +14,7 @@
       "title": "Frameworks",
       "technologies": [
         {
-          "name": "Flutter",
-          "icon": "logos:flutter"
+          "name": "Flutter"
         }
       ]
     }

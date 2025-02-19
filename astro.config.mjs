@@ -53,52 +53,8 @@ export default defineConfig({
     }),
     icon({
       include: {
-        'simple-icons': [
-          'typescript',
-          'javascript',
-          'react',
-          'nodedotjs',
-          'android',
-          'jenkins',
-          'git',
-          'jest',
-          'figma',
-          'html5',
-          'css3',
-          'python',
-          'docker',
-          'postgresql',
-          'mongodb',
-          'flutter',
-          'dart',
-          'rust',
-          'astro',
-          'visualstudiocode',
-          'expo',
-          'devops',
-          'scrumalliance',
-          'testinglibrary'
-        ],
         mdi: [
-          'code-tags',
-          'code-braces',
-          'open-in-new',
-          'microsoft-azure-devops'
-        ],
-        logos: [
-          'typescript-icon',
-          'javascript',
-          'css-3',
-          'tailwindcss-icon',
-          'sass',
-          'dart',
-          'flutter',
-          'nodejs-icon',
-          'git',
-          'docker-icon'
-        ],
-        'vscode-icons': [
-          'file-type-jenkins'
+          'open-in-new'
         ]
       },
       svgoOptions: {
