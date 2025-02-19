@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 import CertificationCard from '../components/CertificationCard.astro';
 import SearchBar from '../components/SearchBar.astro';
+import SafeResource from '@igor.dvlpr/astro-saferesource';
 import { getCollection } from 'astro:content';
 
 const certifications = await getCollection('certifications');
@@ -137,170 +138,153 @@ export const prerender = true;
 }
 </style>
 
-<script>
-interface Certification {
-    title: string;
-    skills: {
-        title: string;
-        technologies: {
-            name: string;
-        }[];
-    }[];
-    courses: {
-        name: string;
-        period?: string;
-        duration: string;
-    }[];
-    complementaryContent?: {
-        name: string;
-        duration: string;
-    }[];
-}
+<SafeResource>
+    <script is:inline>
+    function shouldShowCard(searchTerm, certification) {
+        if (!searchTerm) return true;
 
-function shouldShowCard(searchTerm: string, certification: Certification): boolean {
-    if (!searchTerm) return true;
+        const searchTermLower = searchTerm.toLowerCase();
 
-    const searchTermLower = searchTerm.toLowerCase();
+        // Verificar título
+        if (certification.title.toLowerCase().includes(searchTermLower)) return true;
 
-    // Verificar título
-    if (certification.title.toLowerCase().includes(searchTermLower)) return true;
+        // Verificar skills
+        const hasSkillMatch = certification.skills.some(skill =>
+            skill.technologies.some(tech => tech.name.toLowerCase().includes(searchTermLower))
+        );
+        if (hasSkillMatch) return true;
 
-    // Verificar skills
-    const hasSkillMatch = certification.skills.some(skill =>
-        skill.technologies.some(tech => tech.name.toLowerCase().includes(searchTermLower))
-    );
-    if (hasSkillMatch) return true;
+        // Verificar cursos
+        const hasCourseMatch = certification.courses.some(course =>
+            course.name.toLowerCase().includes(searchTermLower)
+        );
+        if (hasCourseMatch) return true;
 
-    // Verificar cursos
-    const hasCourseMatch = certification.courses.some(course =>
-        course.name.toLowerCase().includes(searchTermLower)
-    );
-    if (hasCourseMatch) return true;
+        // Verificar conteúdo complementar
+        if (certification.complementaryContent?.some(content =>
+            content.name.toLowerCase().includes(searchTermLower)
+        )) return true;
 
-    // Verificar conteúdo complementar
-    if (certification.complementaryContent?.some(content =>
-        content.name.toLowerCase().includes(searchTermLower)
-    )) return true;
-
-    return false;
-}
-
-function filterCertifications(searchTerm: string) {
-    console.log('Filtrando certificações com termo:', searchTerm); // Debug
-
-    // Se não houver termo de busca, mostrar todos os cards
-    if (!searchTerm) {
-        document.querySelectorAll('.card-wrapper').forEach(wrapper => {
-            wrapper.classList.remove('hidden');
-        });
-        document.querySelector('.no-results')?.classList.add('hidden');
-
-        // Limpar destaques
-        const event = new CustomEvent('globalSearch', {
-            bubbles: true,
-            detail: { searchTerm: '' }
-        });
-        document.dispatchEvent(event);
-        return;
+        return false;
     }
 
-    // Filtrar cards
-    const grid = document.querySelector('.certifications-grid');
-    const cards = document.querySelectorAll<HTMLElement>('.certification-card');
-    let visibleCount = 0;
+    function filterCertifications(searchTerm) {
+        console.log('Filtrando certificações com termo:', searchTerm); // Debug
 
-    cards.forEach(card => {
-        if (!card.dataset.certification) return;
-
-        try {
-            const certification: Certification = JSON.parse(card.dataset.certification);
-            const shouldShow = shouldShowCard(searchTerm, certification);
-            const wrapper = card.closest('.card-wrapper');
-            if (wrapper) {
-                wrapper.classList.toggle('hidden', !shouldShow);
-                if (shouldShow) visibleCount++;
-            }
-        } catch (error) {
-            console.error('Erro ao processar certificação:', error);
-        }
-    });
-
-    // Atualizar mensagem de resultados
-    const noResults = grid?.querySelector('.no-results');
-    if (noResults) {
-        noResults.classList.toggle('hidden', visibleCount > 0);
-    }
-
-    // Disparar evento de busca para destacar conteúdo
-    requestAnimationFrame(() => {
-        const event = new CustomEvent('globalSearch', {
-            bubbles: true,
-            detail: { searchTerm: searchTerm.toLowerCase() }
-        });
-        document.dispatchEvent(event);
-    });
-}
-
-function initializeCertificationsPage() {
-    // Lazy loading dos cards
-    const observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    const target = entry.target as HTMLElement;
-                    requestAnimationFrame(() => {
-                        target.classList.add('visible');
-                    });
-                    observer.unobserve(target);
-                }
+        // Se não houver termo de busca, mostrar todos os cards
+        if (!searchTerm) {
+            document.querySelectorAll('.card-wrapper').forEach(wrapper => {
+                wrapper.classList.remove('hidden');
             });
-        },
-        {
-            threshold: 0.1,
-            rootMargin: '50px'
+            document.querySelector('.no-results')?.classList.add('hidden');
+
+            // Limpar destaques
+            const event = new CustomEvent('globalSearch', {
+                bubbles: true,
+                detail: { searchTerm: '' }
+            });
+            document.dispatchEvent(event);
+            return;
         }
-    );
 
-    // Observar cards para lazy loading
-    document.querySelectorAll('.card-wrapper').forEach(card => {
-        observer.observe(card);
-    });
+        // Filtrar cards
+        const grid = document.querySelector('.certifications-grid');
+        const cards = document.querySelectorAll('.certification-card');
+        let visibleCount = 0;
 
-    // Se houver um filtro inicial, aplicá-lo após carregar a página
-    const grid = document.querySelector<HTMLElement>('.certifications-grid');
-    const initialFilter = grid?.dataset.initialFilter;
+        cards.forEach(card => {
+            if (!card.dataset.certification) return;
 
-    // Aguardar um pouco para garantir que a página foi carregada
-    if (initialFilter) {
-        setTimeout(() => {
-            console.log('Aplicando filtro inicial:', initialFilter); // Debug
-            filterCertifications(initialFilter);
-            
-            // Atualizar input de busca
-            const searchInput = document.querySelector<HTMLInputElement>('#certification-search');
-            if (searchInput) searchInput.value = initialFilter;
-        }, 100);
+            try {
+                const certification = JSON.parse(card.dataset.certification);
+                const shouldShow = shouldShowCard(searchTerm, certification);
+                const wrapper = card.closest('.card-wrapper');
+                if (wrapper) {
+                    wrapper.classList.toggle('hidden', !shouldShow);
+                    if (shouldShow) visibleCount++;
+                }
+            } catch (error) {
+                console.error('Erro ao processar certificação:', error);
+            }
+        });
+
+        // Atualizar mensagem de resultados
+        const noResults = grid?.querySelector('.no-results');
+        if (noResults) {
+            noResults.classList.toggle('hidden', visibleCount > 0);
+        }
+
+        // Disparar evento de busca para destacar conteúdo
+        requestAnimationFrame(() => {
+            const event = new CustomEvent('globalSearch', {
+                bubbles: true,
+                detail: { searchTerm: searchTerm.toLowerCase() }
+            });
+            document.dispatchEvent(event);
+        });
     }
 
-    // Ouvir mudanças de navegação
-    document.addEventListener('astro:after-navigation', () => {
-        const params = new URLSearchParams(window.location.search);
-        const skillFilter = params.get('skill');
-        if (skillFilter) {
-            console.log('Navegação detectada, aplicando filtro:', skillFilter); // Debug
-            filterCertifications(skillFilter);
+    function initializeCertificationsPage() {
+        // Lazy loading dos cards
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const target = entry.target;
+                        requestAnimationFrame(() => {
+                            target.classList.add('visible');
+                        });
+                        observer.unobserve(target);
+                    }
+                });
+            },
+            {
+                threshold: 0.1,
+                rootMargin: '50px'
+            }
+        );
+
+        // Observar cards para lazy loading
+        document.querySelectorAll('.card-wrapper').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Se houver um filtro inicial, aplicá-lo após carregar a página
+        const grid = document.querySelector('.certifications-grid');
+        const initialFilter = grid?.dataset.initialFilter;
+
+        // Aguardar um pouco para garantir que a página foi carregada
+        if (initialFilter) {
+            setTimeout(() => {
+                console.log('Aplicando filtro inicial:', initialFilter); // Debug
+                filterCertifications(initialFilter);
+                
+                // Atualizar input de busca
+                const searchInput = document.querySelector('#certification-search');
+                if (searchInput) searchInput.value = initialFilter;
+            }, 100);
         }
+
+        // Ouvir mudanças de navegação
+        document.addEventListener('astro:after-navigation', () => {
+            const params = new URLSearchParams(window.location.search);
+            const skillFilter = params.get('skill');
+            if (skillFilter) {
+                console.log('Navegação detectada, aplicando filtro:', skillFilter); // Debug
+                filterCertifications(skillFilter);
+            }
+        });
+    }
+
+    // Inicializar em diferentes eventos do Astro
+    document.addEventListener('astro:page-load', () => {
+        console.log('Inicializando página...'); // Debug
+        initializeCertificationsPage();
     });
-}
 
-// Inicializar em diferentes eventos do Astro
-document.addEventListener('astro:page-load', () => {
-    console.log('Inicializando página...'); // Debug
-    initializeCertificationsPage();
-});
-
-document.addEventListener('astro:after-swap', () => {
-    console.log('Reinicializando após navegação...'); // Debug
-    initializeCertificationsPage();
-});
-</script>
+    document.addEventListener('astro:after-swap', () => {
+        console.log('Reinicializando após navegação...'); // Debug
+        initializeCertificationsPage();
+    });
+    </script>
+</SafeResource>

@@ -1,4 +1,6 @@
 ---
+import SafeResource from '@igor.dvlpr/astro-saferesource';
+
 interface Props {
     className?: string;
     initialSearchTerm?: string | null;
@@ -110,55 +112,57 @@ const { className = '', initialSearchTerm = null } = Astro.props;
 }
 </style>
 
-<script>
-function initializeSearch() {
-    const searchInput = document.getElementById('certification-search') as HTMLInputElement;
+<SafeResource>
+    <script is:inline>
+    function initializeSearch() {
+        const searchInput = document.getElementById('certification-search');
 
-    if (!searchInput) return;
+        if (!searchInput) return;
 
-    function performSearch(searchTerm: string) {
-        console.log('Iniciando busca com termo:', searchTerm); // Debug
+        function performSearch(searchTerm) {
+            console.log('Iniciando busca com termo:', searchTerm); // Debug
 
-        // Disparar evento de busca
-        const event = new CustomEvent('globalSearch', {
-            bubbles: true,
-            detail: { searchTerm: searchTerm.toLowerCase() }
+            // Disparar evento de busca
+            const event = new CustomEvent('globalSearch', {
+                bubbles: true,
+                detail: { searchTerm: searchTerm.toLowerCase() }
+            });
+
+            document.dispatchEvent(event);
+        }
+
+        // Debounce para busca em tempo real
+        let searchTimeout;
+        function debouncedSearch(searchTerm) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => performSearch(searchTerm), 300);
+        }
+
+        // Event listener para input
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.trim();
+            debouncedSearch(searchTerm);
         });
 
-        document.dispatchEvent(event);
+        // Aplicar filtro inicial
+        const initialValue = searchInput.value.trim();
+        if (initialValue) {
+            console.log('SearchBar - Valor inicial:', initialValue); // Debug
+            requestAnimationFrame(() => {
+                performSearch(initialValue);
+            });
+        }
     }
 
-    // Debounce para busca em tempo real
-    let searchTimeout: NodeJS.Timeout;
-    function debouncedSearch(searchTerm: string) {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => performSearch(searchTerm), 300);
-    }
-
-    // Event listener para input
-    searchInput.addEventListener('input', () => {
-        const searchTerm = searchInput.value.trim();
-        debouncedSearch(searchTerm);
+    // Inicializar em diferentes eventos do Astro
+    document.addEventListener('astro:page-load', () => {
+        console.log('Inicializando SearchBar...'); // Debug
+        initializeSearch();
     });
 
-    // Aplicar filtro inicial
-    const initialValue = searchInput.value.trim();
-    if (initialValue) {
-        console.log('SearchBar - Valor inicial:', initialValue); // Debug
-        requestAnimationFrame(() => {
-            performSearch(initialValue);
-        });
-    }
-}
-
-// Inicializar em diferentes eventos do Astro
-document.addEventListener('astro:page-load', () => {
-    console.log('Inicializando SearchBar...'); // Debug
-    initializeSearch();
-});
-
-document.addEventListener('astro:after-swap', () => {
-    console.log('Reinicializando SearchBar após navegação...'); // Debug
-    initializeSearch();
-});
-</script>
+    document.addEventListener('astro:after-swap', () => {
+        console.log('Reinicializando SearchBar após navegação...'); // Debug
+        initializeSearch();
+    });
+    </script>
+</SafeResource>
