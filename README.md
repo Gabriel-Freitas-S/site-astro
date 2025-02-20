@@ -52,15 +52,6 @@ Site pessoal desenvolvido com Astro, focado em performance, SEO e boas práticas
 - Robots.txt configurável
 - Meta tags otimizadas
 
-### Segurança
-- Content Security Policy (CSP) configurado
-- Headers de segurança:
-  - X-Content-Type-Options
-  - X-Frame-Options
-  - Referrer-Policy
-  - Permissions-Policy
-  - Strict-Transport-Security
-
 ## 🚦 Scripts Disponíveis
 
 ```bash
