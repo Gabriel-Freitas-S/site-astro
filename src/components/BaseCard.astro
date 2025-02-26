@@ -53,15 +53,20 @@ export const prerender = true;
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
     .base-card {
-        transition: none;
-        transform: none;
+        transition: none !important;
+        transform: none !important;
+        box-shadow: none !important;
+        border: 1px solid currentColor;
     }
     
     .base-card:hover,
     .base-card:active {
-        transform: none;
+        transform: none !important;
+        box-shadow: none !important;
+        background-color: Highlight;
+        color: HighlightText;
     }
 }
 

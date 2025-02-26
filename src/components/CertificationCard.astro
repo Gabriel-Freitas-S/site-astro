@@ -221,11 +221,45 @@ ul {
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
     .card-content {
-        opacity: 1;
-        transform: none;
-        transition: none;
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+
+    .duration-badge {
+        background: ButtonFace !important;
+        color: ButtonText !important;
+        border: 1px solid currentColor !important;
+    }
+
+    .info-row {
+        color: CanvasText !important;
+    }
+
+    li {
+        background: Canvas !important;
+        border: 1px solid currentColor !important;
+    }
+
+    .course-item.matched,
+    .complementary-item.matched {
+        background: Highlight !important;
+        color: HighlightText !important;
+        border-color: currentColor !important;
+    }
+}
+
+@media (forced-colors: active) {
+    .card-content {
+        forced-color-adjust: none;
+    }
+
+    .duration-badge,
+    .course-item,
+    .complementary-item {
+        forced-color-adjust: auto;
     }
 }
 

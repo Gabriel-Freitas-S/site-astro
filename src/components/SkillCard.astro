@@ -107,4 +107,31 @@ const { title, technologies } = Astro.props;
 :global(.light-theme) .tech-item {
     background: var(--accent-quaternary);
 }
+
+@media (forced-colors: active) {
+    .skill-section {
+        border: 1px solid CanvasText;
+        background: Canvas !important;
+    }
+
+    .skill-section h3 {
+        color: CanvasText !important;
+    }
+
+    .tech-item {
+        background: ButtonFace !important;
+        color: ButtonText !important;
+        border: 1px solid currentColor !important;
+    }
+
+    .tech-item:hover {
+        background: Highlight !important;
+        color: HighlightText !important;
+        transform: none !important;
+    }
+
+    .filter-icon {
+        fill: currentColor !important;
+    }
+}
 </style>

@@ -304,13 +304,44 @@ export const prerender = true;
         forced-color-adjust: none;
     }
 
+    /* Permitir que elementos interativos usem cores do sistema */
     a, button {
+        forced-color-adjust: auto;
+        color: LinkText;
+    }
+
+    a:visited {
+        color: VisitedText;
+    }
+
+    /* Garantir que imagens e ícones mantenham suas cores */
+    img, svg {
         forced-color-adjust: auto;
     }
 
-    img {
-        forced-color-adjust: auto;
+    /* Estilos específicos para botões */
+    button, [role="button"] {
+        background-color: ButtonFace;
+        color: ButtonText;
+        border-color: ButtonText;
     }
+
+    button:hover, [role="button"]:hover {
+        background-color: Highlight;
+        color: HighlightText;
+    }
+
+    /* Campos de formulário */
+    input, select, textarea {
+        background-color: Field;
+        color: FieldText;
+        border-color: FieldText;
+    }
+}
+
+/* Suporte para navegadores legados */
+@media (-ms-high-contrast: active), (forced-colors: active) {
+    /* Mesmos estilos que acima */
 }
 
 @media (prefers-reduced-motion: reduce) {

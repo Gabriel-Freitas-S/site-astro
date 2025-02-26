@@ -93,6 +93,29 @@ const { className = '', initialSearchTerm = null } = Astro.props;
     }
 }
 
+/* Forced Colors Mode */
+@media (forced-colors: active) {
+    .search-wrapper {
+        background: Field !important;
+        border: 1px solid FieldText !important;
+        box-shadow: none !important;
+    }
+
+    .search-wrapper:focus-within {
+        border-color: Highlight !important;
+        outline: 2px solid Highlight !important;
+    }
+
+    .search-input {
+        color: FieldText !important;
+        background: Field !important;
+    }
+
+    .search-icon {
+        color: GrayText !important;
+    }
+}
+
 /* Theme Adjustments */
 :global(.light-theme) .search-wrapper {
     background: var(--card-bg);

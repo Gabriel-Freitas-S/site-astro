@@ -281,7 +281,7 @@ li::before {
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
     .experience-card,
     .card-header,
     .description,
@@ -291,6 +291,53 @@ li::before {
         opacity: 1 !important;
         transform: none !important;
         visibility: visible !important;
+    }
+
+    .duration-badge {
+        background: ButtonFace !important;
+        color: ButtonText !important;
+        border: 1px solid currentColor !important;
+        box-shadow: none !important;
+    }
+
+    .position-info h2 {
+        color: CanvasText !important;
+    }
+
+    .position-info h3 {
+        color: GrayText !important;
+    }
+
+    .description {
+        color: CanvasText !important;
+    }
+
+    .achievements {
+        border-top: 1px solid currentColor;
+    }
+
+    li::before {
+        color: currentColor !important;
+    }
+}
+
+@media (forced-colors: active) {
+    .experience-card {
+        forced-color-adjust: none;
+    }
+
+    .duration-badge {
+        forced-color-adjust: auto;
+    }
+
+    li {
+        background: Canvas !important;
+        color: CanvasText !important;
+    }
+
+    li:hover {
+        background: Highlight !important;
+        color: HighlightText !important;
     }
 }
 

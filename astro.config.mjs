@@ -77,12 +77,12 @@ export default defineConfig({
       'Cache-Control': 'public, max-age=3600, immutable',
       'Content-Security-Policy': [
         "default-src 'self'",
-        "script-src 'self' https://www.googletagmanager.com",
-        "style-src 'self' 'unsafe-inline'",
+        "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
         "img-src 'self' data: https:;",
         "font-src 'self' https://fonts.gstatic.com",
-        "connect-src 'self' https://www.google-analytics.com",
-        "frame-src 'none'",
+        "connect-src 'self' https://www.google-analytics.com https://fonts.googleapis.com https://fonts.gstatic.com",
+        "frame-src 'self'",
         "form-action 'none'",
         "base-uri 'self'",
         "object-src 'none'"
