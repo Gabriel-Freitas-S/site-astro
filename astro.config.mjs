@@ -34,8 +34,16 @@ export default defineConfig({
       fileExtensions: ['.css', '.js', '.html', '.xml', '.svg', '.json']
     }),
     minify(),
-    sitemap(),
-    partytown(),
+    sitemap({
+      changefreq: 'weekly',
+      priority: 0.7,
+      lastmod: new Date(),
+    }),
+    partytown({
+      config: {
+        forward: ['dataLayer.push'],
+      }
+    }),
     icon({ include: { mdi: ['open-in-new'] } })
   ],
   prefetch: {
@@ -65,8 +73,8 @@ export default defineConfig({
       'X-Frame-Options': 'DENY',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
       'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
-      'Cache-Control': 'public, max-age=31536000, immutable',
+      'Strict-Transport-Security': 'max-age=3600; includeSubDomains',
+      'Cache-Control': 'public, max-age=3600, immutable',
       'Content-Security-Policy': [
         "default-src 'self'",
         "script-src 'self' https://www.googletagmanager.com",
@@ -85,17 +93,44 @@ export default defineConfig({
     build: {
       cssCodeSplit: true,
       modulePreload: {
-        polyfill: true
+        polyfill: true,
+        resolveDependencies: (url, deps, { hostId, hostType }) => {
+          return deps.filter(dep => !dep.includes('node_modules'))
+        }
       },
       rollupOptions: {
         output: {
-          manualChunks: {
-            'vendor': ['astro-icon'],
-            'icons': ['simple-icons/*', 'mdi/*', 'logos/*', 'vscode-icons/*'],
-            'transitions': ['astro:transitions']
+          manualChunks(id) {
+            // Cria chunks para componentes reutilizados
+            if (id.includes('/components/')) {
+              return 'components';
+            }
+            // Separa as dependências de terceiros
+            if (id.includes('node_modules')) {
+              if (id.includes('astro-icon')) {
+                return 'icons';
+              }
+              if (id.includes('astro:transitions')) {
+                return 'transitions';
+              }
+              return 'vendor';
+            }
+            // Agrupa arquivos de utilidades
+            if (id.includes('/utils/')) {
+              return 'utils';
+            }
           },
-          chunkFileNames: 'assets/js/[hash].js',
-          assetFileNames: 'assets/[ext]/[hash][extname]'
+          chunkFileNames: 'assets/js/[name].[hash].js',
+          assetFileNames: ({name}) => {
+            if (/\.(gif|jpe?g|png|svg|webp)$/.test(name ?? '')) {
+              return 'assets/images/[name].[hash][extname]';
+            }
+            if (/\.css$/.test(name ?? '')) {
+              return 'assets/css/[name].[hash][extname]';
+            }
+            return 'assets/[ext]/[name].[hash][extname]';
+          },
+          entryFileNames: 'assets/[name].[hash].js'
         }
       },
       minify: 'terser',
@@ -103,9 +138,19 @@ export default defineConfig({
         compress: {
           drop_console: true,
           drop_debugger: true,
-          pure_funcs: ['console.log', 'console.debug', 'console.info']
+          pure_funcs: ['console.log', 'console.debug', 'console.info'],
+          passes: 2,
+          ecma: 2020
+        },
+        mangle: {
+          safari10: true
+        },
+        format: {
+          comments: false,
+          ecma: 2020
         }
-      }
+      },
+      sourcemap: false
     },
     ssr: {
       noExternal: ['@fontsource/*']

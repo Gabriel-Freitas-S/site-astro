@@ -5,8 +5,19 @@ import Navigation from '../components/Navigation.astro';
 import SkillCard from '../components/SkillCard.astro';
 import SafeResource from '@igor.dvlpr/astro-saferesource';
 import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
+import profileImage from '../assets/images/profile.webp';
+import { SharedObserver } from '../utils/intersectionObserver.js';
 
 export const prerender = true;
+
+// Otimizar imagem para OG
+const ogImage = await getImage({
+    src: profileImage,
+    width: 1200,
+    height: 630,
+    format: 'jpeg',
+});
 
 interface Technology {
     name: string;
@@ -57,12 +68,45 @@ const skillCategories = Array.from(allSkills.entries())
         return indexA - indexB;
     });
 
-const description = `Desenvolvedor de software especializado em desenvolvimento web e mobile, com experiência em diversas tecnologias e frameworks.`;
+const description = `Desenvolvedor de software especializado em desenvolvimento web e mobile, com experiência em React, TypeScript, Node.js e outras tecnologias modernas. Conheça meu trabalho e habilidades.`;
+
+// Metadados estruturados para SEO
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Gabriel Freitas Souza",
+    "jobTitle": "Desenvolvedor de Software",
+    "url": "https://gabrielfs.dev",
+    "image": ogImage.src,
+    "description": description,
+    "knowsAbout": skillCategories.map(cat => cat.title),
+};
 ---
 
-<Layout 
+<Layout
     title="Gabriel Freitas Souza - Portfolio"
     description={description}
+    openGraph={{
+        basic: {
+            title: "Gabriel Freitas Souza - Portfolio",
+            type: "website",
+            image: ogImage.src,
+        },
+        optional: {
+            description,
+            locale: "pt_BR",
+            siteName: "Gabriel Freitas Souza",
+        },
+    }}
+    twitter={{
+        card: "summary_large_image",
+        site: "@gfreitasdev",
+        creator: "@gfreitasdev",
+        title: "Gabriel Freitas Souza - Portfolio",
+        description,
+        image: ogImage.src,
+    }}
+    structuredData={jsonLd}
 >
     <Navigation />
     <Header />
@@ -149,49 +193,78 @@ const description = `Desenvolvedor de software especializado em desenvolvimento 
     }
 }
 </style>
-
 <SafeResource>
     <script is:inline>
-    function observeSkillCategories() {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        requestAnimationFrame(() => {
-                            const element = entry.target;
-                            element.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
-                            element.style.opacity = '1';
-                            element.style.transform = 'translateY(0)';
-                        });
-                        observer.unobserve(entry.target);
+        document.addEventListener('astro:page-load', () => {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelectorAll('.lazy-load').forEach(el => {
+                    if (el instanceof HTMLElement) {
+                        el.style.opacity = '1';
+                        el.style.transform = 'none';
                     }
                 });
-            },
-            {
-                threshold: 0.1,
-                rootMargin: '50px'
+                return;
             }
-        );
 
-        document.querySelectorAll('.lazy-load').forEach((category, index) => {
-            if (category instanceof HTMLElement) {
-                category.style.transitionDelay = `${index * 100}ms`;
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            requestAnimationFrame(() => {
+                                const element = entry.target;
+                                if (element instanceof HTMLElement) {
+                                    element.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
+                                    const index = Array.from(document.querySelectorAll('.lazy-load')).indexOf(element);
+                                    element.style.transitionDelay = `${index * 100}ms`;
+                                    element.style.opacity = '1';
+                                    element.style.transform = 'translateY(0)';
+                                }
+                            });
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                },
+                {
+                    threshold: 0.1,
+                    rootMargin: '50px'
+                }
+            );
+
+            document.querySelectorAll('.lazy-load').forEach(category => {
                 observer.observe(category);
+            });
+        }, { passive: true });
+        function handleSkillsAnimation() {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelectorAll('.lazy-load').forEach(el => {
+                    if (el instanceof HTMLElement) {
+                        el.style.opacity = '1';
+                        el.style.transform = 'none';
+                    }
+                });
+                return;
             }
-        });
-    }
 
-    document.addEventListener('astro:page-load', () => {
-        if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
-            observeSkillCategories();
-        } else {
-            document.querySelectorAll('.lazy-load').forEach(el => {
-                if (el instanceof HTMLElement) {
-                    el.style.opacity = '1';
-                    el.style.transform = 'none';
+            const observer = SharedObserver.getInstance({
+                threshold: 0.1,
+                rootMargin: '50px',
+                once: true
+            });
+
+            document.querySelectorAll('.lazy-load').forEach((category, index) => {
+                if (category instanceof HTMLElement) {
+                    observer.observe(category, () => {
+                        requestAnimationFrame(() => {
+                            category.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
+                            category.style.transitionDelay = `${index * 100}ms`;
+                            category.style.opacity = '1';
+                            category.style.transform = 'translateY(0)';
+                        });
+                    });
                 }
             });
         }
-    }, { passive: true });
+
+        document.addEventListener('astro:page-load', handleSkillsAnimation, { passive: true });
     </script>
 </SafeResource>

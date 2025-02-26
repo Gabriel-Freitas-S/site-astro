@@ -2,14 +2,44 @@
 import { ClientRouter } from 'astro:transitions';
 import SafeResource from '@igor.dvlpr/astro-saferesource';
 
+interface OpenGraphBasic {
+    title: string;
+    type: string;
+    image: string;
+}
+
+interface OpenGraphOptional {
+    description: string;
+    locale: string;
+    siteName: string;
+}
+
+interface TwitterCard {
+    card: string;
+    site: string;
+    creator: string;
+    title: string;
+    description: string;
+    image: string;
+}
+
 interface Props {
     title: string;
     description?: string;
+    openGraph?: {
+        basic: OpenGraphBasic;
+        optional?: OpenGraphOptional;
+    };
+    twitter?: TwitterCard;
+    structuredData?: Record<string, any>;
 }
 
 const {
     title,
-    description = "Gabriel Freitas Souza - Desenvolvedor de software"
+    description = "Gabriel Freitas Souza - Desenvolvedor de software",
+    openGraph,
+    twitter,
+    structuredData
 } = Astro.props;
 
 export const prerender = true;
@@ -25,23 +55,46 @@ export const prerender = true;
         <meta name="theme-color" content="#007AFF" />
         <meta name="color-scheme" content="light dark" />
         <meta name="format-detection" content="telephone=no" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <!-- Resource hints otimizados -->
         <meta http-equiv="x-dns-prefetch-control" content="on" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+        
+        <!-- Preload da fonte crítica -->
+        <link
+            rel="preload"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+            as="style"
+            crossorigin
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+            crossorigin
+        />
 
         <!-- Open Graph -->
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        <meta property="og:type" content="website" />
+        <meta property="og:title" content={openGraph?.basic.title || title} />
+        <meta property="og:description" content={openGraph?.optional?.description || description} />
+        <meta property="og:type" content={openGraph?.basic.type || 'website'} />
         <meta property="og:url" content={Astro.url} />
+        {openGraph?.basic.image && <meta property="og:image" content={openGraph.basic.image} />}
+        {openGraph?.optional?.locale && <meta property="og:locale" content={openGraph.optional.locale} />}
+        {openGraph?.optional?.siteName && <meta property="og:site_name" content={openGraph.optional.siteName} />}
         
         <!-- Twitter -->
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={description} />
+        <meta name="twitter:card" content={twitter?.card || 'summary'} />
+        <meta name="twitter:title" content={twitter?.title || title} />
+        <meta name="twitter:description" content={twitter?.description || description} />
+        {twitter?.site && <meta name="twitter:site" content={twitter.site} />}
+        {twitter?.creator && <meta name="twitter:creator" content={twitter.creator} />}
+        {twitter?.image && <meta name="twitter:image" content={twitter.image} />}
+
+        <!-- Structured Data -->
+        {structuredData && (
+            <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+        )}
 
         <title>{title}</title>
         <ClientRouter />
@@ -270,7 +323,7 @@ export const prerender = true;
 }
 
 html {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Inter';
     background: var(--background-color);
     color: var(--text-color);
     scroll-behavior: smooth;
