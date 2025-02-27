@@ -7,45 +7,40 @@ import icon from 'astro-icon';
 import partytown from '@astrojs/partytown';
 import robotsTxt from 'astro-robots-txt';
 
+import cloudflarePagesHeaders from 'astro-cloudflare-pages-headers';
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://gabrielfs.dev',
   compressHTML: true,
-  integrations: [
-    robotsTxt({
-      policy: [
-        {
-          userAgent: '*',
-          allow: '/',
-          crawlDelay: 10
-        },
-        {
-          userAgent: 'Googlebot',
-          allow: '/',
-          crawlDelay: 2
-        }
-      ],
-      sitemap: true,
-      host: true
-    }),
-    compressor({
-      gzip: true,
-      brotli: true,
-      fileExtensions: ['.css', '.js', '.html', '.xml', '.svg', '.json']
-    }),
-    minify(),
-    sitemap({
-      changefreq: 'weekly',
-      priority: 0.7,
-      lastmod: new Date(),
-    }),
-    partytown({
-      config: {
-        forward: ['dataLayer.push'],
+  integrations: [robotsTxt({
+    policy: [
+      {
+        userAgent: '*',
+        allow: '/',
+        crawlDelay: 10
+      },
+      {
+        userAgent: 'Googlebot',
+        allow: '/',
+        crawlDelay: 2
       }
-    }),
-    icon({ include: { mdi: ['open-in-new'] } })
-  ],
+    ],
+    sitemap: true,
+    host: true
+  }), compressor({
+    gzip: true,
+    brotli: true,
+    fileExtensions: ['.css', '.js', '.html', '.xml', '.svg', '.json']
+  }), minify(), sitemap({
+    changefreq: 'weekly',
+    priority: 0.7,
+    lastmod: new Date(),
+  }), partytown({
+    config: {
+      forward: ['dataLayer.push'],
+    }
+  }), icon({ include: { mdi: ['open-in-new'] } }), cloudflarePagesHeaders()],
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'viewport'
@@ -73,8 +68,8 @@ export default defineConfig({
       'X-Frame-Options': 'DENY',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
       'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-      'Strict-Transport-Security': 'max-age=3600; includeSubDomains',
-      'Cache-Control': 'public, max-age=3600, immutable',
+      'Strict-Transport-Security': 'max-age=86400; includeSubDomains',
+      'Cache-Control': 'public, max-age=86400, immutable',
       'Content-Security-Policy': [
         "default-src 'self'",
         "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
