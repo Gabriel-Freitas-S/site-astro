@@ -1,4 +1,4 @@
----
+ ---
 import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 import CertificationCard from '../components/CertificationCard.astro';
@@ -8,16 +8,8 @@ import { getCollection } from 'astro:content';
 
 const certifications = await getCollection('certifications');
 
-// Ordenar por duração
-const sortedCertifications = certifications.sort((a, b) => {
-    const getHours = (duration: string) => parseInt(duration.replace('h', ''));
-    const totalA = getHours(a.data.duration);
-    const totalB = getHours(b.data.duration);
-    return totalB - totalA;
-});
-
 // Calcular total de horas
-const totalHours = sortedCertifications.reduce((acc, cert) => {
+const totalHours = certifications.reduce((acc, cert) => {
     const hours = parseInt(cert.data.duration.replace('h', ''));
     return acc + hours;
 }, 0);
@@ -52,7 +44,7 @@ export const prerender = true;
             aria-label="Lista de certificações"
             data-initial-filter={searchTerm}
         >
-            {sortedCertifications.map((certification, index) => (
+            {certifications.map((certification: any, index: number) => (
                 <LazyAnimation
                     className="card-wrapper"
                     index={index}
@@ -107,7 +99,6 @@ export const prerender = true;
 .card-wrapper {
     container-type: inline-size;
     container-name: card;
-    transition: order 0.3s ease;
     opacity: 0;
     transform: translateY(20px);
     animation: fadeIn 0.5s ease forwards;
@@ -184,76 +175,31 @@ function shouldShowCard(certification: any, searchTerm: string): boolean {
     return false;
 }
 
-function reorderCertifications(searchTerm: string) {
-    // Aguardar próximo frame para garantir que os elementos foram carregados
-    requestAnimationFrame(() => {
-        const grid = document.querySelector<HTMLElement>('.certifications-grid');
-        if (!grid) return;
-
-        const wrappers = Array.from(grid.querySelectorAll<HTMLElement>('.card-wrapper'));
-        
-        if (!searchTerm) {
-            // Se não houver termo de busca, restaurar ordem original
-            wrappers.forEach((wrapper, index) => {
-                wrapper.style.order = wrapper.dataset.index || index.toString();
-            });
-            return;
-        }
-
-        // Ordenar wrappers baseado na correspondência
-        wrappers.forEach(wrapper => {
-            const card = wrapper.querySelector<HTMLElement>('.certification-card');
-            if (!card?.dataset.certification) return;
-
-            try {
-                const certification = JSON.parse(card.dataset.certification);
-                const matches = shouldShowCard(certification, searchTerm);
-                
-                // Definir ordem: cards com correspondência primeiro
-                wrapper.style.order = matches ? '0' : '1';
-            } catch (error) {
-                console.error('Erro ao processar certificação:', error);
-            }
-        });
-
-        // Disparar evento para destacar conteúdo
-        document.dispatchEvent(new CustomEvent('certificationSearch', {
-            detail: { searchTerm }
-        }));
-    });
+function dispatchSearchEvent(searchTerm: string) {
+    document.dispatchEvent(new CustomEvent('certificationSearch', {
+        detail: { searchTerm }
+    }));
 }
 
-function initializeFilter() {
-    // Escutar eventos de filtragem
-    document.addEventListener('filterCertifications', ((event: CustomEvent) => {
-        if (event.detail) {
-            reorderCertifications(event.detail.searchTerm || '');
-        }
-    }) as EventListener);
-
-    // Escutar eventos de lazy loading
-    document.addEventListener('lazyAnimationComplete', () => {
-        const grid = document.querySelector<HTMLElement>('.certifications-grid');
-        if (grid?.dataset.initialFilter) {
-            reorderCertifications(grid.dataset.initialFilter);
-        }
-    });
-
-    // Aplicar ordenação inicial se houver filtro
-    const grid = document.querySelector<HTMLElement>('.certifications-grid');
-    if (grid?.dataset.initialFilter) {
-        reorderCertifications(grid.dataset.initialFilter);
+// Escutar eventos de filtragem
+document.addEventListener('filterCertifications', ((event: CustomEvent) => {
+    if (event.detail) {
+        dispatchSearchEvent(event.detail.searchTerm || '');
     }
-}
+}) as EventListener);
 
 // Inicializar em diferentes eventos
-document.addEventListener('astro:page-load', initializeFilter);
-document.addEventListener('astro:after-swap', initializeFilter);
+document.addEventListener('astro:page-load', () => {
+    const grid = document.querySelector<HTMLElement>('.certifications-grid');
+    if (grid?.dataset.initialFilter) {
+        dispatchSearchEvent(grid.dataset.initialFilter);
+    }
+});
 
-// Executar imediatamente se o DOM estiver pronto
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeFilter);
-} else {
-    initializeFilter();
-}
+document.addEventListener('astro:after-swap', () => {
+    const grid = document.querySelector<HTMLElement>('.certifications-grid');
+    if (grid?.dataset.initialFilter) {
+        dispatchSearchEvent(grid.dataset.initialFilter);
+    }
+});
 </script>
