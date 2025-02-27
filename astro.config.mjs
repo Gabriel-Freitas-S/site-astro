@@ -9,8 +9,6 @@ import robotsTxt from 'astro-robots-txt';
 
 import cloudflarePagesHeaders from 'astro-cloudflare-pages-headers';
 
-import cloudflare from '@astrojs/cloudflare';
-
 // https://astro.build/config
 export default defineConfig({
   site: 'https://gabrielfs.dev',
@@ -163,6 +161,4 @@ export default defineConfig({
       exclude: ['@astrojs/image', 'sharp']
     }
   },
-
-  adapter: cloudflare()
 });
