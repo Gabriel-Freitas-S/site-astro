@@ -10,9 +10,3 @@ pages_build_output_dir = "./dist"
 [build]
 command = "npm run build"
 output_directory = "dist"
-
-[env.production]
-name = "site-astro-prod"
-
-[env.staging]
-name = "site-astro-staging"
