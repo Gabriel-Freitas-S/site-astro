@@ -9,10 +9,13 @@ import robotsTxt from 'astro-robots-txt';
 
 import cloudflarePagesHeaders from 'astro-cloudflare-pages-headers';
 
+import cloudflare from '@astrojs/cloudflare';
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://gabrielfs.dev',
   compressHTML: true,
+
   integrations: [robotsTxt({
     policy: [
       {
@@ -41,10 +44,12 @@ export default defineConfig({
       forward: ['dataLayer.push'],
     }
   }), icon({ include: { mdi: ['open-in-new'] } }), cloudflarePagesHeaders()],
+
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'viewport'
   },
+
   image: {
     service: {
       entrypoint: 'astro/assets/services/sharp',
@@ -56,12 +61,15 @@ export default defineConfig({
       }
     }
   },
+
   build: {
     inlineStylesheets: 'auto',
     assets: 'assets',
     redirects: true
   },
+
   output: 'static',
+
   server: {
     headers: {
       'X-Content-Type-Options': 'nosniff',
@@ -84,6 +92,7 @@ export default defineConfig({
       ].join('; ')
     }
   },
+
   vite: {
     build: {
       cssCodeSplit: true,
@@ -153,5 +162,7 @@ export default defineConfig({
     optimizeDeps: {
       exclude: ['@astrojs/image', 'sharp']
     }
-  }
+  },
+
+  adapter: cloudflare()
 });
