@@ -1,0 +1,16 @@
+name = "site-astro"
+compatibility_date = "2024-02-27"
+main = "./dist"
+
+[site]
+bucket = "./dist"
+
+[build]
+command = "npm run build"
+output_directory = "dist"
+
+[env.production]
+name = "site-astro-prod"
+
+[env.staging]
+name = "site-astro-staging"
