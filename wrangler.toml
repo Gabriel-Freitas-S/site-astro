@@ -1,6 +1,5 @@
 name = "site-astro"
 compatibility_date = "2024-02-27"
-main = "./dist"
 
 [site]
 bucket = "./dist"
