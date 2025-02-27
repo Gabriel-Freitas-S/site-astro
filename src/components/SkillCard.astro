@@ -18,7 +18,7 @@ const { title, technologies } = Astro.props;
     <div class="technologies-list">
         {technologies.map((tech) => (
             <a
-                href={`/certificacoes?skill=${encodeURIComponent(tech.name)}`}
+                href={`/certificacoes?search=${encodeURIComponent(tech.name)}`}
                 class="tech-item"
                 data-astro-prefetch
                 aria-label={`Filtrar certificações por ${tech.name}`}

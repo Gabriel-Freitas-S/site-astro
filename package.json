@@ -6,7 +6,7 @@
         "dev": "astro dev",
         "build": "astro build --clean",
         "preview": "astro preview",
-        "astro": "astro",
+        "astro": "astro ",
         "local": "astro build --clean && astro preview"
     },
     "dependencies": {
@@ -20,7 +20,6 @@
     },
     "devDependencies": {
         "@iconify-json/mdi": "^1.2.3",
-        "@iconify-json/simple-icons": "^1.2.25",
         "@igor.dvlpr/astro-saferesource": "^1.0.1",
         "terser": "^5.39.0"
     }

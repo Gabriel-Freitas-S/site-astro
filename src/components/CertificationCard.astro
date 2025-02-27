@@ -25,20 +25,26 @@ interface Props {
             duration: string;
         }[];
     };
+    searchTerm?: string;
 }
 
-const { certification } = Astro.props;
+const { certification, searchTerm = '' } = Astro.props;
+
+function hasMatch(content: string): boolean {
+    if (!searchTerm || !content) return false;
+    return content.toLowerCase().includes(searchTerm.toLowerCase());
+}
+
 export const prerender = true;
 ---
 
 <BaseCard className="certification-card" data-certification={JSON.stringify(certification)}>
-    <div class="card-content lazy-load">
-        <div class="card-header" transition:name={`cert-header-${certification.title}`}>
+    <div class="card-content">
+        <div class="card-header">
             <h2>{certification.title}</h2>
             <span
                 class="duration-badge"
                 aria-label={`Duração: ${certification.duration}`}
-                transition:name={`cert-duration-${certification.duration}`}
             >
                 {certification.duration}
             </span>
@@ -48,19 +54,22 @@ export const prerender = true;
             <div class="section courses">
                 <h3>Cursos</h3>
                 <ul class="course-list">
-                    {certification.courses.map(course => (
-                        <li class="course-item" data-content={course.name.toLowerCase()}>
-                            <div class="info-row">
-                                <div class="info-main">
-                                    <span class="name">{course.name}</span>
-                                    {course.period && (
-                                        <span class="period">({course.period})</span>
-                                    )}
+                    {certification.courses.map(course => {
+                        const isMatched = hasMatch(course.name);
+                        return (
+                            <li class:list={["course-item", { matched: isMatched }]} data-content={course.name.toLowerCase()}>
+                                <div class="info-row">
+                                    <div class="info-main">
+                                        <span class="name">{course.name}</span>
+                                        {course.period && (
+                                            <span class="period">({course.period})</span>
+                                        )}
+                                    </div>
+                                    <span class="duration">{course.duration}</span>
                                 </div>
-                                <span class="duration">{course.duration}</span>
-                            </div>
-                        </li>
-                    ))}
+                            </li>
+                        );
+                    })}
                 </ul>
             </div>
 
@@ -68,14 +77,17 @@ export const prerender = true;
                 <div class="section complementary">
                     <h3>Conteúdos complementares</h3>
                     <ul class="complementary-list">
-                        {certification.complementaryContent.map(content => (
-                            <li class="complementary-item" data-content={content.name.toLowerCase()}>
-                                <div class="info-row">
-                                    <span class="name">{content.name}</span>
-                                    <span class="duration">{content.duration}</span>
-                                </div>
-                            </li>
-                        ))}
+                        {certification.complementaryContent.map(content => {
+                            const isMatched = hasMatch(content.name);
+                            return (
+                                <li class:list={["complementary-item", { matched: isMatched }]} data-content={content.name.toLowerCase()}>
+                                    <div class="info-row">
+                                        <span class="name">{content.name}</span>
+                                        <span class="duration">{content.duration}</span>
+                                    </div>
+                                </li>
+                            );
+                        })}
                     </ul>
                 </div>
             )}
@@ -90,8 +102,6 @@ export const prerender = true;
     display: grid;
     grid-template-rows: auto 1fr;
     gap: 1.5rem;
-    opacity: 0;
-    transform: translateY(10px);
     border-radius: inherit;
     overflow: hidden;
 }
@@ -189,7 +199,6 @@ ul {
         border-radius: var(--border-radius);
         background: rgba(var(--text-color-rgb), 0.05);
         overflow: hidden;
-        transition: all 0.3s ease;
     }
 }
 
@@ -203,31 +212,22 @@ ul {
     }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .card-content.lazy-load {
-        view-transition-name: card;
-        transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-        will-change: transform, opacity;
-    }
-
-    .card-content.visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    .course-item,
-    .complementary-item {
-        transition: all 0.3s ease-out;
-    }
+.course-item,
+.complementary-item {
+    position: relative;
+    transition: all 0.3s ease;
 }
 
-@media (prefers-reduced-motion: reduce), (forced-colors: active) {
-    .card-content {
-        opacity: 1 !important;
-        transform: none !important;
-        transition: none !important;
-    }
+.course-item.matched,
+.complementary-item.matched {
+    background: color-mix(in srgb, var(--accent-primary) 15%, var(--card-bg));
+    border-left: 3px solid var(--accent-primary);
+    padding-left: calc(0.5rem - 3px);
+    box-shadow: 0 2px 4px rgba(var(--text-color-rgb), 0.1);
+}
 
+/* Forced Colors Mode */
+@media (forced-colors: active) {
     .duration-badge {
         background: ButtonFace !important;
         color: ButtonText !important;
@@ -250,106 +250,63 @@ ul {
         border-color: currentColor !important;
     }
 }
-
-@media (forced-colors: active) {
-    .card-content {
-        forced-color-adjust: none;
-    }
-
-    .duration-badge,
-    .course-item,
-    .complementary-item {
-        forced-color-adjust: auto;
-    }
-}
-
-.course-item,
-.complementary-item {
-    position: relative;
-}
-
-.course-item.matched,
-.complementary-item.matched {
-    background: color-mix(in srgb, var(--accent-primary) 15%, var(--card-bg)) !important;
-    border-left: 3px solid var(--accent-primary);
-    padding-left: calc(0.5rem - 3px);
-    box-shadow: 0 2px 4px rgba(var(--text-color-rgb), 0.1);
-    transform: translateX(4px);
-}
-
-.hidden {
-    display: none !important;
-}
 </style>
 
 <script>
-interface Technology {
-    name: string;
-}
+function initializeCard(card: Element) {
+    if (!card) return;
 
-interface Skill {
-    title: string;
-    technologies: Technology[];
-}
+    function hasMatch(content: string, searchTerm: string): boolean {
+        if (!searchTerm || !content) return false;
+        return content.toLowerCase().includes(searchTerm.toLowerCase());
+    }
 
-interface Certification {
-    title: string;
-    skills: Skill[];
-    courses: {
-        name: string;
-        period?: string;
-        duration: string;
-    }[];
-    complementaryContent?: {
-        name: string;
-        duration: string;
-    }[];
-}
-
-function initializeContentFiltering() {
-    document.querySelectorAll<HTMLElement>('.certification-card').forEach(card => {
-        if (!card) return;
-
-        function hasMatch(content: string, searchTerm: string): boolean {
-            if (!searchTerm || !content) return false;
-            return content.toLowerCase().includes(searchTerm.toLowerCase());
-        }
-
-        function updateHighlights(searchTerm: string) {
-            // Remover todos os destaques se não houver termo de busca
-            if (!searchTerm) {
-                card.querySelectorAll('.matched').forEach(el => el.classList.remove('matched'));
-                return;
-            }
-
-            // Processar cursos e conteúdos complementares
-            const items = card.querySelectorAll<HTMLElement>('.course-item, .complementary-item');
-            items.forEach(item => {
+    function updateHighlights(searchTerm: string) {
+        requestAnimationFrame(() => {
+            card.querySelectorAll<HTMLElement>('[data-content]').forEach(item => {
                 const content = item.dataset.content || '';
                 item.classList.toggle('matched', hasMatch(content, searchTerm));
             });
-        }
+        });
+    }
 
-        // Ouvir eventos globais de busca
-        document.addEventListener('globalSearch', ((event: CustomEvent) => {
-            if (card.classList.contains('hidden')) return;
-            
-            const searchTerm = event.detail?.searchTerm || '';
-            requestAnimationFrame(() => {
-                updateHighlights(searchTerm);
-            });
-        }) as EventListener);
+    // Atualizar highlights quando receber evento de busca
+    document.addEventListener('certificationSearch', ((event: CustomEvent) => {
+        const searchTerm = event.detail?.searchTerm || '';
+        updateHighlights(searchTerm);
+    }) as EventListener);
 
-        // Aplicar filtro inicial da URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const skillFilter = urlParams.get('skill');
-        if (skillFilter && !card.classList.contains('hidden')) {
-            updateHighlights(skillFilter);
+    // Aplicar highlight inicial baseado na URL
+    function applyInitialHighlight() {
+        const url = new URL(window.location.href);
+        const searchTerm = url.searchParams.get('search');
+        if (searchTerm) {
+            updateHighlights(searchTerm);
         }
-    });
+    }
+
+    // Aplicar highlights em diferentes momentos
+    applyInitialHighlight();
+
+    // Observar mudanças na URL (para navegação do histórico)
+    window.addEventListener('popstate', applyInitialHighlight);
 }
 
-// Inicializar quando o DOM estiver pronto
-document.addEventListener('astro:page-load', initializeContentFiltering);
-document.addEventListener('astro:after-swap', initializeContentFiltering);
+// Inicializar em diferentes eventos do Astro
+document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll('.certification-card').forEach(initializeCard);
+});
+
+document.addEventListener('astro:after-swap', () => {
+    document.querySelectorAll('.certification-card').forEach(initializeCard);
+});
+
+// Executar inicialização imediata se o DOM já estiver pronto
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.certification-card').forEach(initializeCard);
+    });
+} else {
+    document.querySelectorAll('.certification-card').forEach(initializeCard);
+}
 </script>

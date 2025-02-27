@@ -15,6 +15,7 @@ const { className = "", index } = Astro.props;
     transition: opacity 0.4s ease-out, transform 0.4s ease-out;
     transition-delay: ${index * 100}ms;
   `}
+  data-index={index}
 >
   <slot />
 </div>
@@ -43,23 +44,68 @@ const { className = "", index } = Astro.props;
 
 <script is:inline>
   (() => {
-    document.addEventListener('astro:page-load', () => {
+    function initializeLazyAnimation() {
+      let loadedCount = 0;
+      const elements = document.querySelectorAll('.lazy-animation');
+      const totalElements = elements.length;
+
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach(entry => {
             if (entry.isIntersecting) {
-              entry.target.style.opacity = '1';
-              entry.target.style.transform = 'translateY(0)';
-              observer.unobserve(entry.target);
+              const element = entry.target;
+              element.style.opacity = '1';
+              element.style.transform = 'translateY(0)';
+              observer.unobserve(element);
+              loadedCount++;
+
+              // Disparar evento para cada elemento carregado
+              document.dispatchEvent(new CustomEvent('lazyAnimationItemLoaded', {
+                detail: {
+                  element,
+                  index: parseInt(element.dataset.index || '0'),
+                  isLast: loadedCount === totalElements
+                }
+              }));
+
+              // Disparar evento quando todos os elementos forem carregados
+              if (loadedCount === totalElements) {
+                requestAnimationFrame(() => {
+                  document.dispatchEvent(new CustomEvent('lazyAnimationComplete'));
+                });
+              }
             }
           });
         },
         { threshold: 0.1, rootMargin: '50px' }
       );
 
-      document.querySelectorAll('.lazy-animation').forEach(el => {
-        observer.observe(el);
+      elements.forEach(el => {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          // Se reduced motion estiver ativo, marcar como carregado imediatamente
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+          loadedCount++;
+          if (loadedCount === totalElements) {
+            requestAnimationFrame(() => {
+              document.dispatchEvent(new CustomEvent('lazyAnimationComplete'));
+            });
+          }
+        } else {
+          observer.observe(el);
+        }
       });
-    });
+    }
+
+    // Inicializar em diferentes eventos do Astro
+    document.addEventListener('astro:page-load', initializeLazyAnimation);
+    document.addEventListener('astro:after-swap', initializeLazyAnimation);
+
+    // Executar imediatamente se o DOM já estiver pronto
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeLazyAnimation);
+    } else {
+      initializeLazyAnimation();
+    }
   })();
 </script>

@@ -3,10 +3,12 @@ import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 import CertificationCard from '../components/CertificationCard.astro';
 import SearchBar from '../components/SearchBar.astro';
-import SafeResource from '@igor.dvlpr/astro-saferesource';
+import LazyAnimation from '../components/LazyAnimation.astro';
 import { getCollection } from 'astro:content';
 
 const certifications = await getCollection('certifications');
+
+// Ordenar por duração
 const sortedCertifications = certifications.sort((a, b) => {
     const getHours = (duration: string) => parseInt(duration.replace('h', ''));
     const totalA = getHours(a.data.duration);
@@ -14,6 +16,7 @@ const sortedCertifications = certifications.sort((a, b) => {
     return totalB - totalA;
 });
 
+// Calcular total de horas
 const totalHours = sortedCertifications.reduce((acc, cert) => {
     const hours = parseInt(cert.data.duration.replace('h', ''));
     return acc + hours;
@@ -21,9 +24,9 @@ const totalHours = sortedCertifications.reduce((acc, cert) => {
 
 const description = `Certificações e cursos em desenvolvimento de software, totalizando ${totalHours} horas de estudo em diversas tecnologias e frameworks.`;
 
-// Recuperar o filtro da URL se existir
+// Recuperar o termo de pesquisa da URL
 const url = new URL(Astro.request.url);
-const skillFilter = url.searchParams.get('skill');
+const searchTerm = (url.searchParams.get('search') || '').toLowerCase();
 
 export const prerender = true;
 ---
@@ -42,21 +45,24 @@ export const prerender = true;
             </p>
         </div>
 
-        <SearchBar initialSearchTerm={skillFilter} />
+        <SearchBar initialSearchTerm={searchTerm} />
 
         <section
             class="certifications-grid"
             aria-label="Lista de certificações"
-            data-initial-filter={skillFilter}
+            data-initial-filter={searchTerm}
         >
             {sortedCertifications.map((certification, index) => (
-                <div
-                    class="card-wrapper"
+                <LazyAnimation
+                    className="card-wrapper"
+                    index={index}
                     data-index={index}
-                    style={`--delay: ${index * 100}ms`}
                 >
-                    <CertificationCard certification={certification.data} />
-                </div>
+                    <CertificationCard 
+                        certification={certification.data}
+                        searchTerm={searchTerm}
+                    />
+                </LazyAnimation>
             ))}
             <p class="no-results hidden">Nenhuma certificação encontrada.</p>
         </section>
@@ -101,27 +107,23 @@ export const prerender = true;
 .card-wrapper {
     container-type: inline-size;
     container-name: card;
+    transition: order 0.3s ease;
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.4s ease-out var(--delay), transform 0.4s ease-out var(--delay);
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @container certifications-grid (min-width: 768px) {
     .certifications-grid {
         grid-template-columns: repeat(auto-fill, minmax(min(100%, 500px), 1fr));
     }
-}
-
-/* Ajustes para tema claro */
-:global(.light-theme) .header-description {
-    color: var(--text-color);
-    font-weight: 600;
-}
-
-/* Estilos de carregamento progressivo */
-.card-wrapper.visible {
-    opacity: 1;
-    transform: translateY(0);
 }
 
 .no-results {
@@ -133,152 +135,125 @@ export const prerender = true;
     grid-column: 1 / -1;
 }
 
+/* Ajustes para tema claro */
+:global(.light-theme) .header-description {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+/* Utility Classes */
 .hidden {
     display: none !important;
 }
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .card-wrapper {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+}
 </style>
 
-<SafeResource>
-    <script is:inline>
-    function shouldShowCard(searchTerm, certification) {
-        if (!searchTerm) return true;
+<script>
+function shouldShowCard(certification: any, searchTerm: string): boolean {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
 
-        const searchTermLower = searchTerm.toLowerCase();
+    // Verificar título
+    if (certification.title.toLowerCase().includes(term)) return true;
 
-        // Verificar título
-        if (certification.title.toLowerCase().includes(searchTermLower)) return true;
+    // Verificar skills
+    if (certification.skills.some((skill: any) =>
+        skill.technologies.some((tech: any) =>
+            tech.name.toLowerCase().includes(term)
+        )
+    )) return true;
 
-        // Verificar skills
-        const hasSkillMatch = certification.skills.some(skill =>
-            skill.technologies.some(tech => tech.name.toLowerCase().includes(searchTermLower))
-        );
-        if (hasSkillMatch) return true;
+    // Verificar cursos
+    if (certification.courses.some((course: any) =>
+        course.name.toLowerCase().includes(term)
+    )) return true;
 
-        // Verificar cursos
-        const hasCourseMatch = certification.courses.some(course =>
-            course.name.toLowerCase().includes(searchTermLower)
-        );
-        if (hasCourseMatch) return true;
+    // Verificar conteúdo complementar
+    if (certification.complementaryContent?.some((content: any) =>
+        content.name.toLowerCase().includes(term)
+    )) return true;
 
-        // Verificar conteúdo complementar
-        if (certification.complementaryContent?.some(content =>
-            content.name.toLowerCase().includes(searchTermLower)
-        )) return true;
+    return false;
+}
 
-        return false;
-    }
+function reorderCertifications(searchTerm: string) {
+    // Aguardar próximo frame para garantir que os elementos foram carregados
+    requestAnimationFrame(() => {
+        const grid = document.querySelector<HTMLElement>('.certifications-grid');
+        if (!grid) return;
 
-    function filterCertifications(searchTerm) {
-        // Se não houver termo de busca, mostrar todos os cards
+        const wrappers = Array.from(grid.querySelectorAll<HTMLElement>('.card-wrapper'));
+        
         if (!searchTerm) {
-            document.querySelectorAll('.card-wrapper').forEach(wrapper => {
-                wrapper.classList.remove('hidden');
+            // Se não houver termo de busca, restaurar ordem original
+            wrappers.forEach((wrapper, index) => {
+                wrapper.style.order = wrapper.dataset.index || index.toString();
             });
-            document.querySelector('.no-results')?.classList.add('hidden');
-
-            // Limpar destaques
-            const event = new CustomEvent('globalSearch', {
-                bubbles: true,
-                detail: { searchTerm: '' }
-            });
-            document.dispatchEvent(event);
             return;
         }
 
-        // Filtrar cards
-        const grid = document.querySelector('.certifications-grid');
-        const cards = document.querySelectorAll('.certification-card');
-        let visibleCount = 0;
-
-        cards.forEach(card => {
-            if (!card.dataset.certification) return;
+        // Ordenar wrappers baseado na correspondência
+        wrappers.forEach(wrapper => {
+            const card = wrapper.querySelector<HTMLElement>('.certification-card');
+            if (!card?.dataset.certification) return;
 
             try {
                 const certification = JSON.parse(card.dataset.certification);
-                const shouldShow = shouldShowCard(searchTerm, certification);
-                const wrapper = card.closest('.card-wrapper');
-                if (wrapper) {
-                    wrapper.classList.toggle('hidden', !shouldShow);
-                    if (shouldShow) visibleCount++;
-                }
+                const matches = shouldShowCard(certification, searchTerm);
+                
+                // Definir ordem: cards com correspondência primeiro
+                wrapper.style.order = matches ? '0' : '1';
             } catch (error) {
                 console.error('Erro ao processar certificação:', error);
             }
         });
 
-        // Atualizar mensagem de resultados
-        const noResults = grid?.querySelector('.no-results');
-        if (noResults) {
-            noResults.classList.toggle('hidden', visibleCount > 0);
+        // Disparar evento para destacar conteúdo
+        document.dispatchEvent(new CustomEvent('certificationSearch', {
+            detail: { searchTerm }
+        }));
+    });
+}
+
+function initializeFilter() {
+    // Escutar eventos de filtragem
+    document.addEventListener('filterCertifications', ((event: CustomEvent) => {
+        if (event.detail) {
+            reorderCertifications(event.detail.searchTerm || '');
         }
+    }) as EventListener);
 
-        // Disparar evento de busca para destacar conteúdo
-        requestAnimationFrame(() => {
-            const event = new CustomEvent('globalSearch', {
-                bubbles: true,
-                detail: { searchTerm: searchTerm.toLowerCase() }
-            });
-            document.dispatchEvent(event);
-        });
-    }
-
-    function initializeCertificationsPage() {
-        // Lazy loading dos cards
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        const target = entry.target;
-                        requestAnimationFrame(() => {
-                            target.classList.add('visible');
-                        });
-                        observer.unobserve(target);
-                    }
-                });
-            },
-            {
-                threshold: 0.1,
-                rootMargin: '50px'
-            }
-        );
-
-        // Observar cards para lazy loading
-        document.querySelectorAll('.card-wrapper').forEach(card => {
-            observer.observe(card);
-        });
-
-        // Se houver um filtro inicial, aplicá-lo após carregar a página
-        const grid = document.querySelector('.certifications-grid');
-        const initialFilter = grid?.dataset.initialFilter;
-
-        // Aguardar um pouco para garantir que a página foi carregada
-        if (initialFilter) {
-            setTimeout(() => {
-                filterCertifications(initialFilter);
-                
-                // Atualizar input de busca
-                const searchInput = document.querySelector('#certification-search');
-                if (searchInput) searchInput.value = initialFilter;
-            }, 100);
+    // Escutar eventos de lazy loading
+    document.addEventListener('lazyAnimationComplete', () => {
+        const grid = document.querySelector<HTMLElement>('.certifications-grid');
+        if (grid?.dataset.initialFilter) {
+            reorderCertifications(grid.dataset.initialFilter);
         }
-
-        // Ouvir mudanças de navegação
-        document.addEventListener('astro:after-navigation', () => {
-            const params = new URLSearchParams(window.location.search);
-            const skillFilter = params.get('skill');
-            if (skillFilter) {
-                filterCertifications(skillFilter);
-            }
-        });
-    }
-
-    // Inicializar em diferentes eventos do Astro
-    document.addEventListener('astro:page-load', () => {
-        initializeCertificationsPage();
     });
 
-    document.addEventListener('astro:after-swap', () => {
-        initializeCertificationsPage();
-    });
-    </script>
-</SafeResource>
+    // Aplicar ordenação inicial se houver filtro
+    const grid = document.querySelector<HTMLElement>('.certifications-grid');
+    if (grid?.dataset.initialFilter) {
+        reorderCertifications(grid.dataset.initialFilter);
+    }
+}
+
+// Inicializar em diferentes eventos
+document.addEventListener('astro:page-load', initializeFilter);
+document.addEventListener('astro:after-swap', initializeFilter);
+
+// Executar imediatamente se o DOM estiver pronto
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeFilter);
+} else {
+    initializeFilter();
+}
+</script>
