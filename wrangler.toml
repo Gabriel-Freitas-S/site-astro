@@ -8,6 +8,9 @@ bucket = "./dist"
 command = "npm run build"
 output_directory = "dist"
 
+# Configuração necessária para o Cloudflare Pages
+pages_build_output_dir = "dist"
+
 [env.production]
 name = "site-astro-prod"
 
