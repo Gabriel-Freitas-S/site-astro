@@ -7,8 +7,6 @@ import icon from 'astro-icon';
 import partytown from '@astrojs/partytown';
 import robotsTxt from 'astro-robots-txt';
 
-import cloudflarePagesHeaders from 'astro-cloudflare-pages-headers';
-
 
 // https://astro.build/config
 export default defineConfig({
@@ -42,7 +40,7 @@ export default defineConfig({
     config: {
       forward: ['dataLayer.push'],
     }
-  }), icon({ include: { mdi: ['open-in-new'] } }), cloudflarePagesHeaders()],
+  }), icon({ include: { mdi: ['open-in-new'] } })],
 
   prefetch: {
     prefetchAll: true,
@@ -68,36 +66,6 @@ export default defineConfig({
   },
 
   output: 'static',
-
-  server: {
-    headers: {
-      // Cabeçalhos de segurança básicos
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'Referrer-Policy': 'strict-origin-when-cross-origin',
-      'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
-      
-      'Cache-Control': 'must-revalidate,public,max-age=31536000,immutable',      
-      
-      // Content Security Policy otimizada para Partytown
-      'Content-Security-Policy': [
-        "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com 'wasm-unsafe-eval'",
-        "script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
-        "worker-src 'self' blob:",
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-        "img-src 'self' data: https: www.google-analytics.com www.googletagmanager.com",
-        "font-src 'self' https://fonts.gstatic.com",
-        "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://fonts.googleapis.com https://fonts.gstatic.com",
-        "frame-src 'self'",
-        "form-action 'self'",
-        "base-uri 'self'",
-        "object-src 'none'"
-      ].join('; ')
-    },
-  },
-  
   
   vite: {
     build: {

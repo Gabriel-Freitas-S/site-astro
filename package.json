@@ -1,5 +1,5 @@
 {
-    "name": "site-astro",
+    "name": "gabrielfs",
     "type": "module",
     "version": "0.0.1",
     "scripts": {
@@ -8,8 +8,8 @@
         "preview": "astro preview",
         "astro": "astro ",
         "local": "astro build --clean && astro preview",
-        "cloudflare": "wrangler pages deploy dist",
-        "deploy": "npm run build && npm run cloudflare",
+        "cl-deploy": "wrangler pages deploy dist",
+        "deploy": "npm run build && npm run cl-deploy",
         "cl-preview": "wrangler pages dev ./dist"
     },
     "dependencies": {
